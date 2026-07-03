@@ -24,6 +24,18 @@ import {
 } from "../../shared/routing-queries.ts";
 import { apiKeyAuth, usageMiddleware } from "../public-middleware.ts";
 
+const ROUTING_PAUSED_MESSAGE =
+	"Routing is temporarily paused while we reduce OSRM hosting costs. Geocoding, autocomplete, zones, devices, and webhooks remain available.";
+const ROUTING_PAUSED: boolean = true;
+
+function throwIfRoutingPaused(): void {
+	if (ROUTING_PAUSED) {
+		throw new ORPCError("SERVICE_UNAVAILABLE", {
+			message: ROUTING_PAUSED_MESSAGE,
+		});
+	}
+}
+
 interface DirectionsInput {
 	from?: string;
 	fromAddressId?: number;
@@ -103,6 +115,7 @@ export const routingDirections = baseBuilder
 		})
 	)
 	.handler(async ({ input, context }) => {
+		throwIfRoutingPaused();
 		const { from, to } = await resolveDirectionsInput(context.db, input);
 		try {
 			const route = await fetchOsrmRoute(
@@ -232,6 +245,7 @@ export const routingMatrix = baseBuilder
 		})
 	)
 	.handler(async ({ input, context }) => {
+		throwIfRoutingPaused();
 		const { sourceItems, destItems } = parseMatrixSides(
 			input.sources,
 			input.destinations
@@ -325,6 +339,7 @@ export const routingIsochrone = baseBuilder
 			)
 	)
 	.handler(async ({ input, context }) => {
+		throwIfRoutingPaused();
 		const points = await resolveMatrixPoints(context.db, "origin", [
 			input.origin,
 		]);
@@ -469,6 +484,7 @@ export const routingMatch = baseBuilder
 		})
 	)
 	.handler(async ({ input }) => {
+		throwIfRoutingPaused();
 		const { trace, timestamps, radiuses } = buildMatchArrays(input.coordinates);
 		try {
 			const result = await fetchOsrmMatch(trace, {
@@ -570,6 +586,7 @@ export const routingOptimize = baseBuilder
 		})
 	)
 	.handler(async ({ input, context }) => {
+		throwIfRoutingPaused();
 		if (input.waypoints.length > MAX_OPTIMIZE_WAYPOINTS) {
 			throw new ORPCError("BAD_REQUEST", {
 				message: `Optimisation is limited to ${MAX_OPTIMIZE_WAYPOINTS} waypoints.`,

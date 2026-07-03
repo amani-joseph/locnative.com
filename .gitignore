@@ -66,3 +66,20 @@ infra/osrm/data/
 
 # Design-handoff archives (kept on disk, not committed to git history)
 *.zip
+
+# --- Machine, tool, and build junk (stop working-tree noise) ---
+# FUSE filesystem temp files (artifacts from deletes on a mounted fs)
+**/.fuse_hidden*
+**/.thumbnail
+# pnpm content-addressable store
+.pnpm-store/
+# wrangler update-check cache
+update-check/
+# gstack / superpowers session working dir
+.superpowers/
+# SSR build cache (random-id dir, previously committed by accident)
+Rg4xacSoJdQxVWTQ6Npgo/
+# Local brand/planning artifacts kept on disk, not tracked
+/*.pdf
+/*.docx
+/Locnative.com footer requirement/

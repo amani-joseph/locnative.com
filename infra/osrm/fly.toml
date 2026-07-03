@@ -11,8 +11,8 @@ primary_region = "syd"
 [http_service]
   internal_port = 5000
   force_https = true
-  auto_stop_machines = false
-  min_machines_running = 1
+  auto_stop_machines = true
+  min_machines_running = 0
 
 [[vm]]
   size = "performance-4x"
