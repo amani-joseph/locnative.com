@@ -1,6 +1,8 @@
 import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
 
+const HEX_32_BYTE_REGEX = /^[0-9a-fA-F]{64}$/;
+
 function buildServerEnv() {
 	return createEnv({
 		server: {
@@ -20,7 +22,7 @@ function buildServerEnv() {
 			KEY_ENC_KEY: z
 				.string()
 				.regex(
-					/^[0-9a-fA-F]{64}$/,
+					HEX_32_BYTE_REGEX,
 					"KEY_ENC_KEY must be 64 hex chars (32 bytes)"
 				),
 			OSRM_BASE_URL: z.string().url(),
