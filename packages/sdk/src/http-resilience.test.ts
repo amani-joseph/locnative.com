@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { WheraboutsApiError } from "./errors.ts";
+import { LocnativeApiError } from "./errors.ts";
 import { createRequester } from "./http.ts";
 
 const okResponse = (body: unknown = { ok: true }): Response =>
@@ -133,7 +133,7 @@ describe("resilience — timeout & abort", () => {
 
 		const promise = request({ method: "GET", path: "/x" });
 		const assertion = expect(promise).rejects.toMatchObject({
-			name: "WheraboutsApiError",
+			name: "LocnativeApiError",
 			code: "timeout",
 		});
 		await vi.advanceTimersByTimeAsync(150);
@@ -231,7 +231,7 @@ describe("idempotency & request id", () => {
 							code: "unprocessable",
 							message: "Invalid",
 							request_id: "req_abc",
-							doc_url: "https://docs.wherabouts.com/errors/unprocessable",
+							doc_url: "https://docs.locnative.com/errors/unprocessable",
 							fields: [{ path: "lat", message: "required" }],
 						},
 					}),
@@ -242,8 +242,8 @@ describe("idempotency & request id", () => {
 		const error = await request({ method: "POST", path: "/x", body: {} }).catch(
 			(e: unknown) => e
 		);
-		expect(error).toBeInstanceOf(WheraboutsApiError);
-		const apiError = error as WheraboutsApiError;
+		expect(error).toBeInstanceOf(LocnativeApiError);
+		const apiError = error as LocnativeApiError;
 		expect(apiError.requestId).toBe("req_abc");
 		expect(apiError.docUrl).toContain("/errors/unprocessable");
 		expect(apiError.fields).toEqual([{ path: "lat", message: "required" }]);
@@ -266,7 +266,7 @@ describe("idempotency & request id", () => {
 		const request = createRequester({ apiKey: "wh", fetch: fetchImpl });
 		const error = (await request({ method: "GET", path: "/x" }).catch(
 			(e: unknown) => e
-		)) as WheraboutsApiError;
+		)) as LocnativeApiError;
 		expect(error.requestId).toBe("req_header_1");
 	});
 });

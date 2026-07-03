@@ -1,20 +1,20 @@
-<svg viewBox="0 0 310 60" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="wherabouts — horizontal lockup">
-  <title>wherabouts</title>
-  <!-- Route mark scaled to 60px tall, preserving 152:84 aspect → width≈109 at h=60 -->
-  <g transform="scale(0.714)">
-    <circle cx="14" cy="16" r="9.5" fill="none" stroke="#FFFFFF" stroke-width="3.5"/>
-    <path d="M14,16 L38,72 L76,30 L114,72 L138,16"
-          fill="none" stroke="#FFFFFF" stroke-width="11"
-          stroke-linecap="round" stroke-linejoin="round"
-          stroke-dasharray="15 11"/>
-    <circle cx="138" cy="16" r="6.5" fill="#C8C8C8"/>
-    <path d="M131,16 L145,16 L138,34 Z" fill="#C8C8C8"/>
+<svg viewBox="0 0 330 90" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="locnative — horizontal lockup">
+  <title>locnative — horizontal lockup</title>
+  <g transform="translate(4,5) scale(0.8)"><path d="M20.5,20.5 L20.5,50 L20.5,79.5 L50,79.5 L79.5,79.5" fill="none" stroke="#EEF5F0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+  <path d="M50,50 L50,20.5 L79.5,50 L79.5,20.5" fill="none" stroke="#4EE0A0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity="1.0"/>
+  <g fill="#EEF5F0">
+    <rect x="12" y="12" width="17" height="17" rx="6" transform="rotate(45 20.5 20.5)" opacity="0.4"/>
+    <rect x="12" y="41.5" width="17" height="17" rx="6" transform="rotate(45 20.5 50)" opacity="0.65"/>
+    <rect x="12" y="71" width="17" height="17" rx="6" transform="rotate(45 20.5 79.5)" opacity="0.85"/>
+    <rect x="41.5" y="71" width="17" height="17" rx="6" transform="rotate(45 50 79.5)" opacity="0.95"/>
+    <rect x="71" y="71" width="17" height="17" rx="6" transform="rotate(45 79.5 79.5)"/>
   </g>
-  <!-- Vertical rule -->
-  <line x1="114" y1="10" x2="114" y2="50" stroke="#2C2C2C" stroke-width="1"/>
-  <!-- Wordmark -->
-  <text x="128" y="38"
-        font-family="'JetBrains Mono', ui-monospace, monospace"
-        font-size="26" font-weight="300" fill="#FFFFFF"
-        letter-spacing="-0.3">wherabouts</text>
+  <g fill="#4EE0A0">
+    <rect x="41.5" y="41.5" width="17" height="17" rx="6" transform="rotate(45 50 50)" opacity="0.45"/>
+    <rect x="41.5" y="12" width="17" height="17" rx="6" transform="rotate(45 50 20.5)" opacity="0.7"/>
+    <rect x="71" y="41.5" width="17" height="17" rx="6" transform="rotate(45 79.5 50)" opacity="0.88"/>
+    <rect x="71" y="12" width="17" height="17" rx="6" transform="rotate(45 79.5 20.5)"/>
+  </g></g>
+  <line x1="100" y1="18" x2="100" y2="72" stroke="#3A4A42" stroke-width="1.5"/>
+  <text x="116" y="58" font-family="'JetBrains Mono','DejaVu Sans Mono',ui-monospace,monospace" font-size="30" font-weight="500" fill="#EEF5F0" letter-spacing="-0.03em">locnative</text>
 </svg>

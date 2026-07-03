@@ -8,4 +8,4 @@ export {
 	applyServerTiming,
 	createApiErrorBody,
 	jsonApiError,
-} from "@wherabouts.com/api/api-response";
+} from "@locnative/api/api-response";

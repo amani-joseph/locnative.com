@@ -52,21 +52,21 @@ terra-draw v1 ships adapters as separate packages; only `terra-draw` + `maplibre
 - [ ] **Step 1: Install**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm add terra-draw-maplibre-gl-adapter
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm add terra-draw-maplibre-gl-adapter
 ```
 
 - [ ] **Step 2: Verify it installed**
 
 ```bash
-ls -d /Users/mac/Developer/projects/wherabouts.com/apps/web/node_modules/terra-draw-maplibre-gl-adapter >/dev/null && echo "adapter installed"
+ls -d /Users/mac/Developer/projects/locnative.com/apps/web/node_modules/terra-draw-maplibre-gl-adapter >/dev/null && echo "adapter installed"
 ```
 Expected: `adapter installed`.
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/package.json pnpm-lock.yaml
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "build(web): add terra-draw-maplibre-gl-adapter"
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/package.json pnpm-lock.yaml
+git -C /Users/mac/Developer/projects/locnative.com commit -m "build(web): add terra-draw-maplibre-gl-adapter"
 ```
 
 ---
@@ -85,7 +85,7 @@ Append to `packages/api/src/shared/zone-queries.ts` (it already imports `address
 
 ```typescript
 // Add `addresses` to the existing schema import:
-// import { type Zone, addresses, zones } from "@wherabouts.com/database/schema";
+// import { type Zone, addresses, zones } from "@locnative/database/schema";
 
 export const ADDRESSES_IN_ZONE_HARD_CAP = 10_000;
 
@@ -297,22 +297,22 @@ In `packages/api/src/routers/public/zones.ts`, add to the existing `zone-queries
 - [ ] **Step 3: Type-check**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/packages/api && pnpm check-types 2>&1 | grep -v "api-explorer.ts(204" | grep -i error || echo "no new errors"
+cd /Users/mac/Developer/projects/locnative.com/packages/api && pnpm check-types 2>&1 | grep -v "api-explorer.ts(204" | grep -i error || echo "no new errors"
 ```
 Expected: `no new errors`.
 
 - [ ] **Step 4: Run existing zone tests**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/packages/api && pnpm vitest run src/routers/public/zones.test.ts
+cd /Users/mac/Developer/projects/locnative.com/packages/api && pnpm vitest run src/routers/public/zones.test.ts
 ```
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add packages/api/src/shared/zone-queries.ts packages/api/src/routers/public/zones.ts
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "refactor(api): extract get/update/addresses/list-with-geometry zone queries"
+git -C /Users/mac/Developer/projects/locnative.com add packages/api/src/shared/zone-queries.ts packages/api/src/routers/public/zones.ts
+git -C /Users/mac/Developer/projects/locnative.com commit -m "refactor(api): extract get/update/addresses/list-with-geometry zone queries"
 ```
 
 ---
@@ -530,15 +530,15 @@ export const appRouter = {
 - [ ] **Step 3: Type-check**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/packages/api && pnpm check-types 2>&1 | grep -v "api-explorer.ts(204" | grep -i error || echo "no new errors"
+cd /Users/mac/Developer/projects/locnative.com/packages/api && pnpm check-types 2>&1 | grep -v "api-explorer.ts(204" | grep -i error || echo "no new errors"
 ```
 Expected: `no new errors`.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add packages/api/src/routers/domains/zones.ts packages/api/src/routers/index.ts
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(api): add session-authed dashboard zones oRPC domain"
+git -C /Users/mac/Developer/projects/locnative.com add packages/api/src/routers/domains/zones.ts packages/api/src/routers/index.ts
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(api): add session-authed dashboard zones oRPC domain"
 ```
 
 ---
@@ -613,13 +613,13 @@ describe("featureToPolygon", () => {
 - [ ] **Step 2: Run it — expect FAIL (module missing)**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm vitest run src/components/zones/geometry.test.ts
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm vitest run src/components/zones/geometry.test.ts
 ```
 
 - [ ] **Step 3: Implement `geometry.ts`**
 
 ```typescript
-import type { GeoJsonPolygon } from "@wherabouts.com/api/routers/public/zones-schema";
+import type { GeoJsonPolygon } from "@locnative/api/routers/public/zones-schema";
 
 export interface DrawFeature {
 	type: "Feature";
@@ -669,19 +669,19 @@ export function polygonToFeature(
 }
 ```
 
-> If `@wherabouts.com/api/routers/public/zones-schema` is not resolvable as an import path from the web app, fall back to a local structural type: `export type GeoJsonPolygon = { type: "Polygon"; coordinates: [number, number][][] }`. Check the api package `exports` map first; the package exposes `./*` → `./src/*.ts`, so `@wherabouts.com/api/routers/public/zones-schema` should resolve. Report which form you used.
+> If `@locnative/api/routers/public/zones-schema` is not resolvable as an import path from the web app, fall back to a local structural type: `export type GeoJsonPolygon = { type: "Polygon"; coordinates: [number, number][][] }`. Check the api package `exports` map first; the package exposes `./*` → `./src/*.ts`, so `@locnative/api/routers/public/zones-schema` should resolve. Report which form you used.
 
 - [ ] **Step 4: Run the test — expect PASS (5 tests)**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm vitest run src/components/zones/geometry.test.ts
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm vitest run src/components/zones/geometry.test.ts
 ```
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/src/components/zones/geometry.ts apps/web/src/components/zones/geometry.test.ts
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): add zone geometry converters (terra-draw <-> GeoJsonPolygon)"
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/src/components/zones/geometry.ts apps/web/src/components/zones/geometry.test.ts
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(web): add zone geometry converters (terra-draw <-> GeoJsonPolygon)"
 ```
 
 ---
@@ -704,7 +704,7 @@ import {
 	polygonToFeature,
 	type DrawFeature,
 } from "./geometry.ts";
-import type { GeoJsonPolygon } from "@wherabouts.com/api/routers/public/zones-schema";
+import type { GeoJsonPolygon } from "@locnative/api/routers/public/zones-schema";
 
 export interface UseZoneDraw {
 	startDrawing: () => void;
@@ -807,7 +807,7 @@ Create `apps/web/src/components/zones/zone-map.tsx`. It renders `<MapCanvas>`, c
 import type { Map as MapLibreMap } from "maplibre-gl";
 import { useEffect, useState } from "react";
 import { MapCanvas } from "@/components/map/map-canvas";
-import type { ZoneWithGeometryRow } from "@wherabouts.com/api/shared/zone-queries";
+import type { ZoneWithGeometryRow } from "@locnative/api/shared/zone-queries";
 import { useZoneDraw, type UseZoneDraw } from "./use-zone-draw.ts";
 
 const EXISTING_SRC = "existing-zones";
@@ -870,20 +870,20 @@ export function ZoneMap({ zones, onReady }: ZoneMapProps) {
 }
 ```
 
-> Verify `@wherabouts.com/api/shared/zone-queries` resolves (api package `exports` maps `./*` → `./src/*.ts`, so `@wherabouts.com/api/shared/zone-queries` should work). If not, import the `ZoneWithGeometryRow` type via a local structural type matching the shared one and report it.
+> Verify `@locnative/api/shared/zone-queries` resolves (api package `exports` maps `./*` → `./src/*.ts`, so `@locnative/api/shared/zone-queries` should work). If not, import the `ZoneWithGeometryRow` type via a local structural type matching the shared one and report it.
 
 - [ ] **Step 3: Type-check**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm exec tsc --noEmit -p tsconfig.json 2>&1 | grep -i "zones/" || echo "no zones errors"
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm exec tsc --noEmit -p tsconfig.json 2>&1 | grep -i "zones/" || echo "no zones errors"
 ```
 Expected: `no zones errors`.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/src/components/zones/use-zone-draw.ts apps/web/src/components/zones/zone-map.tsx
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): add terra-draw zone drawing hook + zone map"
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/src/components/zones/use-zone-draw.ts apps/web/src/components/zones/zone-map.tsx
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(web): add terra-draw zone drawing hook + zone map"
 ```
 
 ---
@@ -900,15 +900,15 @@ git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): add te
 Create `apps/web/src/components/zones/zone-list.tsx`:
 
 ```typescript
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
+} from "@locnative/ui/components/card";
 import { MapPinIcon, TrashIcon } from "lucide-react";
-import type { ZoneWithGeometryRow } from "@wherabouts.com/api/shared/zone-queries";
+import type { ZoneWithGeometryRow } from "@locnative/api/shared/zone-queries";
 
 export interface ZoneListProps {
 	zones: ZoneWithGeometryRow[];
@@ -974,7 +974,7 @@ export function ZoneList({
 Create `apps/web/src/components/zones/zone-create-dialog.tsx`:
 
 ```typescript
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Dialog,
 	DialogContent,
@@ -982,9 +982,9 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@wherabouts.com/ui/components/dialog";
-import { Input } from "@wherabouts.com/ui/components/input";
-import { Label } from "@wherabouts.com/ui/components/label";
+} from "@locnative/ui/components/dialog";
+import { Input } from "@locnative/ui/components/input";
+import { Label } from "@locnative/ui/components/label";
 import { useState } from "react";
 
 export interface ZoneCreateDialogProps {
@@ -1059,7 +1059,7 @@ Replace `apps/web/src/routes/_protected/zones.tsx` with the page that ties map +
 
 ```typescript
 import { createFileRoute } from "@tanstack/react-router";
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Button } from "@locnative/ui/components/button";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ActiveProjectSelector } from "@/components/active-project-selector";
@@ -1197,15 +1197,15 @@ function RouteComponent() {
 - [ ] **Step 4: Build to confirm compile + route**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm build 2>&1 | tail -15
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm build 2>&1 | tail -15
 ```
 Expected: build succeeds.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/src/components/zones/zone-list.tsx apps/web/src/components/zones/zone-create-dialog.tsx apps/web/src/routes/_protected/zones.tsx
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): zones page with map drawing, list, create, delete"
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/src/components/zones/zone-list.tsx apps/web/src/components/zones/zone-create-dialog.tsx apps/web/src/routes/_protected/zones.tsx
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(web): zones page with map drawing, list, create, delete"
 ```
 
 ---
@@ -1221,15 +1221,15 @@ git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): zones 
 Create `apps/web/src/components/zones/point-test-tool.tsx`:
 
 ```typescript
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
-import { Input } from "@wherabouts.com/ui/components/input";
-import { Label } from "@wherabouts.com/ui/components/label";
+} from "@locnative/ui/components/card";
+import { Input } from "@locnative/ui/components/input";
+import { Label } from "@locnative/ui/components/label";
 import { useState } from "react";
 
 export interface PointTestResult {
@@ -1317,15 +1317,15 @@ const handleTest = async (lat: number, lng: number) => {
 - [ ] **Step 3: Build**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm build 2>&1 | tail -10
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm build 2>&1 | tail -10
 ```
 Expected: succeeds.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/src/components/zones/point-test-tool.tsx apps/web/src/routes/_protected/zones.tsx
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): add point-in-polygon tester to zones page"
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/src/components/zones/point-test-tool.tsx apps/web/src/routes/_protected/zones.tsx
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(web): add point-in-polygon tester to zones page"
 ```
 
 ---
@@ -1347,7 +1347,7 @@ import {
 	SheetDescription,
 	SheetHeader,
 	SheetTitle,
-} from "@wherabouts.com/ui/components/sheet";
+} from "@locnative/ui/components/sheet";
 import {
 	Table,
 	TableBody,
@@ -1355,7 +1355,7 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@wherabouts.com/ui/components/table";
+} from "@locnative/ui/components/table";
 
 export interface ZoneAddressItem {
 	id: number;
@@ -1466,15 +1466,15 @@ Add `onViewAddresses` to `ZoneListProps` and a `ListIcon` button per row in `zon
 - [ ] **Step 3: Build**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm build 2>&1 | tail -10
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm build 2>&1 | tail -10
 ```
 Expected: succeeds.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/src/components/zones/zone-addresses-drawer.tsx apps/web/src/components/zones/zone-list.tsx apps/web/src/routes/_protected/zones.tsx
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): add addresses-in-zone viewer to zones page"
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/src/components/zones/zone-addresses-drawer.tsx apps/web/src/components/zones/zone-list.tsx apps/web/src/routes/_protected/zones.tsx
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(web): add addresses-in-zone viewer to zones page"
 ```
 
 ---
@@ -1537,15 +1537,15 @@ Render a "Save edit" button (visible when `editingId !== null`) in the page head
 - [ ] **Step 2: Build**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm build 2>&1 | tail -10
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm build 2>&1 | tail -10
 ```
 Expected: succeeds.
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/src/components/zones/zone-list.tsx apps/web/src/components/zones/use-zone-draw.ts apps/web/src/routes/_protected/zones.tsx
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): edit existing zone geometry on the map"
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/src/components/zones/zone-list.tsx apps/web/src/components/zones/use-zone-draw.ts apps/web/src/routes/_protected/zones.tsx
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(web): edit existing zone geometry on the map"
 ```
 
 ---

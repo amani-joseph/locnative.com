@@ -4,6 +4,8 @@ import { beforeAll, describe, expect, it } from "vitest";
 // the module under test because `serverEnv` is evaluated at import time.
 const TEST_KEY =
 	"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+const CIPHERTEXT_REGEX = /^[0-9a-f]+:[0-9a-f]+$/;
+const IV_REGEX = /^[0-9a-f]{24}$/;
 
 beforeAll(() => {
 	process.env.DATABASE_URL ??= "postgres://test:test@localhost:5432/test";
@@ -27,8 +29,8 @@ describe("api-key-crypto", () => {
 		const plaintext = "sk_live_super_secret_api_key_value_123";
 		const encrypted = encryptSecret(plaintext);
 
-		expect(encrypted.ciphertext).toMatch(/^[0-9a-f]+:[0-9a-f]+$/);
-		expect(encrypted.iv).toMatch(/^[0-9a-f]{24}$/); // 12 bytes = 24 hex chars
+		expect(encrypted.ciphertext).toMatch(CIPHERTEXT_REGEX);
+		expect(encrypted.iv).toMatch(IV_REGEX); // 12 bytes = 24 hex chars
 
 		const decrypted = decryptSecret(encrypted);
 		expect(decrypted).toBe(plaintext);

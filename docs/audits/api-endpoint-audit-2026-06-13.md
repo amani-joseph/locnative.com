@@ -1,7 +1,7 @@
-# API Endpoint Audit — wherabouts.com
+# API Endpoint Audit — locnative.com
 
 **Date:** 2026-06-13
-**Target:** Production — `https://api.wherabouts.com`
+**Target:** Production — `https://api.locnative.com`
 **Method:** Cold (first call) vs warm (median of 3) latency, read-only `GET` endpoints only. No mutations executed.
 **Auth:** Bearer API key provided by owner. The key authenticates but is **not scoped to a project** — see [Auth findings](#auth--scope-findings).
 **Test parameters:** Sydney CBD `lat=-33.8688, lng=151.2093`; query terms `George St` / `10 Bourke St` / `Sydney Opera House`; `country=AU` (data is G-NAF Australia).

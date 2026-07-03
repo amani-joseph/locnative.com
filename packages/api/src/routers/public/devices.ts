@@ -1,5 +1,5 @@
+import { deviceZoneState, zones } from "@locnative/database/schema";
 import { ORPCError } from "@orpc/server";
-import { deviceZoneState, zones } from "@wherabouts.com/database/schema";
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import { o as baseBuilder } from "../../builder.ts";
@@ -8,18 +8,18 @@ import {
 	usageMiddleware,
 	type ValidatedApiKey,
 } from "../public-middleware.ts";
-import {
-	type BoundaryCrossing,
-	computeBoundaryCrossings,
-} from "./boundary-crossings.ts";
+import { computeBoundaryCrossings as computeBoundaryCrossingsImpl } from "./boundary-crossings.ts";
 
-export { type BoundaryCrossing, computeBoundaryCrossings };
+export type { BoundaryCrossing } from "./boundary-crossings.ts";
+export const computeBoundaryCrossings = computeBoundaryCrossingsImpl;
 
 // ---------------------------------------------------------------------------
 // Helper
 // ---------------------------------------------------------------------------
 
-type AuthContext = { validatedApiKey: ValidatedApiKey };
+interface AuthContext {
+	validatedApiKey: ValidatedApiKey;
+}
 
 function requireProjectId(projectId: string | null): string {
 	if (!projectId) {
@@ -108,7 +108,7 @@ export const pushDeviceLocation = baseBuilder
 			}
 		}
 
-		const crossings = computeBoundaryCrossings(
+		const crossings = computeBoundaryCrossingsImpl(
 			prevZoneIds,
 			currentZoneIds,
 			zoneNames

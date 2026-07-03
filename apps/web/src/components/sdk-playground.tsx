@@ -1,18 +1,18 @@
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
+} from "@locnative/ui/components/card";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@wherabouts.com/ui/components/select";
-import { Textarea } from "@wherabouts.com/ui/components/textarea";
+} from "@locnative/ui/components/select";
+import { Textarea } from "@locnative/ui/components/textarea";
 import { useEffect, useMemo, useState } from "react";
 import { apiExplorerEndpoints } from "@/lib/api-explorer-endpoints";
 import { orpcClient } from "@/lib/orpc";

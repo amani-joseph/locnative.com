@@ -25,5 +25,5 @@ export function logDevError(context: string, error: unknown): void {
 	if (error instanceof Error && error.name === "AbortError") {
 		return;
 	}
-	console.error(`[wherabouts] ${context}`, error);
+	console.error(`[locnative] ${context}`, error);
 }

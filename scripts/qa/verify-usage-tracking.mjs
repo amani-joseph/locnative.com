@@ -4,6 +4,9 @@
 import { readFileSync } from "node:fs";
 import { neon } from "@neondatabase/serverless";
 
+const DATABASE_URL_REGEX = /^DATABASE_URL=(.*)$/m;
+const SURROUNDING_QUOTES_REGEX = /^["']|["']$/g;
+
 function loadDbUrl() {
 	if (process.env.DATABASE_URL) {
 		return process.env.DATABASE_URL;
@@ -11,9 +14,9 @@ function loadDbUrl() {
 	for (const p of ["apps/server/.env", "apps/web/.env", ".env"]) {
 		try {
 			const txt = readFileSync(p, "utf8");
-			const m = txt.match(/^DATABASE_URL=(.*)$/m);
+			const m = txt.match(DATABASE_URL_REGEX);
 			if (m) {
-				return m[1].trim().replace(/^["']|["']$/g, "");
+				return m[1].trim().replace(SURROUNDING_QUOTES_REGEX, "");
 			}
 		} catch {
 			/* next */

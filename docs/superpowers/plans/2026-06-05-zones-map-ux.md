@@ -49,9 +49,9 @@
 Run:
 ```bash
 cd apps/server
-pnpm dlx wrangler r2 bucket create wherabouts-tiles
+pnpm dlx wrangler r2 bucket create locnative-tiles
 ```
-Expected: `Created bucket wherabouts-tiles`.
+Expected: `Created bucket locnative-tiles`.
 
 - [ ] **Step 2: Build an Australia pmtiles extract**
 
@@ -73,13 +73,13 @@ git clone --depth 1 https://github.com/protomaps/basemaps-assets.git
 - [ ] **Step 4: Upload tiles, fonts, and sprite to R2**
 
 ```bash
-pnpm dlx wrangler r2 object put wherabouts-tiles/australia.pmtiles --file=australia.pmtiles --remote
+pnpm dlx wrangler r2 object put locnative-tiles/australia.pmtiles --file=australia.pmtiles --remote
 # fonts (upload the whole basemaps-assets/fonts tree under fonts/)
 find basemaps-assets/fonts -name '*.pbf' -exec sh -c \
-  'pnpm dlx wrangler r2 object put "wherabouts-tiles/fonts/${1#basemaps-assets/fonts/}" --file="$1" --remote' _ {} \;
+  'pnpm dlx wrangler r2 object put "locnative-tiles/fonts/${1#basemaps-assets/fonts/}" --file="$1" --remote' _ {} \;
 # sprite
-pnpm dlx wrangler r2 object put wherabouts-tiles/sprite/dark.json --file=basemaps-assets/sprites/v4/dark.json --remote
-pnpm dlx wrangler r2 object put wherabouts-tiles/sprite/dark.png  --file=basemaps-assets/sprites/v4/dark.png  --remote
+pnpm dlx wrangler r2 object put locnative-tiles/sprite/dark.json --file=basemaps-assets/sprites/v4/dark.json --remote
+pnpm dlx wrangler r2 object put locnative-tiles/sprite/dark.png  --file=basemaps-assets/sprites/v4/dark.png  --remote
 ```
 Expected: each `put` prints `Upload complete`.
 
@@ -88,8 +88,8 @@ Expected: each `put` prints `Upload complete`.
 In `apps/server/wrangler.jsonc`, extend the `r2_buckets` array (keep the existing `GEOCODE_RESULTS` entry):
 ```jsonc
 "r2_buckets": [
-    { "binding": "GEOCODE_RESULTS", "bucket_name": "wherabouts-geocode-results" },
-    { "binding": "MAP_TILES", "bucket_name": "wherabouts-tiles" }
+    { "binding": "GEOCODE_RESULTS", "bucket_name": "locnative-geocode-results" },
+    { "binding": "MAP_TILES", "bucket_name": "locnative-tiles" }
 ]
 ```
 
@@ -97,7 +97,7 @@ In `apps/server/wrangler.jsonc`, extend the `r2_buckets` array (keep the existin
 
 ```bash
 git add apps/server/wrangler.jsonc
-git commit -m "feat(server): bind wherabouts-tiles R2 bucket for map tiles"
+git commit -m "feat(server): bind locnative-tiles R2 bucket for map tiles"
 ```
 
 ---
@@ -295,7 +295,7 @@ Run:
 cd apps/server && pnpm dlx wrangler dev --port 3003 &
 sleep 6
 # z/x/y over Sydney CBD at z14 ≈ 15087/9834
-pnpm dlx wrangler r2 object get wherabouts-tiles/australia.pmtiles --remote >/dev/null && echo "archive present"
+pnpm dlx wrangler r2 object get locnative-tiles/australia.pmtiles --remote >/dev/null && echo "archive present"
 ```
 Then in a browser or via the app, load `http://localhost:3003/tiles/v1/14/15087/9834.mvt`.
 Expected: HTTP 200 with `content-type: application/x-protobuf` (binary body), or 204 for an empty tile. NOT 404/503.
@@ -324,7 +324,7 @@ In `packages/env/src/web.ts`, add to the `client` object (keep `VITE_SERVER_URL`
 ```ts
 client: {
 	VITE_SERVER_URL: z.url(),
-	/** Base URL of the tile Worker, e.g. https://api.wherabouts.com . Tiles live under /tiles/v1. */
+	/** Base URL of the tile Worker, e.g. https://api.locnative.com . Tiles live under /tiles/v1. */
 	VITE_TILES_BASE_URL: z.url().optional(),
 },
 ```
@@ -335,7 +335,7 @@ In `apps/web/.env`, replace the `VITE_MAPTILER_KEY=` line with:
 ```
 VITE_TILES_BASE_URL=http://localhost:3003
 ```
-(Production sets `https://api.wherabouts.com`.)
+(Production sets `https://api.locnative.com`.)
 
 - [ ] **Step 3: Install the theme package**
 
@@ -359,15 +359,15 @@ describe("buildMapStyle", () => {
 	});
 
 	it("builds a Protomaps style object pointing at our tile worker", () => {
-		const style = buildMapStyle("https://api.wherabouts.com");
+		const style = buildMapStyle("https://api.locnative.com");
 		expect(typeof style).not.toBe("string");
 		const s = style as Exclude<ReturnType<typeof buildMapStyle>, string>;
 		expect(s.sources.protomaps).toMatchObject({
 			type: "vector",
-			tiles: ["https://api.wherabouts.com/tiles/v1/{z}/{x}/{y}.mvt"],
+			tiles: ["https://api.locnative.com/tiles/v1/{z}/{x}/{y}.mvt"],
 		});
 		expect(s.glyphs).toBe(
-			"https://api.wherabouts.com/tiles/v1/fonts/{fontstack}/{range}.pbf"
+			"https://api.locnative.com/tiles/v1/fonts/{fontstack}/{range}.pbf"
 		);
 		expect(Array.isArray(s.layers)).toBe(true);
 		expect(s.layers.length).toBeGreaterThan(5);

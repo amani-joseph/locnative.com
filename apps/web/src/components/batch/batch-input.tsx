@@ -1,5 +1,5 @@
-import { Button } from "@wherabouts.com/ui/components/button";
-import { Textarea } from "@wherabouts.com/ui/components/textarea";
+import { Button } from "@locnative/ui/components/button";
+import { Textarea } from "@locnative/ui/components/textarea";
 import { useRef, useState } from "react";
 
 export interface BatchInputProps {

@@ -1,7 +1,6 @@
-import type { Database } from "@wherabouts.com/database";
-import { billingAccounts } from "@wherabouts.com/database";
-import type { BillingAccount } from "@wherabouts.com/database";
-import { serverEnv } from "@wherabouts.com/env/server";
+import type { BillingAccount, Database } from "@locnative/database";
+import { billingAccounts } from "@locnative/database";
+import { serverEnv } from "@locnative/env/server";
 import { eq } from "drizzle-orm";
 import { getStripeClient } from "./stripe.ts";
 

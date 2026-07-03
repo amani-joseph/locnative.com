@@ -5,7 +5,7 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@wherabouts.com/ui/components/table";
+} from "@locnative/ui/components/table";
 
 export interface JobHistoryItem {
 	createdAt: string;

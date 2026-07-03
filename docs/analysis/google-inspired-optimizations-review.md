@@ -2,12 +2,12 @@
 
 **Date:** 2026-06-16 · **Status:** review list (no code changes)
 
-> **Source note:** the `claude.ai/share` link couldn't be auto-fetched (SPA shell), but the user pasted its content — a Google Maps/Places **data → index → serving** architecture breakdown. Section 0 below evaluates those 5 architecture patterns against the *verified* current Wherabouts stack; sections A–G cover API-surface patterns from the `@googlemaps/*` libraries.
+> **Source note:** the `claude.ai/share` link couldn't be auto-fetched (SPA shell), but the user pasted its content — a Google Maps/Places **data → index → serving** architecture breakdown. Section 0 below evaluates those 5 architecture patterns against the *verified* current Locnative stack; sections A–G cover API-surface patterns from the `@googlemaps/*` libraries.
 
 ## 0. Architecture & scaling (from the shared Google breakdown)
 Google's speed comes less from algorithms than from **(a) tile-partitioned data, (b) pre-built read indexes separate from the write store, and (c) regional edge caching.** Verified verdicts against our stack (Neon Postgres+PostGIS, ~300M rows/28 countries, Cloudflare Workers):
 
-| # | Google pattern | Wherabouts state (verified) | Verdict / action |
+| # | Google pattern | Locnative state (verified) | Verdict / action |
 |---|---|---|---|
 | 0.1 | **Tile/geohash partitioning** — prune bbox queries to 1–4 partitions | **No partitioning**; single `addresses` table. Coarse `idx_addresses_country` only. | 🆕 **Biggest structural win, biggest risk.** Declarative-partition by `country` first (cheap, natural — most queries already filter country), then consider an H3/geohash sub-partition for radius/bbox. ⚠️ A partition migration on a live 300M-row prod table is a planned campaign, not a quick PR. |
 | 0.2 | **Separate write vs read DB**; nightly job builds denormalized read replicas | **Single Neon endpoint** for read+write; no replica. | 🆕 Route GET endpoints to a **Neon read replica** (separate conn string; low risk, offloads the heavy intl-ingestion write contention from the API hot path). Mind workerd/neon-http constraints + `[[a4-pooled-driver-breaks-hot-path]]`. |
@@ -25,7 +25,7 @@ Google's speed comes less from algorithms than from **(a) tile-partitioned data,
 Legend: 🟢 already in flight this session · 🆕 new idea · ⚠️ touches live billing/prod (needs sign-off)
 
 ## A. Payload & cost — "retrieve only what you need" (Google **field masks**)
-Google bills Places by how many fields you request and pushes **field masks** so clients fetch only what they render. Wherabouts returns full records everywhere.
+Google bills Places by how many fields you request and pushes **field masks** so clients fetch only what they render. Locnative returns full records everywhere.
 1. 🆕 **`fields` / sparse-fieldset param** on geocode, autocomplete, nearby, byId — return only requested fields. Smaller payloads → faster mobile, lower egress, and a natural future billing lever. Highest-leverage item here.
 2. 🆕 **Result quality metadata** (Google geocoding's `location_type`, `partial_match`, `viewport`). We expose `confidence`; add `match_type` (exact/interpolated/locality) + a `viewport`/bbox per result so clients can zoom correctly and trust/score matches.
 
@@ -41,7 +41,7 @@ G-NAF/boundary data is effectively static; today responses look uncacheable.
 
 ## D. UI building blocks — Google **Web Components** + **MarkerClusterer**
 Google ships `<gmp-map>`/`<gmpx-place-picker>` (encapsulated best-practice HTML elements) and `markerclusterer` for dense points.
-8. 🆕 **Framework-agnostic Web Components** (`<wherabouts-autocomplete>`, `<wherabouts-map>`) so non-React users (plain HTML, Vue, Svelte) get the same debounced/cached/a11y autocomplete as React users. Mirrors Google's Extended Component Library; keeps our React hooks as the React-specific layer.
+8. 🆕 **Framework-agnostic Web Components** (`<locnative-autocomplete>`, `<locnative-map>`) so non-React users (plain HTML, Vue, Svelte) get the same debounced/cached/a11y autocomplete as React users. Mirrors Google's Extended Component Library; keeps our React hooks as the React-specific layer.
 9. 🆕 **Marker clustering** for nearby/places/zone-member rendering in the dashboard & playground. We use MapLibre (self-hosted Protomaps), so use `supercluster`/MapLibre clustering rather than Google's lib. Prevents the "10k pins melt the map" problem.
 
 ## E. Static rendering & link security (Google **Static Maps** + **url-signature**)
@@ -54,8 +54,8 @@ Google ships `<gmp-map>`/`<gmpx-place-picker>` (encapsulated best-practice HTML 
 14. 🆕 **Place types taxonomy + structured place result** for Phase 12 Places/POI — adopt a Google/Foursquare-style category enum so `places.search` filters are predictable.
 
 ## G. DX & types (Google **typescript-guards**, multi-package family)
-15. 🟢 **Type guards** (`isWheraboutsApiError`, etc.) + **geo utils** (`getLatLng`, `toLngLat`, `distanceMeters`) — shipped this session.
-16. 🆕 **Package family discipline** — keep core SDK zero-dep; add `@wherabouts/web-components` (D8) and keep React in `@wherabouts/react`. Mirrors Google's `js-api-loader` (core) / `react-google-maps` (framework) split.
+15. 🟢 **Type guards** (`isLocnativeApiError`, etc.) + **geo utils** (`getLatLng`, `toLngLat`, `distanceMeters`) — shipped this session.
+16. 🆕 **Package family discipline** — keep core SDK zero-dep; add `@locnative/web-components` (D8) and keep React in `@locnative/react`. Mirrors Google's `js-api-loader` (core) / `react-google-maps` (framework) split.
 
 ## Suggested priority
 **P1 (cost/latency, broad impact):** #1 field masks, #3 HTTP caching/ETag, #9 marker clustering.

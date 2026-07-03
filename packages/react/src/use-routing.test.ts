@@ -1,9 +1,9 @@
-import { createWheraboutsClient } from "@wherabouts/sdk";
+import { createLocnativeClient } from "@locnative/sdk";
 import { describe, expect, it, vi } from "vitest";
 import { runResource } from "./async-resource.ts";
 
 function clientWith(fetchMock: typeof fetch) {
-	return createWheraboutsClient({
+	return createLocnativeClient({
 		apiKey: "wh_test_key",
 		baseUrl: "http://localhost",
 		fetch: fetchMock,

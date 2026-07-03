@@ -118,7 +118,7 @@ Conventions from `apps/web/src/routes/_protected/api-keys.tsx` and
   (`createTanstackQueryUtils`) with `useQuery`/`useMutation` for cache invalidation
   (api-keys.tsx currently uses manual `useState`/`useEffect` + `orpcClient` directly —
   acceptable, but react-query is cleaner for create/update/delete + refetch).
-- UI: shadcn from `@wherabouts.com/ui/components/*` (Card, Button, Badge, Dialog, Input,
+- UI: shadcn from `@locnative/ui/components/*` (Card, Button, Badge, Dialog, Input,
   Label, Skeleton already used). Icons from `lucide-react`. Toasts via `sonner`.
 
 New pieces:

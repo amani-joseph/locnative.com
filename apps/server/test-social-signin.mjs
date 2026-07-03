@@ -1,11 +1,11 @@
 // Run with: node apps/server/test-social-signin.mjs
 const response = await fetch(
-	"https://wherabouts-server.mr-amanijoseph.workers.dev/api/auth/sign-in/social",
+	"https://locnative-server.mr-amanijoseph.workers.dev/api/auth/sign-in/social",
 	{
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
-			Origin: "https://wherabouts-web.mr-amanijoseph.workers.dev",
+			Origin: "https://locnative-web.mr-amanijoseph.workers.dev",
 		},
 		body: JSON.stringify({ provider: "github", callbackURL: "/dashboard" }),
 	}

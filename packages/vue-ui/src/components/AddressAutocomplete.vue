@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { WheraboutsClient } from "@wherabouts/sdk";
+import type { LocnativeClient } from "@locnative/sdk";
 import { computed, onScopeDispose, ref, watch } from "vue";
 import { useAddressGeolocation } from "../composables/use-address-geolocation";
 import { useAutocomplete } from "../composables/use-autocomplete";
@@ -10,8 +10,8 @@ import { toAddressWithParsed } from "../utils/parse-address";
 
 const props = withDefaults(
 	defineProps<{
-		/** Required. SDK client created with `createWheraboutsClient`. */
-		client: WheraboutsClient;
+		/** Required. SDK client created with `createLocnativeClient`. */
+		client: LocnativeClient;
 		/** Class applied to the root container. */
 		class?: string;
 		/** Debounce in ms before querying the API. Default 300. */
@@ -61,22 +61,27 @@ const DEFAULT_I18N: AddressI18nStrings = {
 };
 
 const i18n = computed(() => ({ ...DEFAULT_I18N, ...props.i18nStrings }));
-const id = computed(() => props.id ?? "wherabouts-autocomplete");
+const id = computed(() => props.id ?? "locnative-autocomplete");
 
 const { lat: geoLat, lng: geoLng } = useAddressGeolocation(
 	() => props.enableGeolocation ?? false
 );
 
-const { query, results, error: autocompleteError, status, setQuery } =
-	useAutocomplete(props.client, {
-		debounceMs: props.debounceMs,
-		minLength: props.minCharsToSearch,
-		limit: props.maxSuggestions,
-		lat: props.userLat ?? geoLat.value,
-		lng: props.userLng ?? geoLng.value,
-		sessionToken: props.sessionToken,
-		keepPreviousData: true,
-	});
+const {
+	query,
+	results,
+	error: autocompleteError,
+	status,
+	setQuery,
+} = useAutocomplete(props.client, {
+	debounceMs: props.debounceMs,
+	minLength: props.minCharsToSearch,
+	limit: props.maxSuggestions,
+	lat: props.userLat ?? geoLat.value,
+	lng: props.userLng ?? geoLng.value,
+	sessionToken: props.sessionToken,
+	keepPreviousData: true,
+});
 
 const combobox = useCombobox({
 	id: id.value,
@@ -90,14 +95,17 @@ const combobox = useCombobox({
 	},
 });
 
-const error = computed(() =>
-	props.error || (status.value === "error" ? autocompleteError.value : null)
+const error = computed(
+	() =>
+		props.error || (status.value === "error" ? autocompleteError.value : null)
 );
 
 const inputRef = ref<HTMLInputElement>();
-const dropdownPosition = ref<{ left: number; top: number; width: number } | null>(
-	null
-);
+const dropdownPosition = ref<{
+	left: number;
+	top: number;
+	width: number;
+} | null>(null);
 // Gap (px) between the input and the dropdown.
 const DROPDOWN_GAP_PX = 4;
 
@@ -255,10 +263,10 @@ const onSuggestionClick = (index: number): void => {
             Suggestions powered by
             <a
               class="font-medium underline-offset-2 hover:underline"
-              href="https://wherabouts.com"
+              href="https://locnative.com"
               rel="noopener"
               target="_blank"
-            >Wherabouts</a>
+            >Locnative</a>
           </p>
         </div>
       </div>

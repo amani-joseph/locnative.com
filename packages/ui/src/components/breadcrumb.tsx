@@ -1,6 +1,6 @@
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
-import { cn } from "@wherabouts.com/ui/lib/utils";
+import { cn } from "@locnative/ui/lib/utils";
 import { ChevronRightIcon, MoreHorizontalIcon } from "lucide-react";
 import type * as React from "react";
 

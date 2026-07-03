@@ -1,7 +1,7 @@
 # API Endpoint Audit — Final Confirmation (all fixes live)
 
 **Date:** 2026-06-15
-**Target:** Production — `https://api.wherabouts.com` (Worker version `e8a5b166`, master `373fd8c`)
+**Target:** Production — `https://api.locnative.com` (Worker version `e8a5b166`, master `373fd8c`)
 **Method:** N=10 warm → p50/p95, cold (first call) separate; nearby radius curve N=3; temporary project-scoped key (minted in-sandbox, scoped to project `d3946e1d`, revoked after). No secrets recorded.
 **Baselines:** `api-endpoint-audit-2026-06-14.md` (stale prod, pre-fix) and `…-postdeploy-comparison.md`.
 

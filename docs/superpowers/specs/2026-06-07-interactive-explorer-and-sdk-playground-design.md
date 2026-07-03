@@ -18,7 +18,7 @@ endpoints**. Its server proxy `apiExplorer.sendRequest` builds a URL from path+q
 params and forwards with the user's managed/raw API key; non-GET endpoints are
 "docs-only" (a copy-paste curl block) because the proxy cannot send a request body.
 
-The completed **TypeScript SDK** (`@wherabouts.com/sdk`) now exposes all 18 endpoints as
+The completed **TypeScript SDK** (`@locnative/sdk`) now exposes all 18 endpoints as
 namespaced methods (`client.zones.create(...)`), but nothing in the web app lets a user
 *run* the SDK or the non-GET endpoints interactively. This is the gap this work closes.
 
@@ -119,8 +119,8 @@ Components live under `apps/web/src/components/sdk-playground/`.
 - **Code panel:** render the equivalent SDK snippet for the selected method + current
   inputs, e.g.:
   ```ts
-  import { createWheraboutsClient } from "@wherabouts.com/sdk";
-  const client = createWheraboutsClient({ apiKey: process.env.WHERABOUTS_API_KEY! });
+  import { createLocnativeClient } from "@locnative/sdk";
+  const client = createLocnativeClient({ apiKey: process.env.LOCNATIVE_API_KEY! });
   const result = await client.zones.create({ name: "depot", geometry: {…} });
   ```
 - **Run:** executes via the same Stage-A `sendRequest` proxy and shows the result, so the

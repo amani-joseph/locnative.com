@@ -1,10 +1,10 @@
-import { Kbd, KbdGroup } from "@wherabouts.com/ui/components/kbd";
-import { SidebarTrigger } from "@wherabouts.com/ui/components/sidebar";
+import { Kbd, KbdGroup } from "@locnative/ui/components/kbd";
+import { SidebarTrigger } from "@locnative/ui/components/sidebar";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
-} from "@wherabouts.com/ui/components/tooltip";
+} from "@locnative/ui/components/tooltip";
 
 export function CustomSidebarTrigger() {
 	return (

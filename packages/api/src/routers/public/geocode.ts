@@ -1,5 +1,5 @@
+import { autocompleteAddresses } from "@locnative/database/queries";
 import { ORPCError } from "@orpc/server";
-import { autocompleteAddresses } from "@wherabouts.com/database/queries";
 import { z } from "zod";
 import type { ValidatedApiKey } from "../../api-key-auth.ts";
 import { o as baseBuilder } from "../../builder.ts";

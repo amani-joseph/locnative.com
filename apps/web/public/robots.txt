@@ -2,4 +2,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://wherabouts.com/sitemap.xml
+Sitemap: https://locnative.com/sitemap.xml

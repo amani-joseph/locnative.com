@@ -29,12 +29,12 @@ Success = full parity with mydeffo's `packages/auth/` shape, no behavioral chang
 ## Reference
 
 - Upstream pattern: `/Users/mac/Developer/projects/mydeffo.com-web/packages/auth/`
-- Current wherabouts implementation: `packages/api/src/auth.ts`
+- Current locnative implementation: `packages/api/src/auth.ts`
 
 ## Success Criteria
 
 1. `packages/auth/` exists with structure matching mydeffo 1:1 (same file names, same export shape, same dependency set scoped to auth).
 2. `packages/api/src/auth.ts` no longer contains the BetterAuth config (file removed or reduced to a thin re-export if mydeffo does that).
-3. `apps/web` and `apps/server` import auth from `@wherabouts/auth` (or whatever namespace the workspace uses) — no direct imports from `packages/api`.
+3. `apps/web` and `apps/server` import auth from `@locnative/auth` (or whatever namespace the workspace uses) — no direct imports from `packages/api`.
 4. `pnpm install` succeeds; `pnpm build` succeeds at repo root; `pnpm dlx ultracite check` clean on all touched files.
 5. Dev sign-in flow (GitHub OAuth) still completes end-to-end locally — no regression.

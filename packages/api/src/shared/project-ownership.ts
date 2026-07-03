@@ -1,6 +1,6 @@
+import type { Database } from "@locnative/database";
+import { projects } from "@locnative/database/schema";
 import { ORPCError } from "@orpc/server";
-import type { Database } from "@wherabouts.com/database";
-import { projects } from "@wherabouts.com/database/schema";
 import { and, eq, isNull } from "drizzle-orm";
 
 /**

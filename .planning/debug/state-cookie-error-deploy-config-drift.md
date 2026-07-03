@@ -1,6 +1,6 @@
 ---
 status: awaiting_human_verify
-trigger: "State cookie error on deployed wherabouts.com — BetterAuth OAuth state cookie missing on callback"
+trigger: "State cookie error on deployed locnative.com — BetterAuth OAuth state cookie missing on callback"
 created: 2026-04-17T00:00:00Z
 updated: 2026-04-17T00:00:00Z
 ---
@@ -17,42 +17,42 @@ next_action: Fix apps/server/wrangler.jsonc top-level vars, fix apps/server/.env
 expected: OAuth sign-in completes without cookie errors on deployed app.
 actual: "State cookie" error on deployed app — BetterAuth OAuth callback can't find/validate the state cookie.
 errors: "State cookie" / INVALID_STATE / state_cookie_missing from BetterAuth social sign-in callback.
-reproduction: Attempt GitHub OAuth sign-in on the deployed wherabouts.com app.
-started: Persistent on deployed; issue unique to wherabouts (mydeffo doesn't have it).
+reproduction: Attempt GitHub OAuth sign-in on the deployed locnative.com app.
+started: Persistent on deployed; issue unique to locnative (mydeffo doesn't have it).
 
 ## Side-by-Side Diff Table
 
-| Dimension | wherabouts (broken) | mydeffo (working) |
+| Dimension | locnative (broken) | mydeffo (working) |
 |---|---|---|
-| **Domain strategy** | Subdomain split: web=wherabouts.com, api=api.wherabouts.com | Subdomain split: web=mydeffo.com, api=api.mydeffo.com — identical strategy |
-| **BetterAuth baseURL (server)** | `https://api.wherabouts.com` (server wrangler env.production) | `https://api.mydeffo.com` (server wrangler env.production) |
-| **BetterAuth baseURL (web wrangler vars)** | `https://wherabouts.com` — WRONG: this var is unused by auth.ts but pollutes the env and is misleading | Not set in web wrangler — only VITE_SERVER_URL is set |
+| **Domain strategy** | Subdomain split: web=locnative.com, api=api.locnative.com | Subdomain split: web=mydeffo.com, api=api.mydeffo.com — identical strategy |
+| **BetterAuth baseURL (server)** | `https://api.locnative.com` (server wrangler env.production) | `https://api.mydeffo.com` (server wrangler env.production) |
+| **BetterAuth baseURL (web wrangler vars)** | `https://locnative.com` — WRONG: this var is unused by auth.ts but pollutes the env and is misleading | Not set in web wrangler — only VITE_SERVER_URL is set |
 | **NODE_ENV in top-level wrangler vars** | MISSING from `apps/server/wrangler.jsonc` top-level vars | Not needed because mydeffo does NOT use IS_PRODUCTION guard — always sameSite=none |
 | **NODE_ENV in env.production vars** | `NODE_ENV=production` present | `NODE_ENV` not needed (no guard) |
 | **Cookie sameSite** | Conditional: `IS_PRODUCTION ? "none" : "lax"` — dangerous if NODE_ENV not set | Always `"none"` — no conditional |
 | **Cookie secure** | Conditional: `IS_PRODUCTION` | Always `true` |
 | **Cookie domain** | Conditional: only if IS_PRODUCTION AND AUTH_COOKIE_DOMAIN set | Conditional: only if AUTH_COOKIE_DOMAIN set (no NODE_ENV gate) |
-| **AUTH_COOKIE_DOMAIN (server wrangler)** | `.wherabouts.com` in env.production only | `.mydeffo.com` in env.production only |
-| **GitHub redirectURI** | `${BETTER_AUTH_URL}/api/auth/callback/github` = `https://api.wherabouts.com/api/auth/callback/github` | No explicit redirectURI — BetterAuth derives from baseURL automatically |
-| **trustedOrigins** | `wherabouts.com`, `api.wherabouts.com`, `localhost:3001` | `mydeffo.com`, workers.dev fallback, `localhost:3001` |
+| **AUTH_COOKIE_DOMAIN (server wrangler)** | `.locnative.com` in env.production only | `.mydeffo.com` in env.production only |
+| **GitHub redirectURI** | `${BETTER_AUTH_URL}/api/auth/callback/github` = `https://api.locnative.com/api/auth/callback/github` | No explicit redirectURI — BetterAuth derives from baseURL automatically |
+| **trustedOrigins** | `locnative.com`, `api.locnative.com`, `localhost:3001` | `mydeffo.com`, workers.dev fallback, `localhost:3001` |
 | **Auth client baseURL** | Runtime check: localhost→port 3003, else VITE_SERVER_URL | Always VITE_SERVER_URL |
 | **Auth client credentials** | `credentials: "include"` explicit | Not set (better-auth defaults handle it) |
 | **apps/server/.env BETTER_AUTH_URL** | `http://localhost:3001` — WRONG port (server runs on 3003) | Correct |
-| **apps/web/wrangler.jsonc BETTER_AUTH_URL** | `https://wherabouts.com` — this var is read by web Worker env but auth.ts runs on the API server, not web | Not present |
-| **callbackURL in signIn.social** | `window.location.origin + "/dashboard"` = `https://wherabouts.com/dashboard` — correct | `toAbsoluteURL(callbackURL)` helper — same result |
+| **apps/web/wrangler.jsonc BETTER_AUTH_URL** | `https://locnative.com` — this var is read by web Worker env but auth.ts runs on the API server, not web | Not present |
+| **callbackURL in signIn.social** | `window.location.origin + "/dashboard"` = `https://locnative.com/dashboard` — correct | `toAbsoluteURL(callbackURL)` helper — same result |
 
 ## Eliminated
 
-- hypothesis: callbackURL resolves to api.wherabouts.com instead of wherabouts.com
-  evidence: login.tsx uses `window.location.origin` which is wherabouts.com (the web app origin) — correct
+- hypothesis: callbackURL resolves to api.locnative.com instead of locnative.com
+  evidence: login.tsx uses `window.location.origin` which is locnative.com (the web app origin) — correct
   timestamp: 2026-04-17
 
 - hypothesis: GitHub OAuth redirectURI mismatch
-  evidence: auth.ts explicitly sets redirectURI to `${BETTER_AUTH_URL}/api/auth/callback/github` using the SERVER's BETTER_AUTH_URL = https://api.wherabouts.com — path is /api/auth/callback/github which matches the mounted handler. This is correct assuming the GitHub OAuth App is configured with this same URI.
+  evidence: auth.ts explicitly sets redirectURI to `${BETTER_AUTH_URL}/api/auth/callback/github` using the SERVER's BETTER_AUTH_URL = https://api.locnative.com — path is /api/auth/callback/github which matches the mounted handler. This is correct assuming the GitHub OAuth App is configured with this same URI.
   timestamp: 2026-04-17
 
 - hypothesis: CORS blocking callback
-  evidence: apps/server/src/index.ts CORS allowedOrigins includes wherabouts.com and credentials:true — same pattern as mydeffo
+  evidence: apps/server/src/index.ts CORS allowedOrigins includes locnative.com and credentials:true — same pattern as mydeffo
   timestamp: 2026-04-17
 
 ## Evidence
@@ -79,7 +79,7 @@ started: Persistent on deployed; issue unique to wherabouts (mydeffo doesn't hav
 
 - timestamp: 2026-04-17
   checked: apps/web/wrangler.jsonc vars
-  found: BETTER_AUTH_URL=https://wherabouts.com set on the web Worker — but auth.ts is server-side code, never runs in the web Worker
+  found: BETTER_AUTH_URL=https://locnative.com set on the web Worker — but auth.ts is server-side code, never runs in the web Worker
   implication: Misleading config that does nothing but can cause confusion; VITE_SERVER_URL is the correct var for the web layer
 
 - timestamp: 2026-04-17

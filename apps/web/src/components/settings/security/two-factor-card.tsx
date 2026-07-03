@@ -1,5 +1,5 @@
-import { Badge } from "@wherabouts.com/ui/components/badge";
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Badge } from "@locnative/ui/components/badge";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Dialog,
 	DialogContent,
@@ -7,9 +7,9 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@wherabouts.com/ui/components/dialog";
-import { Input } from "@wherabouts.com/ui/components/input";
-import { Label } from "@wherabouts.com/ui/components/label";
+} from "@locnative/ui/components/dialog";
+import { Input } from "@locnative/ui/components/input";
+import { Label } from "@locnative/ui/components/label";
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";

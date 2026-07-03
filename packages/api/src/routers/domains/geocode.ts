@@ -1,7 +1,7 @@
 import {
 	type AutocompleteResult,
 	autocompleteAddresses,
-} from "@wherabouts.com/database/queries";
+} from "@locnative/database/queries";
 import { z } from "zod";
 import { protectedProcedure } from "../../procedures.ts";
 import {

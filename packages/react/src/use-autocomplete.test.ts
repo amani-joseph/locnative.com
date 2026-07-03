@@ -1,5 +1,5 @@
-import type { AddressSuggestion } from "@wherabouts/sdk";
-import { createWheraboutsClient } from "@wherabouts/sdk";
+import type { AddressSuggestion } from "@locnative/sdk";
+import { createLocnativeClient } from "@locnative/sdk";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { deriveStatus } from "./use-autocomplete.ts";
 
@@ -82,7 +82,7 @@ describe("useAutocomplete — client integration", () => {
 			)
 		);
 
-		const client = createWheraboutsClient({
+		const client = createLocnativeClient({
 			apiKey: "wh_test_key",
 			baseUrl: "http://localhost",
 			fetch: fetchMock,
@@ -109,7 +109,7 @@ describe("useAutocomplete — client integration", () => {
 			})
 		);
 
-		const client = createWheraboutsClient({
+		const client = createLocnativeClient({
 			apiKey: "wh_test_key",
 			baseUrl: "http://localhost",
 			fetch: fetchMock,
@@ -142,7 +142,7 @@ describe("useAutocomplete — client integration", () => {
 				})
 		);
 
-		const client = createWheraboutsClient({
+		const client = createLocnativeClient({
 			apiKey: "wh_test_key",
 			baseUrl: "http://localhost",
 			fetch: fetchMock,
@@ -173,7 +173,7 @@ describe("useAutocomplete — client integration", () => {
 			)
 		);
 
-		const client = createWheraboutsClient({
+		const client = createLocnativeClient({
 			apiKey: "wh_test_key",
 			baseUrl: "http://localhost",
 			fetch: fetchMock,
@@ -203,7 +203,7 @@ describe("useAutocomplete — debounce logic", () => {
 			})
 		);
 
-		const client = createWheraboutsClient({
+		const client = createLocnativeClient({
 			apiKey: "wh_test_key",
 			baseUrl: "http://localhost",
 			fetch: fetchMock,

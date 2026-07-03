@@ -79,7 +79,7 @@ existing `Dockerfile` + `Caddyfile` + `entrypoint.sh`.
 
 - Create an **amd64** VM (≥16 GB RAM to serve car+bike+foot, or ≥4 GB for a single
   profile; ≥8 GB if building on the box), **Sydney region**, ~60 GB disk, Ubuntu 24.04.
-- Point a DNS record at it, e.g. `osrm.wherabouts.com → <vm-ip>` (needed for TLS in 4.4).
+- Point a DNS record at it, e.g. `osrm.locnative.com → <vm-ip>` (needed for TLS in 4.4).
 - Open firewall: allow 22, 80, 443; **block 5000/5001–5003 from the public** (Caddy will
   front it on 443).
 
@@ -113,7 +113,7 @@ On a raw VPS **you** terminate TLS, so serve on your domain over 443. Create a
 VPS-specific Caddyfile:
 
 ```caddyfile
-osrm.wherabouts.com {
+osrm.locnative.com {
 	# `route` forces in-order evaluation so the token gate runs before the
 	# profile proxies. Do NOT use bare `handle` blocks here — path routing
 	# pre-empts the auth `respond` and silently bypasses the token.
@@ -139,13 +139,13 @@ Caddy auto-provisions a Let's Encrypt cert for the domain. (Keep `entrypoint.sh`
 ### 4.5 Run it with restart-on-failure
 
 ```bash
-docker build -t wherabouts-osrm -f Dockerfile .   # from infra/osrm with the VPS Caddyfile in place
+docker build -t locnative-osrm -f Dockerfile .   # from infra/osrm with the VPS Caddyfile in place
 docker run -d --name osrm \
   --restart unless-stopped \
   -p 80:80 -p 443:443 \
   -e OSRM_AUTH_TOKEN="<your-token>" \
   -v /opt/osrm/data:/data \
-  wherabouts-osrm
+  locnative-osrm
 ```
 
 > Note: the repo `Dockerfile` `EXPOSE 5000` and `entrypoint.sh` start Caddy via the
@@ -158,18 +158,18 @@ docker run -d --name osrm \
 ```bash
 # OK with token:
 curl -H "authorization: Bearer <your-token>" \
-  "https://osrm.wherabouts.com/route/v1/driving/144.9631,-37.8136;151.2093,-33.8688?overview=full&geometries=geojson"
+  "https://osrm.locnative.com/route/v1/driving/144.9631,-37.8136;151.2093,-33.8688?overview=full&geometries=geojson"
 # 403 without:
-curl -i "https://osrm.wherabouts.com/route/v1/driving/144.9631,-37.8136;151.2093,-33.8688"
+curl -i "https://osrm.locnative.com/route/v1/driving/144.9631,-37.8136;151.2093,-33.8688"
 ```
 
 ### 4.7 Wire the Worker (same as DEPLOY.md Part E)
 
 ```bash
 cd apps/server
-echo "https://osrm.wherabouts.com" | npx wrangler secret put OSRM_BASE_URL   # no trailing slash
+echo "https://osrm.locnative.com" | npx wrangler secret put OSRM_BASE_URL   # no trailing slash
 echo "<your-token>"                | npx wrangler secret put OSRM_AUTH_TOKEN
-pnpm -F @wherabouts.com/server deploy
+pnpm -F @locnative/server deploy
 ```
 
 Then run the end-to-end smoke (DEPLOY.md Part F).

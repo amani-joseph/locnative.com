@@ -1,4 +1,4 @@
-// @wherabouts/react — React hooks for the Wherabouts location API
+// @locnative/react — React hooks for the Locnative location API
 
 export type { StorageLike } from "./autocomplete-cache.ts";
 export type {
@@ -10,7 +10,6 @@ export type {
 	UseComboboxOptions,
 	UseComboboxResult,
 } from "./combobox.ts";
-// biome-ignore lint/performance/noBarrelFile: this is the package's public entry point — a single barrel is the intended module surface.
 export {
 	buildInputProps,
 	buildItemProps,

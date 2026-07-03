@@ -1,4 +1,4 @@
-import type { GeoJsonPolygon } from "@wherabouts.com/api/routers/public/zones-schema";
+import type { GeoJsonPolygon } from "@locnative/api/routers/public/zones-schema";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {

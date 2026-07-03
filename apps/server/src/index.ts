@@ -1,6 +1,3 @@
-import { OpenAPIHandler } from "@orpc/openapi/fetch";
-import { ORPCError, onError } from "@orpc/server";
-import { RPCHandler } from "@orpc/server/fetch";
 import {
 	applyStripeEvent,
 	appRouter,
@@ -11,9 +8,12 @@ import {
 	reportUsageToStripe,
 	stripeCryptoProvider,
 	type WaitUntil,
-} from "@wherabouts.com/api";
-import { auth } from "@wherabouts.com/auth";
-import { serverEnv } from "@wherabouts.com/env/server";
+} from "@locnative/api";
+import { auth } from "@locnative/auth";
+import { serverEnv } from "@locnative/env/server";
+import { OpenAPIHandler } from "@orpc/openapi/fetch";
+import { ORPCError, onError } from "@orpc/server";
+import { RPCHandler } from "@orpc/server/fetch";
 import { Hono, type Context as HonoContext } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
@@ -30,14 +30,13 @@ import { handleTileRequest } from "./tiles.ts";
 
 // Durable Object class must be re-exported from the Worker entry so the runtime
 // can construct it for the USAGE_METER binding declared in wrangler.jsonc.
-// biome-ignore lint/performance/noBarrelFile: required re-export — the Workers runtime resolves the DO class as a named export of the entry module.
 export { UsageMeter } from "./usage-meter.ts";
 
 const app = new Hono();
 
 const TRAILING_SLASH_REGEX = /\/$/;
 const DEPLOYED_WEB_ORIGIN =
-	process.env.DEPLOYED_WEB_ORIGIN ?? "https://wherabouts.com";
+	process.env.DEPLOYED_WEB_ORIGIN ?? "https://locnative.com";
 
 const allowedOrigins = new Set([
 	serverEnv.WEB_BASE_URL.replace(TRAILING_SLASH_REGEX, ""),
@@ -60,12 +59,12 @@ app.use(
 			"Authorization",
 			"Content-Type",
 			"X-API-Key",
-			// The SDK tags every request with x-wherabouts-sdk and writes with
+			// The SDK tags every request with x-locnative-sdk and writes with
 			// idempotency-key. Without these in the allowlist, browser preflight
 			// fails and all SDK calls are blocked by CORS.
-			"x-wherabouts-sdk",
+			"x-locnative-sdk",
 			"idempotency-key",
-			"x-wherabouts-request-source",
+			"x-locnative-request-source",
 		],
 		allowMethods: ["GET", "POST", "OPTIONS"],
 		credentials: false,
@@ -86,9 +85,9 @@ app.use(
 			"Authorization",
 			"Content-Type",
 			"X-API-Key",
-			"x-wherabouts-internal-auth",
-			"x-wherabouts-internal-api-key-id",
-			"x-wherabouts-request-source",
+			"x-locnative-internal-auth",
+			"x-locnative-internal-api-key-id",
+			"x-locnative-request-source",
 		],
 		allowMethods: ["GET", "POST", "OPTIONS"],
 		credentials: true,
@@ -409,7 +408,7 @@ app.use("/*", async (context, next) => {
 });
 
 app.get("/", (context) =>
-	context.json({ ok: true, service: "wherabouts-server" })
+	context.json({ ok: true, service: "locnative-server" })
 );
 
 export default {

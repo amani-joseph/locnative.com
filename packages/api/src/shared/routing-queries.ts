@@ -1,5 +1,5 @@
-import type { Database } from "@wherabouts.com/database";
-import { addresses } from "@wherabouts.com/database/schema";
+import type { Database } from "@locnative/database";
+import { addresses } from "@locnative/database/schema";
 import { eq } from "drizzle-orm";
 
 export interface LatLng {

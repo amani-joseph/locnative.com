@@ -210,7 +210,7 @@ packages/database/
 ### `packages/database/package.json`
 ```json
 {
-  "name": "@wherabouts.com/database",
+  "name": "@locnative/database",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -230,7 +230,7 @@ packages/database/
     "drizzle-orm": "^0.39.0"
   },
   "devDependencies": {
-    "@wherabouts.com/config": "workspace:*",
+    "@locnative/config": "workspace:*",
     "drizzle-kit": "^0.30.0",
     "dotenv": "catalog:",
     "typescript": "^5"
@@ -297,9 +297,9 @@ Then export from package.json:
 ### Consuming from `apps/web/` (TanStack Start)
 ```typescript
 // In a server function or API route
-import { createDb } from "@wherabouts.com/database";
-import { serverEnv } from "@wherabouts.com/env/server";
-import { locations } from "@wherabouts.com/database/schema";
+import { createDb } from "@locnative/database";
+import { serverEnv } from "@locnative/env/server";
+import { locations } from "@locnative/database/schema";
 
 const db = createDb(serverEnv.DATABASE_URL);
 

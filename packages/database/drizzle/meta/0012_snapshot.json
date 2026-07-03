@@ -130,12 +130,8 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -610,12 +606,8 @@
           "name": "api_keys_project_id_projects_id_fk",
           "tableFrom": "api_keys",
           "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["project_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -623,12 +615,8 @@
           "name": "api_keys_team_id_teams_id_fk",
           "tableFrom": "api_keys",
           "tableTo": "teams",
-          "columnsFrom": [
-            "team_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["team_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -855,12 +843,8 @@
           "name": "api_usage_daily_api_key_id_api_keys_id_fk",
           "tableFrom": "api_usage_daily",
           "tableTo": "api_keys",
-          "columnsFrom": [
-            "api_key_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["api_key_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -868,12 +852,8 @@
           "name": "api_usage_daily_project_id_projects_id_fk",
           "tableFrom": "api_usage_daily",
           "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["project_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -990,12 +970,8 @@
           "name": "batch_geocode_jobs_project_id_projects_id_fk",
           "tableFrom": "batch_geocode_jobs",
           "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["project_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1003,12 +979,8 @@
           "name": "batch_geocode_jobs_api_key_id_api_keys_id_fk",
           "tableFrom": "batch_geocode_jobs",
           "tableTo": "api_keys",
-          "columnsFrom": [
-            "api_key_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["api_key_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1068,12 +1040,8 @@
           "name": "device_zone_state_project_id_projects_id_fk",
           "tableFrom": "device_zone_state",
           "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["project_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1081,10 +1049,7 @@
       "compositePrimaryKeys": {
         "device_zone_state_project_id_device_id_pk": {
           "name": "device_zone_state_project_id_device_id_pk",
-          "columns": [
-            "project_id",
-            "device_id"
-          ]
+          "columns": ["project_id", "device_id"]
         }
       },
       "uniqueConstraints": {},
@@ -1205,12 +1170,8 @@
           "name": "projects_team_id_teams_id_fk",
           "tableFrom": "projects",
           "tableTo": "teams",
-          "columnsFrom": [
-            "team_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["team_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1408,12 +1369,8 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1486,12 +1443,8 @@
           "name": "team_invitations_team_id_teams_id_fk",
           "tableFrom": "team_invitations",
           "tableTo": "teams",
-          "columnsFrom": [
-            "team_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["team_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1499,12 +1452,8 @@
           "name": "team_invitations_invited_by_user_id_fk",
           "tableFrom": "team_invitations",
           "tableTo": "user",
-          "columnsFrom": [
-            "invited_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["invited_by"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1580,12 +1529,8 @@
           "name": "team_members_team_id_teams_id_fk",
           "tableFrom": "team_members",
           "tableTo": "teams",
-          "columnsFrom": [
-            "team_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["team_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1593,12 +1538,8 @@
           "name": "team_members_user_id_user_id_fk",
           "tableFrom": "team_members",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1928,12 +1869,8 @@
           "name": "webhook_delivery_attempts_subscription_id_webhook_subscriptions_id_fk",
           "tableFrom": "webhook_delivery_attempts",
           "tableTo": "webhook_subscriptions",
-          "columnsFrom": [
-            "subscription_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["subscription_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2055,12 +1992,8 @@
           "name": "webhook_subscriptions_project_id_projects_id_fk",
           "tableFrom": "webhook_subscriptions",
           "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["project_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2068,12 +2001,8 @@
           "name": "webhook_subscriptions_zone_id_zones_id_fk",
           "tableFrom": "webhook_subscriptions",
           "tableTo": "zones",
-          "columnsFrom": [
-            "zone_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["zone_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2187,12 +2116,8 @@
           "name": "zones_project_id_projects_id_fk",
           "tableFrom": "zones",
           "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["project_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }

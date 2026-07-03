@@ -1,5 +1,5 @@
-import { apiUsageDaily, teamMembers, teams } from "@wherabouts.com/database";
-import { serverEnv } from "@wherabouts.com/env/server";
+import { apiUsageDaily, teamMembers, teams } from "@locnative/database";
+import { serverEnv } from "@locnative/env/server";
 import { and, eq, gte, sql, sum } from "drizzle-orm";
 import { z } from "zod";
 import {

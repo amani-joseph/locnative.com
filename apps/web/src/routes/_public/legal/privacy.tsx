@@ -7,9 +7,9 @@ import { breadcrumbJsonLd, jsonLdScript } from "@/lib/structured-data";
 export const Route = createFileRoute("/_public/legal/privacy")({
 	head: () => {
 		const seo = buildSeo({
-			title: "Privacy Policy | Wherabouts",
+			title: "Privacy Policy | Locnative",
 			description:
-				"How Wherabouts collects, uses, and protects information across our website and location APIs.",
+				"How Locnative collects, uses, and protects information across our website and location APIs.",
 			path: "/legal/privacy",
 			ogType: "website",
 		});

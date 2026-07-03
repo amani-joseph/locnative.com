@@ -19,7 +19,7 @@ created: 2026-04-18
 |----------|-------|
 | Tool | shadcn/ui 3.6.x (style: base-lyra) |
 | Preset | base-lyra, baseColor: neutral, cssVariables: true |
-| Component library | Base UI React 1.x (via `@wherabouts.com/ui`) |
+| Component library | Base UI React 1.x (via `@locnative/ui`) |
 | Icon library | Lucide React |
 | Font | JetBrains Mono (both `--font-sans` and `--font-mono`) |
 
@@ -88,7 +88,7 @@ Pending invitation badge: `text-amber-600` on `variant="outline"` — continuati
 
 ## Component Inventory
 
-All components sourced from `@wherabouts.com/ui` (shadcn official). No new third-party registry blocks required for this phase.
+All components sourced from `@locnative/ui` (shadcn official). No new third-party registry blocks required for this phase.
 
 | Component | Usage | Source |
 |-----------|-------|--------|
@@ -223,8 +223,8 @@ Source: `08-CONTEXT.md` — "Exact shape of the Resend HTML email template" is C
 - **Layout:** Single-column, max-width 600px, white background (`#ffffff`), dark text (`#1a1a1a`).
 - **Font:** JetBrains Mono is a display/UI font — use system-safe stack for email: `ui-monospace, 'Courier New', monospace`. Email clients do not load Google Fonts reliably.
 - **Structure:**
-  1. Top bar: Wherabouts wordmark (text-only if no hosted logo asset).
-  2. Heading (24px, semibold): "[Inviter Name] has invited you to join [Team Name] on Wherabouts"
+  1. Top bar: Locnative wordmark (text-only if no hosted logo asset).
+  2. Heading (24px, semibold): "[Inviter Name] has invited you to join [Team Name] on Locnative"
   3. Body (14px, regular, line-height 1.5): "Click the button below to accept this invitation. This link expires in 72 hours."
   4. CTA button: background `#dedede` (matches `--primary` dark token), text `#1a1a1a`, border-radius 8px, padding 12px 24px, label "Accept invitation".
   5. Footer (12px, muted `#6b6b6b`): "If you weren't expecting this, you can ignore this email. This invitation was sent by [inviter email]."

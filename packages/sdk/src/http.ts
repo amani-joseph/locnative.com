@@ -1,15 +1,15 @@
-import { WheraboutsApiError } from "./errors.ts";
+import { LocnativeApiError } from "./errors.ts";
 import {
 	type HttpMethod,
+	LOCNATIVE_API_VERSION,
+	LOCNATIVE_SDK_VERSION,
+	type LocnativeApiErrorPayload,
+	type LocnativeClientConfig,
 	type Requester,
 	type RequestOptions,
-	WHERABOUTS_API_VERSION,
-	WHERABOUTS_SDK_VERSION,
-	type WheraboutsApiErrorPayload,
-	type WheraboutsClientConfig,
 } from "./shared-types.ts";
 
-const DEFAULT_BASE_URL = "https://api.wherabouts.com";
+const DEFAULT_BASE_URL = "https://api.locnative.com";
 const DEFAULT_MAX_RETRIES = 2;
 const DEFAULT_TIMEOUT_MS = 30_000;
 const BACKOFF_BASE_MS = 200;
@@ -17,7 +17,7 @@ const BACKOFF_CAP_MS = 5000;
 const RETRYABLE_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
 const WRITE_METHODS = new Set<HttpMethod>(["POST", "PUT"]);
 
-const createBaseHeaders = (config: WheraboutsClientConfig): Headers => {
+const createBaseHeaders = (config: LocnativeClientConfig): Headers => {
 	const headers = new Headers(config.headers);
 	headers.set("accept", "application/json");
 	// Only attach auth when a key is configured. Omitting it enables the proxy
@@ -27,8 +27,8 @@ const createBaseHeaders = (config: WheraboutsClientConfig): Headers => {
 		headers.set("authorization", `Bearer ${config.apiKey}`);
 	}
 	headers.set(
-		"x-wherabouts-sdk",
-		`js-ts/${WHERABOUTS_SDK_VERSION} api/${WHERABOUTS_API_VERSION}`
+		"x-locnative-sdk",
+		`js-ts/${LOCNATIVE_SDK_VERSION} api/${LOCNATIVE_API_VERSION}`
 	);
 	return headers;
 };
@@ -69,21 +69,21 @@ const buildRequestHeaders = (
 
 const readRequestId = (response: Response): string | null =>
 	response.headers.get("x-request-id") ??
-	response.headers.get("x-wherabouts-request-id");
+	response.headers.get("x-locnative-request-id");
 
 const parseApiError = async (
 	response: Response
-): Promise<WheraboutsApiError> => {
-	let payload: WheraboutsApiErrorPayload | null = null;
+): Promise<LocnativeApiError> => {
+	let payload: LocnativeApiErrorPayload | null = null;
 	try {
-		payload = (await response.json()) as WheraboutsApiErrorPayload;
+		payload = (await response.json()) as LocnativeApiErrorPayload;
 	} catch {
 		payload = null;
 	}
 	const message =
 		payload?.error.message ??
-		`Wherabouts request failed with status ${response.status}`;
-	return new WheraboutsApiError({
+		`Locnative request failed with status ${response.status}`;
+	return new LocnativeApiError({
 		status: response.status,
 		message,
 		code: payload?.error.code ?? "unknown_error",
@@ -199,7 +199,7 @@ const classifyRequestError = (
 		}
 		return {
 			retry: false,
-			error: new WheraboutsApiError({
+			error: new LocnativeApiError({
 				status: 0,
 				code: "timeout",
 				message: `Request timed out after ${ctx.timeoutMs}ms.`,
@@ -207,7 +207,7 @@ const classifyRequestError = (
 		};
 	}
 	// A parsed API error (non-retryable status) — surface as-is.
-	if (error instanceof WheraboutsApiError) {
+	if (error instanceof LocnativeApiError) {
 		return { retry: false, error };
 	}
 	// Network/transport error — retry if budget remains.
@@ -244,7 +244,7 @@ interface AttemptContext {
 	attempt: number;
 	body: string | undefined;
 	callerSignal: AbortSignal | undefined;
-	config: WheraboutsClientConfig;
+	config: LocnativeClientConfig;
 	fetchImpl: typeof globalThis.fetch;
 	headers: Headers;
 	maxRetries: number;
@@ -319,7 +319,7 @@ const runAttempt = async <T>(
 	}
 };
 
-export const createRequester = (config: WheraboutsClientConfig): Requester => {
+export const createRequester = (config: LocnativeClientConfig): Requester => {
 	const resolvedFetch = config.fetch ?? globalThis.fetch;
 	if (!resolvedFetch) {
 		throw new Error(

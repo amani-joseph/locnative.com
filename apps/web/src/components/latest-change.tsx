@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@wherabouts.com/ui/lib/utils";
+import { cn } from "@locnative/ui/lib/utils";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ const latestChange = {
 	badge: "CHANGELOG",
 	title: "Product update",
 	description: "Performance boosts and UI polish.", // TIP: Use a single line of text for the description. (max 5 words)
-	readMore: { href: "#", label: "Learn more" },
+	readMore: { href: "/changelog", label: "Learn more" },
 } as const;
 
 export function LatestChange() {
@@ -37,7 +37,14 @@ export function LatestChange() {
 			<Button
 				className="w-max px-0 font-light text-xs"
 				nativeButton={false}
-				render={<a href={latestChange.readMore.href} />}
+				render={
+					<a
+						aria-label={latestChange.readMore.label}
+						href={latestChange.readMore.href}
+					>
+						{latestChange.readMore.label}
+					</a>
+				}
 				size="sm"
 				variant="link"
 			>

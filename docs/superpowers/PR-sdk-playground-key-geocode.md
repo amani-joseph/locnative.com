@@ -10,7 +10,7 @@ Enhances the SDK Playground so it's usable without hand-pasting secrets or hand-
 
 ## Notable details
 
-- The SDK snippet never renders a real or managed secret — it keeps the `process.env.WHERABOUTS_API_KEY` placeholder.
+- The SDK snippet never renders a real or managed secret — it keeps the `process.env.LOCNATIVE_API_KEY` placeholder.
 - Both dropdowns are accessible (combobox/listbox ARIA, full keyboard nav, focus/blur + timer cleanup); the picker guards against last-response-wins races on fast typing.
 - Switching methods now resets stale params/body/place-name comments.
 
@@ -23,7 +23,7 @@ Enhances the SDK Playground so it's usable without hand-pasting secrets or hand-
 
 - [x] `apps/web` typecheck clean (`tsc --noEmit`)
 - [x] `apps/web` tests: 47/47
-- [x] `@wherabouts.com/api` tests: 65/65 (incl. `geocode.autocomplete` mapper)
+- [x] `@locnative/api` tests: 65/65 (incl. `geocode.autocomplete` mapper)
 - [ ] Manual: routing.directions — pick a saved key, type "Brisbane"/"Sydney", confirm markers→route and snippet shows `from: "...", // Brisbane QLD`
 - [ ] Manual: paste a raw `wh_…` key and a raw `lat,lng`; confirm both pass through
 - [ ] Manual: empty key field → Run shows "Select a saved API key or paste a raw key first."

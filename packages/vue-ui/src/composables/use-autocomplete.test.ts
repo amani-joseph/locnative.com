@@ -33,9 +33,6 @@ describe("deriveStatus", () => {
 	});
 
 	it("is success when results are present", () => {
-		expectStatus(
-			{ query: "abc", results: [{} as never] },
-			"success"
-		);
+		expectStatus({ query: "abc", results: [{} as never] }, "success");
 	});
 });

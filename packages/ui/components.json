@@ -12,11 +12,11 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@wherabouts.com/ui/components",
-    "utils": "@wherabouts.com/ui/lib/utils",
-    "hooks": "@wherabouts.com/ui/hooks",
-    "lib": "@wherabouts.com/ui/lib",
-    "ui": "@wherabouts.com/ui/components"
+    "components": "@locnative/ui/components",
+    "utils": "@locnative/ui/lib/utils",
+    "hooks": "@locnative/ui/hooks",
+    "lib": "@locnative/ui/lib",
+    "ui": "@locnative/ui/components"
   },
   "menuColor": "default",
   "menuAccent": "subtle",

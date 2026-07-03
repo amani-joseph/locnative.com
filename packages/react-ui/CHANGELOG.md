@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `@wherabouts/react-ui` are documented here. This project adheres
+All notable changes to `@locnative/react-ui` are documented here. This project adheres
 to [Semantic Versioning](https://semver.org/) and the
 [Keep a Changelog](https://keepachangelog.com/) format.
 

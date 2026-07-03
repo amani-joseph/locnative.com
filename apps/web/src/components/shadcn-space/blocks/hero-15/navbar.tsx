@@ -3,7 +3,7 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
-import Logo from "@/assets/logo/logo";
+import { Logo } from "@/components/logo";
 import { NavUser } from "@/components/nav-user";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -105,7 +105,7 @@ const Navbar = ({ navigationData }: NavbarProps) => {
 			<div className="mx-auto w-full max-w-7xl px-4 py-5 lg:px-8 xl:px-16">
 				<nav className="flex items-center justify-between">
 					<Link className="inline-flex items-center" to="/">
-						<Logo />
+						<Logo imgClassName="h-12 sm:h-14" />
 					</Link>
 					<NavigationMenu className="max-lg:hidden">
 						<NavigationMenuList className="gap-6">

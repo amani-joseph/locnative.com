@@ -22,13 +22,13 @@ A controlled group of structured inputs (street, suburb, state, postcode) for ed
 
 ```tsx
 import { useState } from "react";
-import { createWheraboutsClient } from "@wherabouts/sdk";
+import { createLocnativeClient } from "@locnative/sdk";
 import {
   AddressFieldGroup,
   type AddressFieldGroupValue,
-} from "@wherabouts/react-ui";
+} from "@locnative/react-ui";
 
-const client = createWheraboutsClient({ apiKey: "..." });
+const client = createLocnativeClient({ apiKey: "..." });
 
 const EMPTY: AddressFieldGroupValue = {
   street: "",
@@ -115,7 +115,7 @@ const isComplete = Object.values(address).every((v) => v.trim().length > 0);
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `client` | `WheraboutsClient` | **Required** | SDK client created with `createWheraboutsClient`. |
+| `client` | `LocnativeClient` | **Required** | SDK client created with `createLocnativeClient`. |
 | `value` | `AddressFieldGroupValue` | **Required** | Controlled value for the field group. |
 | `onChange` | `(value: AddressFieldGroupValue) => void` | **Required** | Change handler called with the updated value on any field edit. |
 | `streetLabel` | `string` | `"Street Address"` | Override the street address field label. |

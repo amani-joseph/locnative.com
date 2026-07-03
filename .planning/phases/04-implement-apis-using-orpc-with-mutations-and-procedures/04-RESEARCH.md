@@ -6,7 +6,7 @@
 
 ## Summary
 
-The oRPC infrastructure is **already substantially built** in the wherabouts project. A `@wherabouts.com/api` package exists with builder, context, procedures (public + protected), and four domain routers (auth, dashboard, apiKeys, projects). A separate `apps/server` Hono app serves the RPC handler at `/rpc`, and the web app proxies requests to it via a TanStack Start catch-all route at `/rpc/$`. The frontend uses `orpcClient` directly (not TanStack Query hooks) for data fetching in thin wrapper files (`dashboard-server.ts`, `api-keys-server.ts`, `projects-server.ts`).
+The oRPC infrastructure is **already substantially built** in the locnative project. A `@locnative/api` package exists with builder, context, procedures (public + protected), and four domain routers (auth, dashboard, apiKeys, projects). A separate `apps/server` Hono app serves the RPC handler at `/rpc`, and the web app proxies requests to it via a TanStack Start catch-all route at `/rpc/$`. The frontend uses `orpcClient` directly (not TanStack Query hooks) for data fetching in thin wrapper files (`dashboard-server.ts`, `api-keys-server.ts`, `projects-server.ts`).
 
 The main remaining work is: (1) migrating the `sendApiExplorerRequest` `createServerFn` to an oRPC procedure, (2) migrating the `fetchSession` `createServerFn` in `__root.tsx` to use the oRPC auth router, (3) integrating `@orpc/tanstack-query` for proper React Query hook integration (the package is already installed but not used), and (4) ensuring the client-side data fetching pattern matches the mydeffo reference (using `createTanstackQueryUtils` for query key management and cache invalidation).
 
@@ -33,7 +33,7 @@ The main remaining work is: (1) migrating the `sendApiExplorerRequest` `createSe
 | Instead of | Could Use | Tradeoff |
 |------------|-----------|----------|
 | Direct `orpcClient` calls | `@orpc/tanstack-query` hooks | TanStack Query utils give automatic cache keys, invalidation, and SSR dehydration -- prefer this |
-| `createServerFn` (TanStack) | oRPC procedures | oRPC centralizes all server logic in `@wherabouts.com/api` package -- prefer this |
+| `createServerFn` (TanStack) | oRPC procedures | oRPC centralizes all server logic in `@locnative/api` package -- prefer this |
 
 ## Architecture Patterns
 
@@ -117,13 +117,13 @@ export const apiKeysRouter = {
 ```typescript
 // packages/api/src/routers/index.ts
 export const appRouter = {
-  apiKeys: apiKeysRouter,   // Nested style (wherabouts)
+  apiKeys: apiKeysRouter,   // Nested style (locnative)
   auth: authRouter,
   dashboard: dashboardRouter,
   projects: projectsRouter,
 };
 // Note: mydeffo uses spread style (...authRouter) for flat namespace.
-// wherabouts uses nested style (auth: authRouter) for namespaced access.
+// locnative uses nested style (auth: authRouter) for namespaced access.
 ```
 
 ### Pattern 4: oRPC Client with TanStack Query Utils (mydeffo reference)
@@ -260,7 +260,7 @@ import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
 import type { RouterClient } from "@orpc/server";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
-import type { AppRouter } from "@wherabouts.com/api";
+import type { AppRouter } from "@locnative/api";
 import { QueryClient } from "@tanstack/react-query";
 
 export const queryClient = new QueryClient({});
@@ -292,7 +292,7 @@ export const orpc = createTanstackQueryUtils(orpcClient);
 
 ## Open Questions
 
-1. **Should the API Explorer procedure live in `@wherabouts.com/api` or stay in the web app?**
+1. **Should the API Explorer procedure live in `@locnative/api` or stay in the web app?**
    - What we know: It needs server-only env vars (`BETTER_AUTH_SECRET`, `WEB_BASE_URL`) and makes internal HTTP requests to the same web app's API endpoints.
    - What's unclear: Whether the server package should know about API endpoint URL patterns that are defined in the web app.
    - Recommendation: Move it to the API package. The endpoint patterns can be passed as configuration or the procedure can receive the full URL from the client.

@@ -46,9 +46,9 @@ The exact shapes of `EndpointDoc` (in `docs-page.tsx`), the explorer catalog ent
 
 - [ ] **Step 1:** Read all three files fully and record the exact templates:
 ```bash
-cat /Users/mac/Developer/projects/wherabouts.com/apps/web/src/lib/openapi.ts
-cat /Users/mac/Developer/projects/wherabouts.com/apps/web/src/lib/api-explorer-endpoints.ts
-sed -n '70,200p' /Users/mac/Developer/projects/wherabouts.com/apps/web/src/components/docs-page.tsx
+cat /Users/mac/Developer/projects/locnative.com/apps/web/src/lib/openapi.ts
+cat /Users/mac/Developer/projects/locnative.com/apps/web/src/lib/api-explorer-endpoints.ts
+sed -n '70,200p' /Users/mac/Developer/projects/locnative.com/apps/web/src/components/docs-page.tsx
 ```
 Note: the `EndpointDoc` interface fields (title, href, method, path, summary, description, notes[], params[], curl, exampleResponse, etc.), the explorer entry shape (and how it marks GET vs non-GET / executable), and the OpenAPI path object shape. Use the autocomplete entry as the canonical template for each. Confirm the field names before Task 1.
 
@@ -88,9 +88,9 @@ Repeat for all 16, with correct method, path params (`{id}`, `{jobId}`, `{device
 - [ ] **Step 2: Type-check + commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm exec tsc --noEmit -p tsconfig.json 2>&1 | grep -i "openapi" || echo "no openapi errors"
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/src/lib/openapi.ts
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "docs(web): add 16 new endpoints to OpenAPI spec"
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm exec tsc --noEmit -p tsconfig.json 2>&1 | grep -i "openapi" || echo "no openapi errors"
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/src/lib/openapi.ts
+git -C /Users/mac/Developer/projects/locnative.com commit -m "docs(web): add 16 new endpoints to OpenAPI spec"
 ```
 
 ---
@@ -105,16 +105,16 @@ git -C /Users/mac/Developer/projects/wherabouts.com commit -m "docs(web): add 16
 
 - [ ] **Step 3:** Add a short async-lifecycle narrative block for the two multi-step flows:
 - **Batch:** submit (`POST /geocode/batch` → `jobId`) → poll (`GET /geocode/batch/{jobId}` until `status: completed`) → fetch results (`GET /geocode/batch/{jobId}/results`).
-- **Webhooks delivery:** on a zone boundary crossing, Wherabouts POSTs `{event, zone, device, timestamp}` to the subscription URL with an `X-Wherabouts-Signature: hmac-sha256=...` header; verify the HMAC using the once-shown signing secret; 3 retries then the subscription is marked failing.
+- **Webhooks delivery:** on a zone boundary crossing, Locnative POSTs `{event, zone, device, timestamp}` to the subscription URL with an `X-Locnative-Signature: hmac-sha256=...` header; verify the HMAC using the once-shown signing secret; 3 retries then the subscription is marked failing.
 
 Match the existing prose component style in `docs-page.tsx`.
 
 - [ ] **Step 4: Build + commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm build 2>&1 | tail -8
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/src/components/docs-page.tsx
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "docs(web): document 16 new endpoints + async-lifecycle narrative on docs page"
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm build 2>&1 | tail -8
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/src/components/docs-page.tsx
+git -C /Users/mac/Developer/projects/locnative.com commit -m "docs(web): document 16 new endpoints + async-lifecycle narrative on docs page"
 ```
 
 ---
@@ -128,9 +128,9 @@ git -C /Users/mac/Developer/projects/wherabouts.com commit -m "docs(web): docume
 - [ ] **Step 2: Build + commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm build 2>&1 | tail -8
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/src/lib/api-explorer-endpoints.ts
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "docs(web): add 16 new endpoints to API explorer catalog (GET executable)"
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm build 2>&1 | tail -8
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/src/lib/api-explorer-endpoints.ts
+git -C /Users/mac/Developer/projects/locnative.com commit -m "docs(web): add 16 new endpoints to API explorer catalog (GET executable)"
 ```
 
 ---

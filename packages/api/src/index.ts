@@ -1,4 +1,3 @@
-// biome-ignore lint/performance/noBarrelFile: this is the @wherabouts.com/api package's public entry point — a single barrel is the intended module surface.
 export { reportUsageToStripe } from "./billing/meter-reporting.ts";
 export { getStripeClient, stripeCryptoProvider } from "./billing/stripe.ts";
 export { applyStripeEvent } from "./billing/stripe-sync.ts";

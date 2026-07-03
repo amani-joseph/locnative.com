@@ -21,10 +21,10 @@ Resolves a free-text address string to coordinates (forward geocoding) as the `q
 ## Import & minimal example
 
 ```tsx
-import { createWheraboutsClient } from "@wherabouts/sdk";
-import { ForwardGeocodeInput } from "@wherabouts/react-ui";
+import { createLocnativeClient } from "@locnative/sdk";
+import { ForwardGeocodeInput } from "@locnative/react-ui";
 
-const client = createWheraboutsClient({ apiKey: "..." });
+const client = createLocnativeClient({ apiKey: "..." });
 
 function MyComponent() {
   const [query, setQuery] = React.useState("");
@@ -89,7 +89,7 @@ Pass `query={null}` (or an empty string) to suppress the network request entirel
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `client` | `WheraboutsClient` | **Required** | SDK client created with `createWheraboutsClient`. |
+| `client` | `LocnativeClient` | **Required** | SDK client created with `createLocnativeClient`. |
 | `query` | `string \| null` | **Required** | Address text to geocode. `null` or empty string skips the request. |
 | `onResult` | `(r: { latitude: number \| null; longitude: number \| null; formattedAddress: string \| null }) => void` | — | Called whenever the resolved result changes. All fields are `null` when no result is available. |
 | `placeholder` | `string` | `"Coordinates will appear here"` | Placeholder text for the read-only display input. |

@@ -1,4 +1,4 @@
-import type { AddressSuggestion } from "@wherabouts/sdk";
+import type { AddressSuggestion } from "@locnative/sdk";
 import { describe, expect, it } from "vitest";
 import { toAddressWithParsed } from "./parse-address";
 

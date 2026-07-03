@@ -1,10 +1,10 @@
 # Deploy Runbook — Geocoding/Geofencing Feature
 
 Finish steps for shipping the geocoding/geofencing feature (zones, forward + batch
-geocoding, device tracking, webhooks) to `api.wherabouts.com`.
+geocoding, device tracking, webhooks) to `api.locnative.com`.
 
 - **Code state:** complete + reviewed, commits `57e51ca..7644bda`
-- **Worker:** `wherabouts-server` (Cloudflare account `mr.amanijoseph@gmail.com` / `6f1770fecd1b32d5c1ff88073728ff60`)
+- **Worker:** `locnative-server` (Cloudflare account `mr.amanijoseph@gmail.com` / `6f1770fecd1b32d5c1ff88073728ff60`)
 - **Spec / plan:** `docs/superpowers/specs/2026-06-04-mapping-geocoding-geofencing-design.md`, `docs/superpowers/plans/2026-06-04-mapping-geocoding-geofencing.md`
 
 ---
@@ -78,9 +78,9 @@ permissions message, add Queues + R2 scopes to the token / API token.)
 
 ```bash
 cd apps/server
-npx wrangler queues create wherabouts-batch-geocode
-npx wrangler queues create wherabouts-webhook-delivery
-npx wrangler r2 bucket create wherabouts-geocode-results
+npx wrangler queues create locnative-batch-geocode
+npx wrangler queues create locnative-webhook-delivery
+npx wrangler r2 bucket create locnative-geocode-results
 ```
 
 ---
@@ -106,7 +106,7 @@ are already set on the live worker — only `KEY_ENC_KEY` is new.
 ```bash
 cd apps/server
 npx wrangler deploy --dry-run   # optional: re-validate bundle (last run: 589 KB gzip, OK)
-npx wrangler deploy             # pushes live to api.wherabouts.com
+npx wrangler deploy             # pushes live to api.locnative.com
 ```
 
 ---
@@ -117,14 +117,14 @@ With a valid API key (`Authorization: Bearer wh_...` or `X-API-Key`):
 
 ```bash
 # Forward geocode (no new tables needed — sanity that deploy is healthy)
-curl "https://api.wherabouts.com/api/v1/addresses/geocode?q=1%20Macquarie%20St%20Sydney" -H "X-API-Key: $KEY"
+curl "https://api.locnative.com/api/v1/addresses/geocode?q=1%20Macquarie%20St%20Sydney" -H "X-API-Key: $KEY"
 
 # Create a zone (exercises the new tables)
-curl -X POST "https://api.wherabouts.com/api/v1/zones" -H "X-API-Key: $KEY" -H "Content-Type: application/json" \
+curl -X POST "https://api.locnative.com/api/v1/zones" -H "X-API-Key: $KEY" -H "Content-Type: application/json" \
   -d '{"name":"test","geometry":{"type":"Polygon","coordinates":[[[151.2,-33.8],[151.3,-33.8],[151.3,-33.9],[151.2,-33.9],[151.2,-33.8]]]}}'
 
 # Point-in-polygon
-curl "https://api.wherabouts.com/api/v1/zones/contains?lat=-33.85&lng=151.25" -H "X-API-Key: $KEY"
+curl "https://api.locnative.com/api/v1/zones/contains?lat=-33.85&lng=151.25" -H "X-API-Key: $KEY"
 ```
 
 ---

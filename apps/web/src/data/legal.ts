@@ -6,7 +6,7 @@ export const PRIVACY_POLICY: LegalContent = {
 	title: "Privacy Policy",
 	lastUpdated: LAST_UPDATED,
 	intro:
-		"This Privacy Policy describes how Wherabouts collects, uses, and protects information when you use our website and location APIs. It is a draft and will be finalized following legal review.",
+		"This Privacy Policy describes how Locnative collects, uses, and protects information when you use our website and location APIs. It is a draft and will be finalized following legal review.",
 	sections: [
 		{
 			heading: "Information we collect",
@@ -41,9 +41,7 @@ export const PRIVACY_POLICY: LegalContent = {
 		},
 		{
 			heading: "Contact",
-			body: [
-				"Questions about this policy can be sent to hello@wherabouts.com.",
-			],
+			body: ["Questions about this policy can be sent to hello@locnative.com."],
 		},
 	],
 };
@@ -52,7 +50,7 @@ export const TERMS_OF_SERVICE: LegalContent = {
 	title: "Terms of Service",
 	lastUpdated: LAST_UPDATED,
 	intro:
-		"These Terms of Service govern your access to and use of the Wherabouts website and APIs. They are a draft and will be finalized following legal review.",
+		"These Terms of Service govern your access to and use of the Locnative website and APIs. They are a draft and will be finalized following legal review.",
 	sections: [
 		{
 			heading: "Acceptance of terms",
@@ -87,7 +85,7 @@ export const TERMS_OF_SERVICE: LegalContent = {
 		{
 			heading: "Limitation of liability",
 			body: [
-				"To the extent permitted by law, Wherabouts is not liable for indirect or consequential damages arising from use of the service.",
+				"To the extent permitted by law, Locnative is not liable for indirect or consequential damages arising from use of the service.",
 			],
 		},
 	],
@@ -97,7 +95,7 @@ export const ACCEPTABLE_USE: LegalContent = {
 	title: "Acceptable Use Policy",
 	lastUpdated: LAST_UPDATED,
 	intro:
-		"This Acceptable Use Policy describes activities that are not permitted when using the Wherabouts service. It is a draft and will be finalized following legal review.",
+		"This Acceptable Use Policy describes activities that are not permitted when using the Locnative service. It is a draft and will be finalized following legal review.",
 	sections: [
 		{
 			heading: "Prohibited activities",
@@ -126,7 +124,7 @@ export const ACCEPTABLE_USE: LegalContent = {
 		},
 		{
 			heading: "Reporting",
-			body: ["Report suspected abuse to hello@wherabouts.com."],
+			body: ["Report suspected abuse to hello@locnative.com."],
 		},
 	],
 };

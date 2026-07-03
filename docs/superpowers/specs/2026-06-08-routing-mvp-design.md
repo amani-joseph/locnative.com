@@ -1,7 +1,7 @@
 # Routing MVP — Design Spec
 
 **Date:** 2026-06-08
-**Status:** Done — deployed to Fly (`wherabouts-osrm.fly.dev`) and verified end-to-end in production and via `wrangler dev` (2026-06-09).
+**Status:** Done — deployed to Fly (`locnative-osrm.fly.dev`) and verified end-to-end in production and via `wrangler dev` (2026-06-09).
 **Source:** `docs/competitive-analysis-update-2026-06-08.md` §6 P2 (routing — Mappify parity).
 
 **Goal:** Add a point-A→B routing endpoint to the public API: **road distance, travel
@@ -70,7 +70,7 @@ Three units, each independently understandable:
 
 ### 3.3 Routing query helper (the logic)
 - `packages/api/src/shared/routing-queries.ts`: resolves address IDs → coords (reusing the
-  address-by-id query), calls OSRM over HTTP, and maps OSRM's response to the Wherabouts
+  address-by-id query), calls OSRM over HTTP, and maps OSRM's response to the Locnative
   envelope. Isolated from the route handler so it's unit-testable with a mocked OSRM.
 
 ## 4. Data flow

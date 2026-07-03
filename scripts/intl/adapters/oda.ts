@@ -16,6 +16,7 @@
 
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync } from "node:fs";
+import { writeFile } from "node:fs/promises";
 import type { ExtractResult } from "./overture";
 
 const BASE_URL = "https://www150.statcan.gc.ca/n1/en/pub/46-26-0001/2021001";
@@ -64,7 +65,7 @@ async function ensureDownloaded(prov: string): Promise<string> {
 		if (!res.ok) {
 			throw new Error(`ODA ${prov} download failed: HTTP ${res.status}`);
 		}
-		await Bun.write(zipPath, await res.arrayBuffer());
+		await writeFile(zipPath, Buffer.from(await res.arrayBuffer()));
 	}
 	execFileSync("unzip", [
 		"-o",

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import type { WheraboutsClient } from "@wherabouts/sdk";
+import type { LocnativeClient } from "@locnative/sdk";
 import { computed, watch } from "vue";
 import { useForwardGeocode } from "../composables/use-forward-geocode";
 import { cn } from "../utils/cn";
 
 const props = withDefaults(
 	defineProps<{
-		/** Required. SDK client created with `createWheraboutsClient`. */
-		client: WheraboutsClient;
+		/** Required. SDK client created with `createLocnativeClient`. */
+		client: LocnativeClient;
 		/** Class applied to the input element. */
 		class?: string;
 		/** Disable the input. */
@@ -24,16 +24,17 @@ const props = withDefaults(
 	}
 );
 
-const emit = defineEmits<{
-	(
-		e: "result",
-		result: {
-			latitude: number | null;
-			longitude: number | null;
-			formattedAddress: string | null;
-		}
-	): void;
-}>();
+const emit =
+	defineEmits<
+		(
+			e: "result",
+			result: {
+				latitude: number | null;
+				longitude: number | null;
+				formattedAddress: string | null;
+			}
+		) => void
+	>();
 
 const { data } = useForwardGeocode(props.client, () => props.query);
 

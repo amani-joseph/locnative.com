@@ -15,7 +15,7 @@ Turn the static `/team` route into a functional multi-user workspace. Scope:
 - Projects move from user-owned to team-owned. Existing users get an auto-created "Personal" team; their projects + keys are reassigned to it.
 - Secrets are stored encrypted-at-rest so the owning member can re-view/copy them.
 - Removing or leaving a team causes that member's key to fail at the API-key auth middleware (no cascade delete).
-- Phase depends on Phase 07 (Extract auth into its own package) landing first — Teams wiring lives in `@wherabouts.com/auth`.
+- Phase depends on Phase 07 (Extract auth into its own package) landing first — Teams wiring lives in `@locnative/auth`.
 </domain>
 
 <decisions>
@@ -110,7 +110,7 @@ Turn the static `/team` route into a functional multi-user workspace. Scope:
 - `/Users/mac/Developer/projects/mydeffo.com-web/packages/auth/` — mirror for Phase 07 auth package; any team plugin wiring patterns adopted there should be matched once Phase 07 lands.
 
 ### Phase-07 dependency
-- `.planning/phases/07-extract-auth-into-its-own-package/` — Phase 08 assumes `@wherabouts.com/auth` (from Phase 07) is the home for BetterAuth server + client. Plans MUST import from that package, not from `packages/api`.
+- `.planning/phases/07-extract-auth-into-its-own-package/` — Phase 08 assumes `@locnative/auth` (from Phase 07) is the home for BetterAuth server + client. Plans MUST import from that package, not from `packages/api`.
 
 </canonical_refs>
 

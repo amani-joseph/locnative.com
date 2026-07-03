@@ -1,11 +1,10 @@
 import type {
 	AddressSuggestion,
 	AutocompleteParams,
-	WheraboutsClient,
-} from "@wherabouts/sdk";
-import { isRateLimitError } from "@wherabouts/sdk";
+	LocnativeClient,
+} from "@locnative/sdk";
+import { isRateLimitError } from "@locnative/sdk";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { logDevError } from "./dev-log.ts";
 import {
 	type AutocompleteCacheKeyParts,
 	buildCacheKey,
@@ -13,6 +12,7 @@ import {
 	type StorageLike,
 	writeCache,
 } from "./autocomplete-cache.ts";
+import { logDevError } from "./dev-log.ts";
 
 const DEFAULT_DEBOUNCE_MS = 300;
 /** API rejects `q` shorter than 2 chars; gate locally to avoid wasted 400s. */
@@ -126,7 +126,7 @@ interface SearchActions {
 
 /** Run one autocomplete request, routing the outcome through `actions`. */
 async function executeAutocomplete(
-	client: WheraboutsClient,
+	client: LocnativeClient,
 	params: AutocompleteParams,
 	controller: AbortController,
 	actions: SearchActions
@@ -162,7 +162,7 @@ function cancelPending(
 }
 
 export function useAutocomplete(
-	client: WheraboutsClient,
+	client: LocnativeClient,
 	options: UseAutocompleteOptions = {}
 ): UseAutocompleteResult {
 	const {

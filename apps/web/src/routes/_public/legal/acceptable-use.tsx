@@ -7,9 +7,9 @@ import { breadcrumbJsonLd, jsonLdScript } from "@/lib/structured-data";
 export const Route = createFileRoute("/_public/legal/acceptable-use")({
 	head: () => {
 		const seo = buildSeo({
-			title: "Acceptable Use Policy | Wherabouts",
+			title: "Acceptable Use Policy | Locnative",
 			description:
-				"Activities that are not permitted when using the Wherabouts service.",
+				"Activities that are not permitted when using the Locnative service.",
 			path: "/legal/acceptable-use",
 			ogType: "website",
 		});

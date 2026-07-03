@@ -28,11 +28,11 @@
 ## Import & minimal example
 
 ```tsx
-import { createWheraboutsClient } from "@wherabouts/sdk";
-import { AddressFormField } from "@wherabouts/react-ui";
-import "@wherabouts/react-ui/styles.css";
+import { createLocnativeClient } from "@locnative/sdk";
+import { AddressFormField } from "@locnative/react-ui";
+import "@locnative/react-ui/styles.css";
 
-const client = createWheraboutsClient({ apiKey: import.meta.env.VITE_WHERABOUTS_KEY });
+const client = createLocnativeClient({ apiKey: import.meta.env.VITE_LOCNATIVE_KEY });
 
 export function Checkout() {
   return (
@@ -144,7 +144,7 @@ All `AddressAutocomplete` props are forwarded unchanged. Key inherited props:
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `client` | `WheraboutsClient` | — | **Required.** SDK client created with `createWheraboutsClient`. |
+| `client` | `LocnativeClient` | — | **Required.** SDK client created with `createLocnativeClient`. |
 | `onSelect` | `(address: AddressWithParsed) => void` | — | Called when a suggestion is selected. |
 | `onQueryChange` | `(query: string) => void` | — | Called as the input text changes. |
 | `placeholder` | `string` | — | Input placeholder text. |
@@ -157,13 +157,13 @@ All `AddressAutocomplete` props are forwarded unchanged. Key inherited props:
 | `disabled` | `boolean` | — | Disable the input. |
 | `required` | `boolean` | — | Mark the input as required (also renders `*` next to the label). |
 | `error` | `string` | — | External error message; renders below the input with `role="alert"`. |
-| `id` | `string` | `"wherabouts-field"` | Forwarded to the input element and linked to the label via `htmlFor`. |
+| `id` | `string` | `"locnative-field"` | Forwarded to the input element and linked to the label via `htmlFor`. |
 | `className` | `string` | — | Class applied to the `AddressAutocomplete` root container. |
 
 ## Accessibility
 
 - The component renders a `<label>` with `htmlFor` set to the same `id` as the
-  underlying `AddressAutocomplete` input (default `"wherabouts-field"`). This
+  underlying `AddressAutocomplete` input (default `"locnative-field"`). This
   association satisfies WCAG 2.1 SC 1.3.1 and ensures screen readers announce the
   label when the input is focused.
 - Pass a custom `id` when you render multiple `AddressFormField` instances on the
@@ -182,7 +182,7 @@ All `AddressAutocomplete` props are forwarded unchanged. Key inherited props:
 
 - **Multiple fields on one page:** Always supply a unique `id` (e.g. `id="billing-address"`,
   `id="shipping-address"`) when rendering more than one `AddressFormField` on the same
-  page. Without it, both fields default to `id="wherabouts-field"`, which breaks the
+  page. Without it, both fields default to `id="locnative-field"`, which breaks the
   `htmlFor` association and is invalid HTML.
 - **Passing `error` from form validation vs. API errors:** The `error` prop accepts an
   external string (e.g. from TanStack Form's `field.state.meta.errors`) and renders it

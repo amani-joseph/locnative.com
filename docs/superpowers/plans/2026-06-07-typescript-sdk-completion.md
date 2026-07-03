@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Extend `@wherabouts.com/sdk` from 4 addresses-only methods to full coverage of all 18 public API endpoints (22 methods), organized as resource namespaces, with a vitest test suite.
+**Goal:** Extend `@locnative/sdk` from 4 addresses-only methods to full coverage of all 18 public API endpoints (22 methods), organized as resource namespaces, with a vitest test suite.
 
 **Architecture:** Hand-written, dependency-free `fetch` client. A single generalized `request` helper (method + query + JSON body) lives in `src/http.ts`; each API resource is a factory module under `src/resources/` with co-located types; `client.ts` composes the namespaces; `index.ts` is the public barrel. Tests inject a mock `fetch` and assert the request the SDK builds.
 
@@ -10,7 +10,7 @@
 
 **Spec:** `docs/superpowers/specs/2026-06-07-typescript-sdk-completion-design.md`
 
-**Working dir:** `/Users/mac/Developer/projects/wherabouts.com/.claude/worktrees/sdk-completion` (branch `worktree-sdk-completion`). Run all commands from there.
+**Working dir:** `/Users/mac/Developer/projects/locnative.com/.claude/worktrees/sdk-completion` (branch `worktree-sdk-completion`). Run all commands from there.
 
 ---
 
@@ -58,7 +58,7 @@ Existing SDK to follow as the template: `packages/sdk/src/{client,types,errors,i
 ```
 packages/sdk/src/
   http.ts                 # config type, createHeaders, parseApiError, createRequester
-  errors.ts               # WheraboutsApiError (unchanged)
+  errors.ts               # LocnativeApiError (unchanged)
   shared-types.ts         # config + error payload + version consts (moved from types.ts)
   resources/
     addresses.ts          # + addresses.test.ts
@@ -67,7 +67,7 @@ packages/sdk/src/
     devices.ts            # + devices.test.ts
     webhooks.ts           # + webhooks.test.ts
     regions.ts            # + regions.test.ts
-  client.ts               # createWheraboutsClient — composes namespaces
+  client.ts               # createLocnativeClient — composes namespaces
   client.test.ts          # cross-namespace + coverage test
   index.ts                # public barrel
 ```
@@ -86,17 +86,17 @@ packages/sdk/src/
 - [ ] **Step 1: Create `shared-types.ts`** (moved from `types.ts`):
 
 ```ts
-export const WHERABOUTS_API_VERSION = "v1" as const;
-export const WHERABOUTS_SDK_VERSION = "0.2.0-preview" as const;
+export const LOCNATIVE_API_VERSION = "v1" as const;
+export const LOCNATIVE_SDK_VERSION = "0.2.0-preview" as const;
 
-export interface WheraboutsApiErrorPayload {
+export interface LocnativeApiErrorPayload {
 	error: {
 		code: "bad_request" | "internal_error" | "not_found" | "unauthorized";
 		message: string;
 	};
 }
 
-export interface WheraboutsClientConfig {
+export interface LocnativeClientConfig {
 	apiKey: string;
 	baseUrl?: string;
 	fetch?: typeof fetch;
@@ -119,7 +119,7 @@ export type Requester = <T>(opts: RequestOptions) => Promise<T>;
 
 ```ts
 import { describe, expect, it } from "vitest";
-import { WheraboutsApiError } from "./errors.ts";
+import { LocnativeApiError } from "./errors.ts";
 import { createRequester } from "./http.ts";
 
 interface Captured {
@@ -166,10 +166,10 @@ describe("createRequester", () => {
 		const c = captured[0];
 		expect(c.method).toBe("GET");
 		expect(c.url).toBe(
-			"https://api.wherabouts.com/api/v1/addresses/autocomplete?q=123+Main&limit=5"
+			"https://api.locnative.com/api/v1/addresses/autocomplete?q=123+Main&limit=5"
 		);
 		expect(c.headers.authorization).toBe("Bearer wh_test");
-		expect(c.headers["x-wherabouts-sdk"]).toContain("js-ts/");
+		expect(c.headers["x-locnative-sdk"]).toContain("js-ts/");
 		expect(c.body).toBeNull();
 	});
 
@@ -195,7 +195,7 @@ describe("createRequester", () => {
 		expect(result).toBeUndefined();
 	});
 
-	it("throws WheraboutsApiError on a non-2xx body", async () => {
+	it("throws LocnativeApiError on a non-2xx body", async () => {
 		const { fetch } = mockFetch(404, {
 			error: { code: "not_found", message: "Zone not found." },
 		});
@@ -203,61 +203,61 @@ describe("createRequester", () => {
 		await expect(
 			request({ method: "GET", path: "/api/v1/zones/999" })
 		).rejects.toMatchObject({
-			name: "WheraboutsApiError",
+			name: "LocnativeApiError",
 			status: 404,
 			code: "not_found",
 		});
 		await expect(
 			request({ method: "GET", path: "/api/v1/zones/999" })
-		).rejects.toBeInstanceOf(WheraboutsApiError);
+		).rejects.toBeInstanceOf(LocnativeApiError);
 	});
 });
 ```
 
 - [ ] **Step 3: Run the test, verify it FAILS**
 
-Run: `corepack pnpm --filter @wherabouts.com/sdk exec vitest run src/http.test.ts`
+Run: `corepack pnpm --filter @locnative/sdk exec vitest run src/http.test.ts`
 Expected: FAIL — `createRequester` does not exist.
 
 - [ ] **Step 4: Create `packages/sdk/src/http.ts`:**
 
 ```ts
-import { WheraboutsApiError } from "./errors.ts";
+import { LocnativeApiError } from "./errors.ts";
 import {
 	type RequestOptions,
 	type Requester,
-	WHERABOUTS_API_VERSION,
-	WHERABOUTS_SDK_VERSION,
-	type WheraboutsApiErrorPayload,
-	type WheraboutsClientConfig,
+	LOCNATIVE_API_VERSION,
+	LOCNATIVE_SDK_VERSION,
+	type LocnativeApiErrorPayload,
+	type LocnativeClientConfig,
 } from "./shared-types.ts";
 
-const DEFAULT_BASE_URL = "https://api.wherabouts.com";
+const DEFAULT_BASE_URL = "https://api.locnative.com";
 
-const createHeaders = (config: WheraboutsClientConfig): Headers => {
+const createHeaders = (config: LocnativeClientConfig): Headers => {
 	const headers = new Headers(config.headers);
 	headers.set("accept", "application/json");
 	headers.set("authorization", `Bearer ${config.apiKey}`);
 	headers.set(
-		"x-wherabouts-sdk",
-		`js-ts/${WHERABOUTS_SDK_VERSION} api/${WHERABOUTS_API_VERSION}`
+		"x-locnative-sdk",
+		`js-ts/${LOCNATIVE_SDK_VERSION} api/${LOCNATIVE_API_VERSION}`
 	);
 	return headers;
 };
 
 const parseApiError = async (
 	response: Response
-): Promise<WheraboutsApiError> => {
-	let payload: WheraboutsApiErrorPayload | null = null;
+): Promise<LocnativeApiError> => {
+	let payload: LocnativeApiErrorPayload | null = null;
 	try {
-		payload = (await response.json()) as WheraboutsApiErrorPayload;
+		payload = (await response.json()) as LocnativeApiErrorPayload;
 	} catch {
 		payload = null;
 	}
 	const message =
 		payload?.error.message ??
-		`Wherabouts request failed with status ${response.status}`;
-	return new WheraboutsApiError({
+		`Locnative request failed with status ${response.status}`;
+	return new LocnativeApiError({
 		status: response.status,
 		message,
 		code: payload?.error.code ?? "unknown_error",
@@ -265,7 +265,7 @@ const parseApiError = async (
 	});
 };
 
-export const createRequester = (config: WheraboutsClientConfig): Requester => {
+export const createRequester = (config: LocnativeClientConfig): Requester => {
 	const fetchImpl = config.fetch ?? globalThis.fetch;
 	if (!fetchImpl) {
 		throw new Error(
@@ -308,7 +308,7 @@ export const createRequester = (config: WheraboutsClientConfig): Requester => {
 
 - [ ] **Step 5: Run the test, verify it PASSES**
 
-Run: `corepack pnpm --filter @wherabouts.com/sdk exec vitest run src/http.test.ts`
+Run: `corepack pnpm --filter @locnative/sdk exec vitest run src/http.test.ts`
 Expected: PASS (4 tests).
 
 - [ ] **Step 6: Commit**
@@ -392,7 +392,7 @@ describe("addresses resource", () => {
 
 - [ ] **Step 2: Run the test, verify it FAILS**
 
-Run: `corepack pnpm --filter @wherabouts.com/sdk exec vitest run src/resources/addresses.test.ts`
+Run: `corepack pnpm --filter @locnative/sdk exec vitest run src/resources/addresses.test.ts`
 Expected: FAIL — `createAddresses` does not exist.
 
 - [ ] **Step 3: Create `packages/sdk/src/resources/addresses.ts`.**
@@ -451,7 +451,7 @@ export const createAddresses = (request: Requester): AddressesResource => ({
 
 - [ ] **Step 4: Run the test, verify it PASSES**
 
-Run: `corepack pnpm --filter @wherabouts.com/sdk exec vitest run src/resources/addresses.test.ts`
+Run: `corepack pnpm --filter @locnative/sdk exec vitest run src/resources/addresses.test.ts`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -547,9 +547,9 @@ import { createRegions, type RegionsResource } from "./resources/regions.ts";
 import { createWebhooks, type WebhooksResource } from "./resources/webhooks.ts";
 import { createZones, type ZonesResource } from "./resources/zones.ts";
 import { createRequester } from "./http.ts";
-import type { WheraboutsClientConfig } from "./shared-types.ts";
+import type { LocnativeClientConfig } from "./shared-types.ts";
 
-export interface WheraboutsClient {
+export interface LocnativeClient {
 	addresses: AddressesResource;
 	geocode: GeocodeResource;
 	zones: ZonesResource;
@@ -558,9 +558,9 @@ export interface WheraboutsClient {
 	regions: RegionsResource;
 }
 
-export const createWheraboutsClient = (
-	config: WheraboutsClientConfig
-): WheraboutsClient => {
+export const createLocnativeClient = (
+	config: LocnativeClientConfig
+): LocnativeClient => {
 	const request = createRequester(config);
 	return {
 		addresses: createAddresses(request),
@@ -578,13 +578,13 @@ export const createWheraboutsClient = (
 - [ ] **Step 2: Rewrite `packages/sdk/src/index.ts`** to re-export the client, error, version consts, config/error-payload types, and every resource's public types:
 
 ```ts
-export { createWheraboutsClient, type WheraboutsClient } from "./client.ts";
-export { WheraboutsApiError } from "./errors.ts";
+export { createLocnativeClient, type LocnativeClient } from "./client.ts";
+export { LocnativeApiError } from "./errors.ts";
 export {
-	WHERABOUTS_API_VERSION,
-	WHERABOUTS_SDK_VERSION,
-	type WheraboutsApiErrorPayload,
-	type WheraboutsClientConfig,
+	LOCNATIVE_API_VERSION,
+	LOCNATIVE_SDK_VERSION,
+	type LocnativeApiErrorPayload,
+	type LocnativeClientConfig,
 } from "./shared-types.ts";
 export * from "./resources/addresses.ts";
 export * from "./resources/geocode.ts";
@@ -600,16 +600,16 @@ export * from "./resources/regions.ts";
 git rm packages/sdk/src/types.ts
 ```
 
-- [ ] **Step 4: Update the docs reference.** In `apps/web/src/components/docs-page.tsx`, find the SDK usage example(s) that import/use `@wherabouts.com/sdk` (e.g. `client.autocomplete(...)`) and update them to the namespaced API (`client.addresses.autocomplete(...)`). Read the surrounding example to keep the existing format.
+- [ ] **Step 4: Update the docs reference.** In `apps/web/src/components/docs-page.tsx`, find the SDK usage example(s) that import/use `@locnative/sdk` (e.g. `client.autocomplete(...)`) and update them to the namespaced API (`client.addresses.autocomplete(...)`). Read the surrounding example to keep the existing format.
 
 - [ ] **Step 5: Type-check the SDK**
 
-Run: `corepack pnpm --filter @wherabouts.com/sdk check-types`
+Run: `corepack pnpm --filter @locnative/sdk check-types`
 Expected: PASS (no errors). Fix any import-name mismatches between `client.ts`/`index.ts` and the resource files.
 
 - [ ] **Step 6: Type-check the web app** (the docs edit)
 
-Run: `corepack pnpm --filter @wherabouts.com/web check-types 2>&1 | grep -i docs-page || echo "no docs-page errors"`
+Run: `corepack pnpm --filter @locnative/web check-types 2>&1 | grep -i docs-page || echo "no docs-page errors"`
 Expected: no errors referencing `docs-page.tsx`.
 
 - [ ] **Step 7: Commit**
@@ -630,7 +630,7 @@ git commit -m "feat(sdk): compose resource namespaces into the client"
 
 ```ts
 import { describe, expect, it } from "vitest";
-import { createWheraboutsClient } from "./client.ts";
+import { createLocnativeClient } from "./client.ts";
 
 const EXPECTED_PATHS = [
 	["GET", "/api/v1/addresses/autocomplete"],
@@ -668,7 +668,7 @@ describe("client coverage", () => {
 				headers: { "content-type": "application/json" },
 			});
 		}) as typeof fetch;
-		const c = createWheraboutsClient({ apiKey: "wh_test", fetch: fetchImpl });
+		const c = createLocnativeClient({ apiKey: "wh_test", fetch: fetchImpl });
 
 		// One call per method (args are placeholders; we only assert the request line).
 		await c.addresses.autocomplete({ q: "x" });
@@ -703,15 +703,15 @@ describe("client coverage", () => {
 
 - [ ] **Step 2: Run the coverage test**
 
-Run: `corepack pnpm --filter @wherabouts.com/sdk exec vitest run src/client.test.ts`
+Run: `corepack pnpm --filter @locnative/sdk exec vitest run src/client.test.ts`
 Expected: PASS. If a path is missing, the corresponding method/wiring is wrong — fix the resource file.
 
 - [ ] **Step 3: Run the full SDK suite + typecheck + lint**
 
 Run:
 ```bash
-corepack pnpm --filter @wherabouts.com/sdk exec vitest run
-corepack pnpm --filter @wherabouts.com/sdk check-types
+corepack pnpm --filter @locnative/sdk exec vitest run
+corepack pnpm --filter @locnative/sdk check-types
 corepack pnpm dlx ultracite check packages/sdk/src
 ```
 Expected: all green. Fix any lint issues in the SDK files (e.g. `useConsistentTypeDefinitions` → use `interface`; `useawait` is satisfied since methods return the promise directly without `async`).
@@ -736,6 +736,6 @@ git commit -m "test(sdk): endpoint coverage guard"
 - §8 version bump (`0.2.0-preview` in Task 1) + docs-page update (Task 8) ✅
 - §9 out-of-scope items have no tasks ✅
 
-**Type consistency:** `Requester`/`RequestOptions`/`WheraboutsClientConfig` defined in Task 1 are used identically in Tasks 2–8. Resource factory naming `createX` + interface `XResource` is consistent across Tasks 2–8 (Task 8 notes "use the actual exported name" as a guard). `WheraboutsClient` is redefined in `client.ts` (Task 8) and the old one in `types.ts` is deleted (Task 8 Step 3).
+**Type consistency:** `Requester`/`RequestOptions`/`LocnativeClientConfig` defined in Task 1 are used identically in Tasks 2–8. Resource factory naming `createX` + interface `XResource` is consistent across Tasks 2–8 (Task 8 notes "use the actual exported name" as a guard). `LocnativeClient` is redefined in `client.ts` (Task 8) and the old one in `types.ts` is deleted (Task 8 Step 3).
 
 **Placeholder scan:** Tasks 1, 2, 8, 9 contain full code. Tasks 3–7 intentionally delegate request/response TYPE bodies to the authoritative handler files (named explicitly) with `addresses.ts` as the worked template and exact request-wiring given for every method — this is correct for an SDK that mirrors a live API (hand-copying server types into the plan would risk drift). Regions (Task 7) types are given in full since they were just authored. No "TODO/TBD" or undefined-symbol references remain.

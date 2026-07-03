@@ -11,4 +11,4 @@ export {
 	FieldSeparator,
 	FieldSet,
 	FieldTitle,
-} from "@wherabouts.com/ui/components/field";
+} from "@locnative/ui/components/field";

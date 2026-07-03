@@ -14,8 +14,8 @@ export {
 	type ValidatedApiKey,
 	validateApiKey,
 	validateApiKeyById,
-} from "@wherabouts.com/api/api-key-auth";
+} from "@locnative/api/api-key-auth";
 export {
 	applyServerTiming,
 	jsonApiError,
-} from "@wherabouts.com/api/api-response";
+} from "@locnative/api/api-response";

@@ -17,7 +17,10 @@ describe("computeMeterDeltas", () => {
 
 	it("skips dates where live <= reported", () => {
 		expect(
-			computeMeterDeltas([{ usageDate: "2026-06-11", liveCount: 100 }], new Map([["2026-06-11", 100]]))
+			computeMeterDeltas(
+				[{ usageDate: "2026-06-11", liveCount: 100 }],
+				new Map([["2026-06-11", 100]])
+			)
 		).toEqual([]);
 	});
 });

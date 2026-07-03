@@ -1,4 +1,4 @@
-import { createWheraboutsClient } from "@wherabouts/sdk";
+import { createLocnativeClient } from "@locnative/sdk";
 import { describe, expect, it, vi } from "vitest";
 
 describe("useZoneContains - client integration", () => {
@@ -23,7 +23,7 @@ describe("useZoneContains - client integration", () => {
 				{ status: 200 }
 			)
 		);
-		const client = createWheraboutsClient({
+		const client = createLocnativeClient({
 			apiKey: "wh_test",
 			baseUrl: "http://localhost",
 			fetch: fetchMock,

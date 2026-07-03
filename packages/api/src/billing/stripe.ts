@@ -1,4 +1,4 @@
-import { serverEnv } from "@wherabouts.com/env/server";
+import { serverEnv } from "@locnative/env/server";
 import Stripe from "stripe";
 
 let cached: Stripe | null = null;

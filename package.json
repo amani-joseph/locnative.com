@@ -1,25 +1,28 @@
 {
-  "name": "wherabouts.com",
+  "name": "locnative.com",
   "private": true,
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
     "check-types": "turbo check-types",
     "dev:web": "turbo -F web dev",
-    "dev:server": "turbo -F @wherabouts.com/server dev",
+    "dev:server": "turbo -F @locnative/server dev",
     "check": "ultracite check",
     "fix": "ultracite fix",
-    "deploy": "turbo -F web deploy -F @wherabouts.com/server deploy",
+    "deploy": "turbo -F web deploy -F @locnative/server deploy",
     "deploy:web": "turbo -F web deploy",
-    "deploy:server": "turbo -F @wherabouts.com/server deploy"
+    "deploy:server": "turbo -F @locnative/server deploy"
   },
   "dependencies": {
-    "@wherabouts.com/env": "workspace:*",
+    "@locnative/env": "workspace:*",
     "dotenv": "catalog:",
     "tsx": "^4.21.0",
     "zod": "catalog:"
@@ -27,18 +30,11 @@
   "devDependencies": {
     "@biomejs/biome": "2.4.10",
     "@neondatabase/serverless": "^1.0.2",
-    "@wherabouts.com/config": "workspace:*",
+    "@locnative/config": "workspace:*",
     "turbo": "^2.8.12",
     "typescript": "^5",
     "ultracite": "7.4.4",
     "ws": "^8.21.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "stripe": "22.2.2",
-      "hono": "4.12.26",
-      "@types/node@^20": "20.19.43"
-    }
   },
   "packageManager": "pnpm@10.12.4"
 }

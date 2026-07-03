@@ -46,7 +46,7 @@ Rejected alternatives:
 
 ### 1. Generate the baseline
 - Move existing `drizzle/*.sql` and `drizzle/meta/*` into `drizzle/_archive/` (kept in git for audit/rollback).
-- Run `pnpm --filter @wherabouts.com/database db:generate` against the current schema → produces `0000_<name>.sql`, `meta/0000_snapshot.json`, and a fresh one-entry `_journal.json`.
+- Run `pnpm --filter @locnative/database db:generate` against the current schema → produces `0000_<name>.sql`, `meta/0000_snapshot.json`, and a fresh one-entry `_journal.json`.
 
 ### 2. Hand-complete the baseline for un-modeled objects
 Edit the generated `0000_<name>.sql`:

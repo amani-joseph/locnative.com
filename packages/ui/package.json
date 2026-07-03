@@ -1,5 +1,5 @@
 {
-  "name": "@wherabouts.com/ui",
+  "name": "@locnative/ui",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -43,7 +43,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@types/three": "^0.183.1",
-    "@wherabouts.com/config": "workspace:*",
+    "@locnative/config": "workspace:*",
     "tailwindcss": "catalog:",
     "typescript": "^5.9.3"
   }

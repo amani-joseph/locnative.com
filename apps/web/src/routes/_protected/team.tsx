@@ -1,14 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Avatar, AvatarFallback } from "@wherabouts.com/ui/components/avatar";
-import { Badge } from "@wherabouts.com/ui/components/badge";
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Avatar, AvatarFallback } from "@locnative/ui/components/avatar";
+import { Badge } from "@locnative/ui/components/badge";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
+} from "@locnative/ui/components/card";
 import {
 	Dialog,
 	DialogContent,
@@ -17,17 +16,18 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-} from "@wherabouts.com/ui/components/dialog";
-import { Input } from "@wherabouts.com/ui/components/input";
-import { Label } from "@wherabouts.com/ui/components/label";
+} from "@locnative/ui/components/dialog";
+import { Input } from "@locnative/ui/components/input";
+import { Label } from "@locnative/ui/components/label";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@wherabouts.com/ui/components/select";
-import { Skeleton } from "@wherabouts.com/ui/components/skeleton";
+} from "@locnative/ui/components/select";
+import { Skeleton } from "@locnative/ui/components/skeleton";
+import { createFileRoute } from "@tanstack/react-router";
 import { MailIcon, ShieldIcon, UserPlusIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";

@@ -82,7 +82,7 @@ describe("ApiEndpointCard", () => {
 		render(
 			<ApiEndpointCard
 				authState={authState}
-				baseUrl="https://api.wherabouts.com"
+				baseUrl="https://api.locnative.com"
 				endpoint={zoneCreate}
 			/>
 		);
@@ -93,7 +93,7 @@ describe("ApiEndpointCard", () => {
 		const { container } = render(
 			<ApiEndpointCard
 				authState={authState}
-				baseUrl="https://api.wherabouts.com"
+				baseUrl="https://api.locnative.com"
 				endpoint={zoneCreate}
 			/>
 		);
@@ -113,7 +113,7 @@ describe("ApiEndpointCard", () => {
 		const { container } = render(
 			<ApiEndpointCard
 				authState={authState}
-				baseUrl="https://api.wherabouts.com"
+				baseUrl="https://api.locnative.com"
 				endpoint={zoneDelete}
 			/>
 		);

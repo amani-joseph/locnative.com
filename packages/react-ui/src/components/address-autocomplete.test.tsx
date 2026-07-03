@@ -1,11 +1,11 @@
+import type { AddressSuggestion, LocnativeClient } from "@locnative/sdk";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { AddressSuggestion, WheraboutsClient } from "@wherabouts/sdk";
 import { describe, expect, it, vi } from "vitest";
 import { AddressAutocomplete } from "./address-autocomplete";
 
 // Mock client
-function createMockClient(): WheraboutsClient {
+function createMockClient(): LocnativeClient {
 	return {
 		addresses: {
 			autocomplete: vi.fn(async () => ({
@@ -24,7 +24,7 @@ function createMockClient(): WheraboutsClient {
 				],
 			})),
 		},
-	} as unknown as WheraboutsClient;
+	} as unknown as LocnativeClient;
 }
 
 describe("AddressAutocomplete", () => {

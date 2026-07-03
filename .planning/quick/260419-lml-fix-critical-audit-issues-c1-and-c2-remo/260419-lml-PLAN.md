@@ -66,18 +66,18 @@ Current `apps/server/wrangler.jsonc` vars block (lines 17-22):
 ```jsonc
 "vars": {
     "NODE_ENV": "production",
-    "AUTH_COOKIE_DOMAIN": ".wherabouts.com",
-    "BETTER_AUTH_URL": "https://api.wherabouts.com",
-    "WEB_BASE_URL": "https://wherabouts.com"
+    "AUTH_COOKIE_DOMAIN": ".locnative.com",
+    "BETTER_AUTH_URL": "https://api.locnative.com",
+    "WEB_BASE_URL": "https://locnative.com"
 },
 ```
 
 Target state (NODE_ENV line removed, other vars unchanged, compat flags unchanged):
 ```jsonc
 "vars": {
-    "AUTH_COOKIE_DOMAIN": ".wherabouts.com",
-    "BETTER_AUTH_URL": "https://api.wherabouts.com",
-    "WEB_BASE_URL": "https://wherabouts.com"
+    "AUTH_COOKIE_DOMAIN": ".locnative.com",
+    "BETTER_AUTH_URL": "https://api.locnative.com",
+    "WEB_BASE_URL": "https://locnative.com"
 },
 ```
 
@@ -85,9 +85,9 @@ Current `CLAUDE.md` `## Project` section (inside `<!-- GSD:project-start -->` / 
 ```markdown
 ## Project
 
-**Wherabouts.com — BetterAuth Migration**
+**Locnative.com — BetterAuth Migration**
 
-Wherabouts.com is an existing application built on TanStack Start + Convex. This project uses BetterAuth (self-hosted, open-source) for authentication, giving full ownership of auth data and infrastructure. The mydeffo.com-web project serves as architectural inspiration for BetterAuth patterns.
+Locnative.com is an existing application built on TanStack Start + Convex. This project uses BetterAuth (self-hosted, open-source) for authentication, giving full ownership of auth data and infrastructure. The mydeffo.com-web project serves as architectural inspiration for BetterAuth patterns.
 
 **Core Value:** Users can authenticate seamlessly — login, signup, OAuth, and session persistence must work without disruption.
 
@@ -134,7 +134,7 @@ Reason for the specific scope: per planning constraints, this fix must ship isol
     - `"NODE_ENV": "production"` no longer present anywhere in `apps/server/wrangler.jsonc`.
     - `AUTH_COOKIE_DOMAIN`, `BETTER_AUTH_URL`, `WEB_BASE_URL` still present.
     - `nodejs_compat_populate_process_env` still in `compatibility_flags`.
-    - File is valid JSONC (parses as JSON with comments — `node -e "require('fs').readFileSync('apps/server/wrangler.jsonc','utf8')"` + a strip-comments parse succeeds, or `pnpm --filter wherabouts-server exec wrangler types` / `wrangler deploy --dry-run` does not error on syntax).
+    - File is valid JSONC (parses as JSON with comments — `node -e "require('fs').readFileSync('apps/server/wrangler.jsonc','utf8')"` + a strip-comments parse succeeds, or `pnpm --filter locnative-server exec wrangler types` / `wrangler deploy --dry-run` does not error on syntax).
     - Single scoped commit created touching only this file.
   </done>
 </task>
@@ -149,9 +149,9 @@ Edit `CLAUDE.md`. Replace the content **between** the `<!-- GSD:project-start so
 <!-- GSD:project-start source:PROJECT.md -->
 ## Project
 
-**Wherabouts.com — BetterAuth Migration**
+**Locnative.com — BetterAuth Migration**
 
-Wherabouts.com is an existing application built on TanStack Start. Authentication uses BetterAuth (self-hosted, open-source), with auth data persisted to **Postgres (Neon) via Drizzle ORM** — see `packages/database/src/schema/auth.ts`. The mydeffo.com-web project serves as architectural inspiration for BetterAuth patterns.
+Locnative.com is an existing application built on TanStack Start. Authentication uses BetterAuth (self-hosted, open-source), with auth data persisted to **Postgres (Neon) via Drizzle ORM** — see `packages/database/src/schema/auth.ts`. The mydeffo.com-web project serves as architectural inspiration for BetterAuth patterns.
 
 > Note: An earlier plan scoped auth storage to Convex. That direction was abandoned due to complexity; there is no `convex/` directory and no Convex dependency in the repo.
 
@@ -208,7 +208,7 @@ After both tasks:
 2. `git status` still shows the other unrelated in-flight changes (`apps/web/public/brand.html`, `packages/database/src/index.ts`, `packages/database/src/queries/autocomplete.ts`, worktree pointer) as **untouched** — this plan must not sweep them up.
 3. `grep -R "NODE_ENV.*production" apps/server/wrangler.jsonc` returns nothing.
 4. `grep -R "Convex" CLAUDE.md` returns at most the historical-note line ("An earlier plan scoped auth storage to Convex…") — never as an active constraint.
-5. JSONC still parses (e.g., `pnpm --filter wherabouts-server exec wrangler deploy --dry-run --outdir=/tmp/wrangler-check` parses config without syntax error, or a lightweight `node -e` strip-comments parse succeeds).
+5. JSONC still parses (e.g., `pnpm --filter locnative-server exec wrangler deploy --dry-run --outdir=/tmp/wrangler-check` parses config without syntax error, or a lightweight `node -e` strip-comments parse succeeds).
 </verification>
 
 <success_criteria>

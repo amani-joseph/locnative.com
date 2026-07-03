@@ -23,7 +23,7 @@ export function AddressFormField({
 	className,
 	...autocompleteProps
 }: AddressFormFieldProps): ReactNode {
-	const id = customId ?? "wherabouts-field";
+	const id = customId ?? "locnative-field";
 
 	return (
 		<div className="flex flex-col gap-2" data-slot="address-form-field">

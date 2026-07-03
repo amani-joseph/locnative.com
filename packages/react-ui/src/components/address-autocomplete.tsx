@@ -1,5 +1,5 @@
-import { useAutocomplete, useCombobox } from "@wherabouts/react";
-import type { WheraboutsClient } from "@wherabouts/sdk";
+import { useAutocomplete, useCombobox } from "@locnative/react";
+import type { LocnativeClient } from "@locnative/sdk";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useAddressGeolocation } from "../hooks/use-address-geolocation";
@@ -10,8 +10,8 @@ import { toAddressWithParsed } from "../utils/parse-address";
 export interface AddressAutocompleteProps {
 	/** Class applied to the root container. */
 	className?: string;
-	/** Required. SDK client created with `createWheraboutsClient`. */
-	client: WheraboutsClient;
+	/** Required. SDK client created with `createLocnativeClient`. */
+	client: LocnativeClient;
 	/** Debounce in ms before querying the API. Default 300. */
 	debounceMs?: number;
 	/** Disable the input. */
@@ -108,7 +108,7 @@ export function AddressAutocomplete({
 	i18nStrings: customI18n,
 	id: customId,
 }: AddressAutocompleteProps) {
-	const id = customId ?? "wherabouts-autocomplete";
+	const id = customId ?? "locnative-autocomplete";
 	const i18n = useMemo(
 		() => ({ ...DEFAULT_I18N, ...customI18n }),
 		[customI18n]
@@ -181,26 +181,12 @@ export function AddressAutocomplete({
 		};
 	}, [isOpen]);
 
-	// Sync external value prop to internal query (only on mount)
-	// This allows controlled initial value without fighting the hook's internal state
-	// biome-ignore lint/correctness/useExhaustiveDependencies: intentional, control initial value only
-	// const _unused = useMemo(() => {
-	//   if (value !== undefined && !inputRef.current?.value) {
-	//     setQuery(value);
-	//   }
-	// }, []);
-
 	const error =
 		externalError || (status === "error" ? autocompleteError : null);
 	const inputProps = getInputProps();
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		// Call the combobox handler with the native event
-		// biome-ignore lint/suspicious/noImplicitAnyLet: combobox handler accepts KeyboardEvent
-		const handler = inputProps.onKeyDown as any;
-		if (handler) {
-			handler(e.nativeEvent);
-		}
+		inputProps.onKeyDown?.(e);
 	};
 
 	return (
@@ -288,7 +274,7 @@ export function AddressAutocomplete({
 									const parsed = toAddressWithParsed(result);
 
 									return (
-										<li
+										<div
 											key={result.id}
 											{...itemProps}
 											className="flex cursor-pointer items-center rounded-none px-3 py-2 transition-colors hover:bg-accent hover:text-accent-foreground aria-selected:bg-accent aria-selected:text-accent-foreground"
@@ -297,9 +283,18 @@ export function AddressAutocomplete({
 												onSelect?.(parsed);
 												setQuery("");
 											}}
+											onKeyDown={(event) => {
+												if (event.key === "Enter" || event.key === " ") {
+													event.preventDefault();
+													onSelect?.(parsed);
+													setQuery("");
+												}
+											}}
 											onMouseDown={(e) => {
 												e.preventDefault();
 											}}
+											role="option"
+											tabIndex={-1}
 										>
 											{renderSuggestion ? (
 												renderSuggestion(parsed, isActive)
@@ -313,12 +308,12 @@ export function AddressAutocomplete({
 													</div>
 												</div>
 											)}
-										</li>
+										</div>
 									);
 								})}
 						</ul>
 
-						{/* Wherabouts branding footer */}
+						{/* Locnative branding footer */}
 						{status === "success" && results.length > 0 && (
 							<div
 								className="border-border border-t bg-muted/40 px-3 py-2"
@@ -328,11 +323,11 @@ export function AddressAutocomplete({
 									Suggestions powered by{" "}
 									<a
 										className="font-semibold text-foreground hover:underline"
-										href="https://wherabouts.com"
+										href="https://locnative.com"
 										rel="noopener noreferrer"
 										target="_blank"
 									>
-										Wherabouts
+										Locnative
 									</a>
 								</p>
 							</div>

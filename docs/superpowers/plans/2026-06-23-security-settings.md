@@ -6,17 +6,17 @@
 
 **Architecture:** Add BetterAuth's `twoFactor` plugin + `deleteUser` flow to the shared `auth` instance (`packages/auth`), backed by new Drizzle tables/columns (`packages/database`). The web app (`apps/web`) gets a `twoFactorClient`, a post-sign-in `/two-factor` verify route, and three self-contained security cards composed of pure-logic helpers (TDD) plus React UI. A central BetterAuth `after` hook writes a `security_audit_log` row for every sensitive action; session geo is captured from Cloudflare `request.cf`.
 
-**Tech Stack:** BetterAuth 1.5.6, Drizzle ORM 0.44, Neon Postgres, TanStack Start/Router, React 19, `@wherabouts.com/ui` (Base UI + shadcn), Vitest, `qrcode`, `ua-parser-js`.
+**Tech Stack:** BetterAuth 1.5.6, Drizzle ORM 0.44, Neon Postgres, TanStack Start/Router, React 19, `@locnative/ui` (Base UI + shadcn), Vitest, `qrcode`, `ua-parser-js`.
 
 ## Global Constraints
 
 - Indent with **tabs**; **double quotes**; self-closing JSX; sorted Tailwind classes (Biome/Ultracite). Run `pnpm dlx ultracite fix <files>` (scoped to touched files only — never unscoped).
 - Relative imports in server-side `.ts` files include the `.ts` extension (e.g. `./db.ts`).
-- Intra-app imports use `@/`; shared packages via `@wherabouts.com/*`; type-only imports use `import type`.
+- Intra-app imports use `@/`; shared packages via `@locnative/*`; type-only imports use `import type`.
 - Named exports preferred; no barrel files; no `console.log` in production code.
-- **DB rule:** the agent MUST NOT run DDL against the shared Neon DB. Generate the migration only; the user runs `pnpm --filter @wherabouts.com/database db:migrate`.
+- **DB rule:** the agent MUST NOT run DDL against the shared Neon DB. Generate the migration only; the user runs `pnpm --filter @locnative/database db:migrate`.
 - BetterAuth client methods return `{ data, error }` — always check `error` before using `data`.
-- App name / TOTP issuer is exactly `"Wherabouts"`.
+- App name / TOTP issuer is exactly `"Locnative"`.
 - Test convention: extract pure logic into modules; test with Vitest (`describe/it/expect`); no DOM renderer.
 
 ---
@@ -115,12 +115,12 @@ In `packages/database/src/schema/index.ts`, add exports for `twoFactors`, `secur
 
 - [ ] **Step 4: Typecheck the schema**
 
-Run: `pnpm --filter @wherabouts.com/database exec tsc --noEmit`
+Run: `pnpm --filter @locnative/database exec tsc --noEmit`
 Expected: PASS (no type errors).
 
 - [ ] **Step 5: Generate the migration (DO NOT migrate)**
 
-Run: `pnpm --filter @wherabouts.com/database db:generate`
+Run: `pnpm --filter @locnative/database db:generate`
 Expected: a new file `packages/database/drizzle/0016_*.sql` containing `CREATE TABLE "two_factor"`, `CREATE TABLE "security_audit_log"`, `ALTER TABLE "user" ADD COLUMN "two_factor_enabled"`, and three `ALTER TABLE "session" ADD COLUMN "geo_*"`. Open the file and confirm. **Do not run `db:migrate`.**
 
 - [ ] **Step 6: Commit**
@@ -186,7 +186,7 @@ describe("mapAuditAction", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `pnpm --filter @wherabouts.com/auth exec vitest run src/audit.test.ts`
+Run: `pnpm --filter @locnative/auth exec vitest run src/audit.test.ts`
 Expected: FAIL ("Cannot find module './audit.ts'").
 
 - [ ] **Step 3: Write the implementation**
@@ -229,7 +229,7 @@ export function mapAuditAction(path: string): string | null {
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `pnpm --filter @wherabouts.com/auth exec vitest run src/audit.test.ts`
+Run: `pnpm --filter @locnative/auth exec vitest run src/audit.test.ts`
 Expected: PASS (all cases green).
 
 - [ ] **Step 5: Commit**
@@ -256,7 +256,7 @@ git commit -m "feat(auth): audit-action path mapper with tests"
 In `packages/auth/src/index.ts`, add imports near the top:
 
 ```ts
-import { securityAuditLog } from "@wherabouts.com/database";
+import { securityAuditLog } from "@locnative/database";
 import { twoFactor } from "better-auth/plugins";
 import { createAuthMiddleware } from "better-auth/api";
 import { mapAuditAction } from "./audit.ts";
@@ -265,7 +265,7 @@ import { mapAuditAction } from "./audit.ts";
 In the `betterAuth({ ... })` call, add `appName`, `plugins`, and a `user.deleteUser` block (place `appName` near `baseURL`):
 
 ```ts
-	appName: "Wherabouts",
+	appName: "Locnative",
 	plugins: [twoFactor()],
 	user: {
 		deleteUser: { enabled: true },
@@ -363,12 +363,12 @@ Replace the existing `rateLimit` block with one that keeps the global default an
 
 - [ ] **Step 5: Typecheck the auth package**
 
-Run: `pnpm --filter @wherabouts.com/auth exec tsc --noEmit`
+Run: `pnpm --filter @locnative/auth exec tsc --noEmit`
 Expected: PASS. If `ctx.context.session` typing complains, narrow with optional chaining as written above.
 
 - [ ] **Step 6: Build the server to confirm plugin wiring resolves**
 
-Run: `pnpm --filter @wherabouts.com/server exec tsc --noEmit`
+Run: `pnpm --filter @locnative/server exec tsc --noEmit`
 Expected: PASS (the Worker imports `auth` and must still typecheck).
 
 - [ ] **Step 7: Commit**
@@ -391,7 +391,7 @@ git commit -m "feat(auth): enable twoFactor + deleteUser, audit hook, session ge
 
 - [ ] **Step 1: Install dependencies**
 
-Run: `pnpm --filter @wherabouts.com/web add qrcode ua-parser-js && pnpm --filter @wherabouts.com/web add -D @types/qrcode`
+Run: `pnpm --filter @locnative/web add qrcode ua-parser-js && pnpm --filter @locnative/web add -D @types/qrcode`
 Expected: deps added to `apps/web/package.json`; lockfile updated. (`ua-parser-js` ships its own types.)
 
 - [ ] **Step 2: Add the twoFactorClient plugin + exports**
@@ -437,7 +437,7 @@ export const {
 
 - [ ] **Step 3: Typecheck the web app**
 
-Run: `pnpm --filter @wherabouts.com/web exec tsc --noEmit`
+Run: `pnpm --filter @locnative/web exec tsc --noEmit`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -508,7 +508,7 @@ describe("parseUserAgent", () => {
 
 - [ ] **Step 2: Run UA test (fails)**
 
-Run: `pnpm --filter @wherabouts.com/web exec vitest run src/lib/security/ua.test.ts`
+Run: `pnpm --filter @locnative/web exec vitest run src/lib/security/ua.test.ts`
 Expected: FAIL (module not found).
 
 - [ ] **Step 3: Implement UA parsing**
@@ -557,7 +557,7 @@ export function parseUserAgent(
 
 - [ ] **Step 4: Run UA test (passes)**
 
-Run: `pnpm --filter @wherabouts.com/web exec vitest run src/lib/security/ua.test.ts`
+Run: `pnpm --filter @locnative/web exec vitest run src/lib/security/ua.test.ts`
 Expected: PASS.
 
 - [ ] **Step 5: Write failing tests for backup codes**
@@ -571,7 +571,7 @@ import { backupCodesFilename, formatBackupCodes } from "./backup-codes.ts";
 describe("formatBackupCodes", () => {
 	it("renders one code per line with a header", () => {
 		const out = formatBackupCodes(["AAAA-BBBB", "CCCC-DDDD"]);
-		expect(out).toContain("Wherabouts backup codes");
+		expect(out).toContain("Locnative backup codes");
 		expect(out).toContain("AAAA-BBBB");
 		expect(out.trim().split("\n").at(-1)).toBe("CCCC-DDDD");
 	});
@@ -580,18 +580,18 @@ describe("formatBackupCodes", () => {
 describe("backupCodesFilename", () => {
 	it("derives a safe filename from the email", () => {
 		expect(backupCodesFilename("jo@x.com")).toBe(
-			"wherabouts-backup-codes-jo-at-x-com.txt"
+			"locnative-backup-codes-jo-at-x-com.txt"
 		);
 	});
 	it("falls back when email missing", () => {
-		expect(backupCodesFilename(null)).toBe("wherabouts-backup-codes.txt");
+		expect(backupCodesFilename(null)).toBe("locnative-backup-codes.txt");
 	});
 });
 ```
 
 - [ ] **Step 6: Run backup-codes test (fails)**
 
-Run: `pnpm --filter @wherabouts.com/web exec vitest run src/lib/security/backup-codes.test.ts`
+Run: `pnpm --filter @locnative/web exec vitest run src/lib/security/backup-codes.test.ts`
 Expected: FAIL.
 
 - [ ] **Step 7: Implement backup codes**
@@ -605,7 +605,7 @@ const TRIM_DASHES = /^-+|-+$/g;
 /** Format backup codes as downloadable plain text. */
 export function formatBackupCodes(codes: string[]): string {
 	return [
-		"Wherabouts backup codes",
+		"Locnative backup codes",
 		"Keep these somewhere safe. Each code can be used once.",
 		"",
 		...codes,
@@ -615,20 +615,20 @@ export function formatBackupCodes(codes: string[]): string {
 /** Build a filesystem-safe filename for the backup-codes download. */
 export function backupCodesFilename(email: string | null | undefined): string {
 	if (!email) {
-		return "wherabouts-backup-codes.txt";
+		return "locnative-backup-codes.txt";
 	}
 	const slug = email
 		.toLowerCase()
 		.replace("@", "-at-")
 		.replace(NON_FILENAME_CHARS, "-")
 		.replace(TRIM_DASHES, "");
-	return `wherabouts-backup-codes-${slug}.txt`;
+	return `locnative-backup-codes-${slug}.txt`;
 }
 ```
 
 - [ ] **Step 8: Run backup-codes test (passes)**
 
-Run: `pnpm --filter @wherabouts.com/web exec vitest run src/lib/security/backup-codes.test.ts`
+Run: `pnpm --filter @locnative/web exec vitest run src/lib/security/backup-codes.test.ts`
 Expected: PASS.
 
 - [ ] **Step 9: Write failing tests for TOTP secret extraction**
@@ -642,7 +642,7 @@ import { extractTotpSecret } from "./totp-uri.ts";
 describe("extractTotpSecret", () => {
 	it("extracts the secret query param", () => {
 		const uri =
-			"otpauth://totp/Wherabouts:jo@x.com?secret=JBSWY3DPEHPK3PXP&issuer=Wherabouts";
+			"otpauth://totp/Locnative:jo@x.com?secret=JBSWY3DPEHPK3PXP&issuer=Locnative";
 		expect(extractTotpSecret(uri)).toBe("JBSWY3DPEHPK3PXP");
 	});
 	it("returns null when absent or malformed", () => {
@@ -654,7 +654,7 @@ describe("extractTotpSecret", () => {
 
 - [ ] **Step 10: Run totp-uri test (fails)**
 
-Run: `pnpm --filter @wherabouts.com/web exec vitest run src/lib/security/totp-uri.test.ts`
+Run: `pnpm --filter @locnative/web exec vitest run src/lib/security/totp-uri.test.ts`
 Expected: FAIL.
 
 - [ ] **Step 11: Implement TOTP secret extraction**
@@ -674,7 +674,7 @@ export function extractTotpSecret(uri: string): string | null {
 
 - [ ] **Step 12: Run totp-uri test (passes)**
 
-Run: `pnpm --filter @wherabouts.com/web exec vitest run src/lib/security/totp-uri.test.ts`
+Run: `pnpm --filter @locnative/web exec vitest run src/lib/security/totp-uri.test.ts`
 Expected: PASS.
 
 - [ ] **Step 13: Write failing tests for delete confirmation**
@@ -730,7 +730,7 @@ describe("validateDeleteConfirmation", () => {
 
 - [ ] **Step 14: Run delete-confirmation test (fails)**
 
-Run: `pnpm --filter @wherabouts.com/web exec vitest run src/lib/security/delete-confirmation.test.ts`
+Run: `pnpm --filter @locnative/web exec vitest run src/lib/security/delete-confirmation.test.ts`
 Expected: FAIL.
 
 - [ ] **Step 15: Implement delete confirmation**
@@ -769,7 +769,7 @@ export function validateDeleteConfirmation(
 
 - [ ] **Step 16: Run all security helper tests (pass)**
 
-Run: `pnpm --filter @wherabouts.com/web exec vitest run src/lib/security/`
+Run: `pnpm --filter @locnative/web exec vitest run src/lib/security/`
 Expected: PASS (all four suites).
 
 - [ ] **Step 17: Commit**
@@ -798,16 +798,16 @@ Create `apps/web/src/routes/_auth/two-factor.tsx`:
 
 ```tsx
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
-import { Input } from "@wherabouts.com/ui/components/input";
-import { Label } from "@wherabouts.com/ui/components/label";
+} from "@locnative/ui/components/card";
+import { Input } from "@locnative/ui/components/input";
+import { Label } from "@locnative/ui/components/label";
 import { useState } from "react";
 import { toast } from "sonner";
 import { twoFactor } from "@/lib/auth-client";
@@ -900,8 +900,8 @@ function TwoFactorRoute() {
 
 - [ ] **Step 2: Regenerate the route tree + typecheck**
 
-Run: `pnpm --filter @wherabouts.com/web exec tsc --noEmit`
-Expected: PASS. (The TanStack Router plugin regenerates `routeTree.gen.ts` on dev/build; if `tsc` complains the route isn't in the tree, run `pnpm --filter @wherabouts.com/web dev` briefly or the router generate script, then re-typecheck.)
+Run: `pnpm --filter @locnative/web exec tsc --noEmit`
+Expected: PASS. (The TanStack Router plugin regenerates `routeTree.gen.ts` on dev/build; if `tsc` complains the route isn't in the tree, run `pnpm --filter @locnative/web dev` briefly or the router generate script, then re-typecheck.)
 
 - [ ] **Step 3: Lint touched files**
 
@@ -931,8 +931,8 @@ git commit -m "feat(web): post-sign-in two-factor verification route"
 Create `apps/web/src/components/settings/security/two-factor-card.tsx`:
 
 ```tsx
-import { Badge } from "@wherabouts.com/ui/components/badge";
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Badge } from "@locnative/ui/components/badge";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Dialog,
 	DialogContent,
@@ -940,9 +940,9 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@wherabouts.com/ui/components/dialog";
-import { Input } from "@wherabouts.com/ui/components/input";
-import { Label } from "@wherabouts.com/ui/components/label";
+} from "@locnative/ui/components/dialog";
+import { Input } from "@locnative/ui/components/input";
+import { Label } from "@locnative/ui/components/label";
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -1263,7 +1263,7 @@ function ManageDialog({
 
 - [ ] **Step 2: Typecheck + lint**
 
-Run: `pnpm --filter @wherabouts.com/web exec tsc --noEmit && pnpm dlx ultracite fix apps/web/src/components/settings/security/two-factor-card.tsx`
+Run: `pnpm --filter @locnative/web exec tsc --noEmit && pnpm dlx ultracite fix apps/web/src/components/settings/security/two-factor-card.tsx`
 Expected: PASS, file formatted. (If `result.data.backupCodes` / `totpURI` typing differs, inspect the return type via the BetterAuth client types and adjust property access — do not cast to `any`.)
 
 - [ ] **Step 3: Commit**
@@ -1289,9 +1289,9 @@ git commit -m "feat(web): two-factor settings card (enable/verify/backup/disable
 Create `apps/web/src/components/settings/security/active-sessions-card.tsx`:
 
 ```tsx
-import { Badge } from "@wherabouts.com/ui/components/badge";
-import { Button } from "@wherabouts.com/ui/components/button";
-import { Skeleton } from "@wherabouts.com/ui/components/skeleton";
+import { Badge } from "@locnative/ui/components/badge";
+import { Button } from "@locnative/ui/components/button";
+import { Skeleton } from "@locnative/ui/components/skeleton";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -1443,7 +1443,7 @@ export function ActiveSessionsCard() {
 
 - [ ] **Step 2: Typecheck + lint**
 
-Run: `pnpm --filter @wherabouts.com/web exec tsc --noEmit && pnpm dlx ultracite fix apps/web/src/components/settings/security/active-sessions-card.tsx`
+Run: `pnpm --filter @locnative/web exec tsc --noEmit && pnpm dlx ultracite fix apps/web/src/components/settings/security/active-sessions-card.tsx`
 Expected: PASS. (The `as unknown as SessionRow[]` bridges BetterAuth's session type with our geo columns; if the client type already includes the geo fields, drop the cast.)
 
 - [ ] **Step 3: Commit**
@@ -1469,7 +1469,7 @@ git commit -m "feat(web): active sessions card with revoke + optimistic UI"
 Create `apps/web/src/components/settings/security/delete-account-card.tsx`:
 
 ```tsx
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Dialog,
 	DialogContent,
@@ -1477,9 +1477,9 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@wherabouts.com/ui/components/dialog";
-import { Input } from "@wherabouts.com/ui/components/input";
-import { Label } from "@wherabouts.com/ui/components/label";
+} from "@locnative/ui/components/dialog";
+import { Input } from "@locnative/ui/components/input";
+import { Label } from "@locnative/ui/components/label";
 import { useState } from "react";
 import { toast } from "sonner";
 import { deleteUser, twoFactor, useSession } from "@/lib/auth-client";
@@ -1660,7 +1660,7 @@ export function DeleteAccountCard() {
 
 - [ ] **Step 2: Typecheck + lint**
 
-Run: `pnpm --filter @wherabouts.com/web exec tsc --noEmit && pnpm dlx ultracite fix apps/web/src/components/settings/security/delete-account-card.tsx`
+Run: `pnpm --filter @locnative/web exec tsc --noEmit && pnpm dlx ultracite fix apps/web/src/components/settings/security/delete-account-card.tsx`
 Expected: PASS, formatted.
 
 - [ ] **Step 3: Commit**
@@ -1706,12 +1706,12 @@ Replace the three stub blocks inside `<TabsContent value="security">` → `<Card
 
 - [ ] **Step 3: Typecheck + lint**
 
-Run: `pnpm --filter @wherabouts.com/web exec tsc --noEmit && pnpm dlx ultracite fix apps/web/src/routes/_protected/settings.tsx`
+Run: `pnpm --filter @locnative/web exec tsc --noEmit && pnpm dlx ultracite fix apps/web/src/routes/_protected/settings.tsx`
 Expected: PASS, formatted.
 
 - [ ] **Step 4: Full web test + build**
 
-Run: `pnpm --filter @wherabouts.com/web exec vitest run && pnpm --filter @wherabouts.com/web build`
+Run: `pnpm --filter @locnative/web exec vitest run && pnpm --filter @locnative/web build`
 Expected: all tests PASS; build succeeds.
 
 - [ ] **Step 5: Commit**
@@ -1727,17 +1727,17 @@ git commit -m "feat(web): wire production security cards into settings"
 
 - [ ] **Run the whole affected test suite**
 
-Run: `pnpm --filter @wherabouts.com/auth exec vitest run && pnpm --filter @wherabouts.com/web exec vitest run`
+Run: `pnpm --filter @locnative/auth exec vitest run && pnpm --filter @locnative/web exec vitest run`
 Expected: all PASS.
 
 - [ ] **Typecheck the three touched packages**
 
-Run: `pnpm --filter @wherabouts.com/database exec tsc --noEmit && pnpm --filter @wherabouts.com/auth exec tsc --noEmit && pnpm --filter @wherabouts.com/web exec tsc --noEmit`
+Run: `pnpm --filter @locnative/database exec tsc --noEmit && pnpm --filter @locnative/auth exec tsc --noEmit && pnpm --filter @locnative/web exec tsc --noEmit`
 Expected: all PASS.
 
 - [ ] **Hand the migration to the user**
 
-Tell the user the generated migration `packages/database/drizzle/0016_*.sql` is ready and must be applied with `pnpm --filter @wherabouts.com/database db:migrate` against the shared Neon DB (agent must not run it). 2FA, sessions geo, and the audit log will not function until the migration is applied.
+Tell the user the generated migration `packages/database/drizzle/0016_*.sql` is ready and must be applied with `pnpm --filter @locnative/database db:migrate` against the shared Neon DB (agent must not run it). 2FA, sessions geo, and the audit log will not function until the migration is applied.
 
 - [ ] **Manual smoke test (user, after migration)**
   1. Enable 2FA → scan QR in an authenticator → verify code → download backup codes.

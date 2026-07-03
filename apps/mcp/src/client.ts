@@ -1,8 +1,8 @@
-import { createWheraboutsClient, type WheraboutsClient } from "@wherabouts/sdk";
+import { createLocnativeClient, type LocnativeClient } from "@locnative/sdk";
 
 export const buildClient = (
 	apiKey: string,
 	baseUrl: string,
 	fetchImpl: typeof fetch = fetch
-): WheraboutsClient =>
-	createWheraboutsClient({ apiKey, baseUrl, fetch: fetchImpl });
+): LocnativeClient =>
+	createLocnativeClient({ apiKey, baseUrl, fetch: fetchImpl });

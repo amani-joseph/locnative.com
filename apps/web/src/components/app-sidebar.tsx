@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouterState } from "@tanstack/react-router";
 import {
 	Sidebar,
 	SidebarContent,
@@ -9,8 +8,9 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
-} from "@wherabouts.com/ui/components/sidebar";
-import { cn } from "@wherabouts.com/ui/lib/utils";
+} from "@locnative/ui/components/sidebar";
+import { cn } from "@locnative/ui/lib/utils";
+import { useRouterState } from "@tanstack/react-router";
 import { footerNavLinks, navGroups } from "@/components/app-shared";
 import { LatestChange } from "@/components/latest-change";
 import { LogoIcon } from "@/components/logo";
@@ -34,7 +34,7 @@ export function AppSidebar() {
 			<SidebarHeader className="h-14 justify-center border-b px-2">
 				<SidebarMenuButton render={sidebarNavRender("/")}>
 					<LogoIcon />
-					<span className="font-medium text-foreground!">Wherabouts</span>
+					<span className="font-medium text-foreground!">Locnative</span>
 				</SidebarMenuButton>
 			</SidebarHeader>
 			<SidebarContent>
@@ -61,7 +61,7 @@ export function AppSidebar() {
 				</SidebarMenu>
 				<div className="px-4 pt-4 pb-2 transition-opacity group-data-[collapsible=icon]:pointer-events-none group-data-[collapsible=icon]:opacity-0">
 					<p className="text-nowrap text-[9px] text-muted-foreground">
-						© {new Date().getFullYear()} Wherabouts.com
+						© {new Date().getFullYear()} Locnative.com
 					</p>
 				</div>
 			</SidebarFooter>

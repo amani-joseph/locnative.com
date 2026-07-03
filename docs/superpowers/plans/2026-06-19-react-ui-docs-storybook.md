@@ -1,30 +1,30 @@
-# @wherabouts/react-ui Docs + Storybook Implementation Plan
+# @locnative/react-ui Docs + Storybook Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add rich per-component Markdown documentation and a working Storybook to `packages/react-ui`, beyond the existing README prop tables.
 
-**Architecture:** Storybook 9 with the `@storybook/react-vite` framework runs standalone inside the package. Stories use a *live* demo `WheraboutsClient` configured from env vars (cross-origin, explicit base URL), degrading to a "not configured" banner when no key is present. Each of the 5 exported components gets a `docs/<name>.md` (full prose) and a `<name>.stories.tsx` (same prose in the autodocs description). JSDoc on the prop interfaces feeds Storybook's autodocs prop tables.
+**Architecture:** Storybook 9 with the `@storybook/react-vite` framework runs standalone inside the package. Stories use a *live* demo `LocnativeClient` configured from env vars (cross-origin, explicit base URL), degrading to a "not configured" banner when no key is present. Each of the 5 exported components gets a `docs/<name>.md` (full prose) and a `<name>.stories.tsx` (same prose in the autodocs description). JSDoc on the prop interfaces feeds Storybook's autodocs prop tables.
 
-**Tech Stack:** TypeScript, React 19, Vite 7, Storybook ^9 (`@storybook/react-vite`, `@storybook/addon-a11y`), the existing `@wherabouts/sdk` client (supports a custom `baseUrl`), Vitest 1 (existing), pnpm workspace with version catalog.
+**Tech Stack:** TypeScript, React 19, Vite 7, Storybook ^9 (`@storybook/react-vite`, `@storybook/addon-a11y`), the existing `@locnative/sdk` client (supports a custom `baseUrl`), Vitest 1 (existing), pnpm workspace with version catalog.
 
 ## Global Constraints
 
 - Package under work: `packages/react-ui` only. Do NOT touch `packages/vue-ui`, `apps/web`, or the existing `/components` route.
 - Storybook dependencies pinned to `^9.0.0` (the line that supports React 19 + Vite 7). `@storybook/addon-essentials` does NOT exist on v9 — controls/actions/docs are built into core; do not add it.
 - Components rely on plain CSS in `src/styles/globals.css` (no Tailwind compilation). Storybook loads styling solely via `import "../src/styles/globals.css"`.
-- The SDK client is created with `createWheraboutsClient({ apiKey, baseUrl })`. Use a **publishable** key only; never a secret server key.
-- Demo client env vars: `VITE_DEMO_API_KEY` (string, may be empty) and `VITE_DEMO_API_BASE_URL` (absolute URL; default `https://api.wherabouts.com`).
+- The SDK client is created with `createLocnativeClient({ apiKey, baseUrl })`. Use a **publishable** key only; never a secret server key.
+- Demo client env vars: `VITE_DEMO_API_KEY` (string, may be empty) and `VITE_DEMO_API_BASE_URL` (absolute URL; default `https://api.locnative.com`).
 - Exported components in scope (from `src/index.ts`): `AddressAutocomplete`, `AddressFormField`, `ForwardGeocodeInput`, `ReverseGeocodeInput`, `AddressFieldGroup`. Internal hooks are out of scope.
 - Run `pnpm dlx ultracite fix` then `pnpm dlx ultracite check` on changed files before each commit (project standard).
-- All package commands run via `pnpm --filter @wherabouts/react-ui <script>`.
+- All package commands run via `pnpm --filter @locnative/react-ui <script>`.
 - Full component prose appears in BOTH `docs/<name>.md` and the story's `parameters.docs.description.component`; keep them identical text.
 
 ---
 
 ### Task 1: Storybook scaffolding + env-driven demo client
 
-Stand up Storybook so `pnpm --filter @wherabouts/react-ui storybook` boots, styling loads, and an env-driven demo client exists with a tested config resolver and a "not configured" banner decorator.
+Stand up Storybook so `pnpm --filter @locnative/react-ui storybook` boots, styling loads, and an env-driven demo client exists with a tested config resolver and a "not configured" banner decorator.
 
 **Files:**
 - Modify: `packages/react-ui/package.json` (devDependencies, scripts, `files`)
@@ -38,7 +38,7 @@ Stand up Storybook so `pnpm --filter @wherabouts/react-ui storybook` boots, styl
 **Interfaces:**
 - Produces:
   - `resolveDemoConfig(env: { VITE_DEMO_API_KEY?: string; VITE_DEMO_API_BASE_URL?: string }): { apiKey: string; baseUrl: string; configured: boolean }`
-  - `createDemoClient(): WheraboutsClient`
+  - `createDemoClient(): LocnativeClient`
   - `isDemoConfigured: boolean`
   - Default export from `preview.tsx` registering the demo-config decorator and `autodocs` tag. Stories in later tasks rely on `createDemoClient` and `isDemoConfigured`.
 
@@ -67,7 +67,7 @@ describe("resolveDemoConfig", () => {
     const cfg = resolveDemoConfig({});
     expect(cfg).toEqual({
       apiKey: "",
-      baseUrl: "https://api.wherabouts.com",
+      baseUrl: "https://api.locnative.com",
       configured: false,
     });
   });
@@ -92,7 +92,7 @@ Edit `packages/react-ui/vitest.config.ts` — change the `include` array to:
 
 - [ ] **Step 3: Run the test to verify it fails**
 
-Run: `pnpm --filter @wherabouts/react-ui test`
+Run: `pnpm --filter @locnative/react-ui test`
 Expected: FAIL — `Failed to resolve import "./demo-client"` / `resolveDemoConfig is not a function`.
 
 - [ ] **Step 4: Implement the demo client**
@@ -100,10 +100,10 @@ Expected: FAIL — `Failed to resolve import "./demo-client"` / `resolveDemoConf
 Create `packages/react-ui/.storybook/demo-client.ts`:
 
 ```ts
-import { createWheraboutsClient } from "@wherabouts/sdk";
-import type { WheraboutsClient } from "@wherabouts/sdk";
+import { createLocnativeClient } from "@locnative/sdk";
+import type { LocnativeClient } from "@locnative/sdk";
 
-const DEFAULT_BASE_URL = "https://api.wherabouts.com";
+const DEFAULT_BASE_URL = "https://api.locnative.com";
 
 type DemoEnv = {
   VITE_DEMO_API_KEY?: string;
@@ -124,8 +124,8 @@ const config = resolveDemoConfig(import.meta.env as DemoEnv);
 
 export const isDemoConfigured = config.configured;
 
-export function createDemoClient(): WheraboutsClient {
-  return createWheraboutsClient({
+export function createDemoClient(): LocnativeClient {
+  return createLocnativeClient({
     apiKey: config.apiKey || "demo-key-not-configured",
     baseUrl: config.baseUrl,
   });
@@ -142,7 +142,7 @@ Create `packages/react-ui/.storybook/vite-env.d.ts`:
 
 - [ ] **Step 6: Run the test to verify it passes**
 
-Run: `pnpm --filter @wherabouts/react-ui test`
+Run: `pnpm --filter @locnative/react-ui test`
 Expected: PASS (existing tests + the 3 new resolver tests).
 
 - [ ] **Step 7: Add Storybook deps and scripts to package.json**
@@ -235,7 +235,7 @@ export default preview;
 
 - [ ] **Step 10: Verify Storybook builds**
 
-Run: `pnpm --filter @wherabouts/react-ui build-storybook`
+Run: `pnpm --filter @locnative/react-ui build-storybook`
 Expected: completes without error and writes `storybook-static/` (no stories yet is fine — it builds the docs shell). If it reports "no stories found", that is acceptable for this task.
 
 - [ ] **Step 11: Run lint and commit**
@@ -272,8 +272,8 @@ In `packages/react-ui/src/components/address-autocomplete.tsx`, add a `/** ... *
 export interface AddressAutocompleteProps {
   /** Class applied to the root container. */
   className?: string;
-  /** Required. SDK client created with `createWheraboutsClient`. */
-  client: WheraboutsClient;
+  /** Required. SDK client created with `createLocnativeClient`. */
+  client: LocnativeClient;
   /** Debounce in ms before querying the API. Default 200. */
   debounceMs?: number;
   /** Disable the input. */
@@ -327,7 +327,7 @@ Open each file first to confirm exact field names before commenting.
 
 - [ ] **Step 3: Verify the build and types are unaffected**
 
-Run: `pnpm --filter @wherabouts/react-ui build`
+Run: `pnpm --filter @locnative/react-ui build`
 Expected: succeeds; `dist/index.d.ts` regenerated.
 
 - [ ] **Step 4: Run lint and commit**
@@ -358,7 +358,7 @@ Create the `docs/` index and link it from the package README. Per-component page
 Create `packages/react-ui/docs/README.md`:
 
 ```markdown
-# @wherabouts/react-ui — Component documentation
+# @locnative/react-ui — Component documentation
 
 Detailed, per-component guides with worked examples, full prop tables,
 accessibility notes, and recipes. For a quick overview and install steps, see
@@ -391,12 +391,12 @@ live in [`docs/`](./docs/README.md).
 This package ships a Storybook with live, interactive examples of every component.
 
 ```bash
-pnpm --filter @wherabouts/react-ui storybook
+pnpm --filter @locnative/react-ui storybook
 ```
 
 Live stories call the real API. Set `VITE_DEMO_API_KEY` (a publishable,
 origin-scoped key) and optionally `VITE_DEMO_API_BASE_URL` (default
-`https://api.wherabouts.com`) to enable results; without a key, components still
+`https://api.locnative.com`) to enable results; without a key, components still
 render with a configuration banner.
 ```
 
@@ -426,11 +426,11 @@ Write the full prose doc and the Storybook stories for `AddressAutocomplete`. Th
 Create `packages/react-ui/docs/address-autocomplete.md` following the template (Summary; When to use / not; Import & minimal example; Worked examples — controlled value, TanStack Form wiring, geolocation/proximity, custom `renderSuggestion`; Props table copied from README + JSDoc; Accessibility — WAI-ARIA combobox role, `aria-activedescendant`, arrow/enter/escape keys, labelling guidance; Recipes & edge cases — `debounceMs`/`minCharsToSearch` tuning, `sessionToken` for billing, error/empty/loading slots). Minimal example to include verbatim:
 
 ```tsx
-import { createWheraboutsClient } from "@wherabouts/sdk";
-import { AddressAutocomplete } from "@wherabouts/react-ui";
-import "@wherabouts/react-ui/styles.css";
+import { createLocnativeClient } from "@locnative/sdk";
+import { AddressAutocomplete } from "@locnative/react-ui";
+import "@locnative/react-ui/styles.css";
 
-const client = createWheraboutsClient({ apiKey: import.meta.env.VITE_WHERABOUTS_KEY });
+const client = createLocnativeClient({ apiKey: import.meta.env.VITE_LOCNATIVE_KEY });
 
 export function Checkout() {
   return (
@@ -463,7 +463,7 @@ const meta = {
       description: {
         // NOTE: keep identical to the Summary + guidance in docs/address-autocomplete.md
         component:
-          "Accessible (WAI-ARIA combobox), debounced address search with keyboard navigation, proximity bias, session tokens, i18n strings, and customizable render slots. Provide a `client` created with `createWheraboutsClient`.",
+          "Accessible (WAI-ARIA combobox), debounced address search with keyboard navigation, proximity bias, session tokens, i18n strings, and customizable render slots. Provide a `client` created with `createLocnativeClient`.",
       },
     },
   },
@@ -501,7 +501,7 @@ export const CustomSuggestionRenderer: Story = {
 
 - [ ] **Step 3: Verify the story compiles in Storybook**
 
-Run: `pnpm --filter @wherabouts/react-ui build-storybook`
+Run: `pnpm --filter @locnative/react-ui build-storybook`
 Expected: succeeds; output references `Components/AddressAutocomplete`.
 
 - [ ] **Step 4: Lint and commit**
@@ -574,7 +574,7 @@ export const WithError: Story = {
 
 - [ ] **Step 3: Verify**
 
-Run: `pnpm --filter @wherabouts/react-ui build-storybook`
+Run: `pnpm --filter @locnative/react-ui build-storybook`
 Expected: succeeds; references `Components/AddressFormField`.
 
 - [ ] **Step 4: Lint and commit**
@@ -663,7 +663,7 @@ export const Disabled: Story = {
 
 - [ ] **Step 3: Verify**
 
-Run: `pnpm --filter @wherabouts/react-ui build-storybook`
+Run: `pnpm --filter @locnative/react-ui build-storybook`
 Expected: succeeds; references `Components/ForwardGeocodeInput`.
 
 - [ ] **Step 4: Lint and commit**
@@ -736,7 +736,7 @@ export const Disabled: Story = {
 
 - [ ] **Step 3: Verify**
 
-Run: `pnpm --filter @wherabouts/react-ui build-storybook`
+Run: `pnpm --filter @locnative/react-ui build-storybook`
 Expected: succeeds; references `Components/ReverseGeocodeInput`.
 
 - [ ] **Step 4: Lint and commit**
@@ -831,7 +831,7 @@ export const CustomLabels: Story = {
 
 - [ ] **Step 3: Verify the full Storybook builds with all components**
 
-Run: `pnpm --filter @wherabouts/react-ui build-storybook`
+Run: `pnpm --filter @locnative/react-ui build-storybook`
 Expected: succeeds; output references all 5 `Components/*` titles.
 
 - [ ] **Step 4: Lint and commit**
@@ -853,22 +853,22 @@ Confirm the package still builds/tests cleanly and the docs cross-links resolve.
 
 - [ ] **Step 1: Build the package**
 
-Run: `pnpm --filter @wherabouts/react-ui build`
+Run: `pnpm --filter @locnative/react-ui build`
 Expected: succeeds; `dist/` regenerated.
 
 - [ ] **Step 2: Run the test suite**
 
-Run: `pnpm --filter @wherabouts/react-ui test`
+Run: `pnpm --filter @locnative/react-ui test`
 Expected: PASS (existing component/util tests + the demo-client resolver tests).
 
 - [ ] **Step 3: Build Storybook**
 
-Run: `pnpm --filter @wherabouts/react-ui build-storybook`
+Run: `pnpm --filter @locnative/react-ui build-storybook`
 Expected: succeeds; all 5 component story groups present.
 
 - [ ] **Step 4: Manual spot check (optional, with a key)**
 
-Run: `VITE_DEMO_API_KEY=<publishable-key> pnpm --filter @wherabouts/react-ui storybook`
+Run: `VITE_DEMO_API_KEY=<publishable-key> pnpm --filter @locnative/react-ui storybook`
 Expected: Storybook opens on :6006; typing in `AddressAutocomplete` returns live suggestions; with no key, the configuration banner shows.
 
 - [ ] **Step 5: Verify docs links resolve**

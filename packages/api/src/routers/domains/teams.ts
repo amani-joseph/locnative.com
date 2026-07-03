@@ -1,12 +1,12 @@
-import { ORPCError } from "@orpc/server";
-import { sendInvitationEmail } from "@wherabouts.com/auth/invitations";
+import { sendInvitationEmail } from "@locnative/auth/invitations";
 import {
 	projects,
 	teamInvitations,
 	teamMembers,
 	teams,
 	users,
-} from "@wherabouts.com/database";
+} from "@locnative/database";
+import { ORPCError } from "@orpc/server";
 import { and, count, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 import type { Context } from "../../context.ts";

@@ -1,5 +1,7 @@
 export const WHERABOUTS_API_VERSION = "v1" as const;
 export const WHERABOUTS_SDK_VERSION = "0.4.3" as const;
+export const LOCNATIVE_API_VERSION = WHERABOUTS_API_VERSION;
+export const LOCNATIVE_SDK_VERSION = WHERABOUTS_SDK_VERSION;
 
 /**
  * Error codes the API may return. The server currently emits a subset; the full
@@ -16,11 +18,13 @@ export type WheraboutsErrorCode =
 	| "timeout"
 	| "unauthorized"
 	| "unprocessable";
+export type LocnativeErrorCode = WheraboutsErrorCode;
 
 export interface WheraboutsFieldError {
 	message: string;
 	path: string;
 }
+export type LocnativeFieldError = WheraboutsFieldError;
 
 export interface RequestLogEvent {
 	durationMs: number;
@@ -42,6 +46,7 @@ export interface WheraboutsApiErrorPayload {
 		fields?: WheraboutsFieldError[];
 	};
 }
+export type LocnativeApiErrorPayload = WheraboutsApiErrorPayload;
 
 export interface WheraboutsClientConfig {
 	/**
@@ -63,6 +68,7 @@ export interface WheraboutsClientConfig {
 	/** Per-request timeout in milliseconds. Default 30000. */
 	timeoutMs?: number;
 }
+export type LocnativeClientConfig = WheraboutsClientConfig;
 
 /**
  * Per-call overrides. Every resource method accepts an optional trailing

@@ -12,7 +12,7 @@ const accordionItems = [
 		icon: Wallet,
 		title: "Predictable pricing for production traffic",
 		description:
-			"Forecast spend without surprise spikes when usage jumps—common with large consumer-maps APIs priced for unpredictable query volume. Wherabouts is structured for app workloads so finance and engineering stay aligned. Confirm allowances, caching, and storage rules in the docs before you ship.",
+			"Forecast spend without surprise spikes when usage jumps—common with large consumer-maps APIs priced for unpredictable query volume. Locnative is structured for app workloads so finance and engineering stay aligned. Confirm allowances, caching, and storage rules in the docs before you ship.",
 	},
 	{
 		id: "developer-experience",

@@ -1,10 +1,10 @@
 // biome-ignore-all lint/style/useConsistentTypeDefinitions: these are kept as `type` aliases, not interfaces, on purpose — Props/Env are passed to McpAgent<Env, _, Props> (constrained to Record<string, unknown>) and ToolResult flows into the MCP SDK's tool-callback return type; interfaces are open/augmentable so TS does not consider them assignable to those index-signature constraints, but closed type aliases are.
 
-import type { WheraboutsClient } from "@wherabouts/sdk";
+import type { LocnativeClient } from "@locnative/sdk";
 import type { ZodRawShape } from "zod";
 
 /** Worker environment bindings/vars for the MCP server. */
-export type Env = { WHERABOUTS_API_BASE_URL: string };
+export type Env = { LOCNATIVE_API_BASE_URL: string };
 
 /** Per-session agent props extracted from the incoming bearer token. */
 export type Props = { apiKey: string };
@@ -36,7 +36,7 @@ export type ToolDef = {
 	};
 	inputSchema: ZodRawShape;
 	handler: (
-		client: WheraboutsClient,
+		client: LocnativeClient,
 		args: Record<string, unknown>
 	) => Promise<ToolResult>;
 };

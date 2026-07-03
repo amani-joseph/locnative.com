@@ -13,12 +13,12 @@
 ## Conventions & prerequisites (read once)
 
 - **Package manager:** `pnpm` (v10). Run package scripts with `pnpm --filter <pkg> <script>`.
-- **Run tests:** `pnpm --filter @wherabouts.com/api test` (Vitest, `*.test.ts` next to source).
-- **Type check:** `pnpm --filter @wherabouts.com/api check-types`.
+- **Run tests:** `pnpm --filter @locnative/api test` (Vitest, `*.test.ts` next to source).
+- **Type check:** `pnpm --filter @locnative/api check-types`.
 - **DB migrations:** edit schema in `packages/database/src/schema/`, export it from
   `packages/database/src/schema/index.ts` AND `packages/database/src/index.ts`, then
-  `pnpm --filter @wherabouts.com/database db:generate` (creates an in-journal SQL file)
-  and `pnpm --filter @wherabouts.com/database db:migrate`. **Never hand-write
+  `pnpm --filter @locnative/database db:generate` (creates an in-journal SQL file)
+  and `pnpm --filter @locnative/database db:migrate`. **Never hand-write
   out-of-journal `.sql`.**
 - **Neon `neon-http` has NO transactions** — `db.transaction()` throws. Every write
   below is an idempotent upsert (`onConflictDoUpdate` / `onConflictDoNothing`).
@@ -40,7 +40,7 @@ git checkout master && git pull && git checkout -b feat/usage-based-billing
 1. Create a Stripe account (test mode) and copy the **secret key** (`sk_test_...`).
 2. The Meter + Price are created by the bootstrap script in Task 9 (don't hand-create).
 3. After deploying the webhook (Task 10), add a webhook endpoint in the Stripe
-   dashboard pointing at `https://api.wherabouts.com/api/stripe/webhook`, subscribe to:
+   dashboard pointing at `https://api.locnative.com/api/stripe/webhook`, subscribe to:
    `checkout.session.completed`, `customer.subscription.created`,
    `customer.subscription.updated`, `customer.subscription.deleted`,
    `payment_method.attached`, `invoice.paid`, `invoice.payment_failed`. Copy the
@@ -158,8 +158,8 @@ export { billingAccounts, billingMeterReports } from "./billing.ts";
 
 Run:
 ```bash
-pnpm --filter @wherabouts.com/database db:generate
-pnpm --filter @wherabouts.com/database db:migrate
+pnpm --filter @locnative/database db:generate
+pnpm --filter @locnative/database db:migrate
 ```
 Expected: a new SQL file appears under `packages/database/drizzle/`, migrate prints applied.
 
@@ -194,8 +194,8 @@ referential integrity is enforced in app code. Import `uuid` is already present.
 
 Run:
 ```bash
-pnpm --filter @wherabouts.com/database db:generate
-pnpm --filter @wherabouts.com/database db:migrate
+pnpm --filter @locnative/database db:generate
+pnpm --filter @locnative/database db:migrate
 ```
 Expected: new SQL adds `billing_account_id` column + index.
 
@@ -256,16 +256,16 @@ describe("isInNewUtcMonth", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `pnpm --filter @wherabouts.com/api test account`
+Run: `pnpm --filter @locnative/api test account`
 Expected: FAIL — `Cannot find module './account.ts'`.
 
 - [ ] **Step 3: Write the implementation**
 
 ```typescript
 // packages/api/src/billing/account.ts
-import type { Database } from "@wherabouts.com/database";
-import { billingAccounts } from "@wherabouts.com/database";
-import type { BillingAccount } from "@wherabouts.com/database";
+import type { Database } from "@locnative/database";
+import { billingAccounts } from "@locnative/database";
+import type { BillingAccount } from "@locnative/database";
 import { eq } from "drizzle-orm";
 
 export interface BillingOwner {
@@ -349,7 +349,7 @@ export async function getOrCreateBillingAccount(
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `pnpm --filter @wherabouts.com/api test account`
+Run: `pnpm --filter @locnative/api test account`
 Expected: PASS (all 5 cases).
 
 - [ ] **Step 5: Commit**
@@ -393,7 +393,7 @@ and return `teamId: row.teamId` alongside the existing fields.
 
 - [ ] **Step 3: Type check**
 
-Run: `pnpm --filter @wherabouts.com/api check-types`
+Run: `pnpm --filter @locnative/api check-types`
 Expected: PASS (no other code reads a fixed shape that breaks).
 
 - [ ] **Step 4: Commit**
@@ -482,7 +482,7 @@ In `packages/api/src/routers/public-middleware.ts`, the `usageMiddleware` reads
 
 - [ ] **Step 4: Type check**
 
-Run: `pnpm --filter @wherabouts.com/api check-types`
+Run: `pnpm --filter @locnative/api check-types`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -525,15 +525,15 @@ and add each to the `runtimeEnv` block:
 - [ ] **Step 2: Install the SDK**
 
 ```bash
-pnpm --filter @wherabouts.com/api add stripe
-pnpm --filter wherabouts-server add stripe
+pnpm --filter @locnative/api add stripe
+pnpm --filter locnative-server add stripe
 ```
 
 - [ ] **Step 3: Create the Workers-safe client factory**
 
 ```typescript
 // packages/api/src/billing/stripe.ts
-import { serverEnv } from "@wherabouts.com/env/server";
+import { serverEnv } from "@locnative/env/server";
 import Stripe from "stripe";
 
 let cached: Stripe | null = null;
@@ -559,7 +559,7 @@ export const stripeCryptoProvider = Stripe.createSubtleCryptoProvider();
 
 - [ ] **Step 4: Type check**
 
-Run: `pnpm --filter @wherabouts.com/api check-types`
+Run: `pnpm --filter @locnative/api check-types`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -618,15 +618,15 @@ describe("accountUpdateForEvent", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `pnpm --filter @wherabouts.com/api test stripe-sync`
+Run: `pnpm --filter @locnative/api test stripe-sync`
 Expected: FAIL — module not found.
 
 - [ ] **Step 3: Write the implementation**
 
 ```typescript
 // packages/api/src/billing/stripe-sync.ts
-import type { Database } from "@wherabouts.com/database";
-import { billingAccounts } from "@wherabouts.com/database";
+import type { Database } from "@locnative/database";
+import { billingAccounts } from "@locnative/database";
 import { eq } from "drizzle-orm";
 import type Stripe from "stripe";
 
@@ -715,7 +715,7 @@ export async function applyStripeEvent(
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `pnpm --filter @wherabouts.com/api test stripe-sync`
+Run: `pnpm --filter @locnative/api test stripe-sync`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -737,10 +737,10 @@ by integration in Task 19's manual flow)
 
 ```typescript
 // packages/api/src/billing/customer.ts
-import type { Database } from "@wherabouts.com/database";
-import { billingAccounts } from "@wherabouts.com/database";
-import type { BillingAccount } from "@wherabouts.com/database";
-import { serverEnv } from "@wherabouts.com/env/server";
+import type { Database } from "@locnative/database";
+import { billingAccounts } from "@locnative/database";
+import type { BillingAccount } from "@locnative/database";
+import { serverEnv } from "@locnative/env/server";
 import { eq } from "drizzle-orm";
 import { getStripeClient } from "./stripe.ts";
 
@@ -806,7 +806,7 @@ export async function createPortalUrl(
 
 - [ ] **Step 2: Type check**
 
-Run: `pnpm --filter @wherabouts.com/api check-types`
+Run: `pnpm --filter @locnative/api check-types`
 Expected: PASS.
 
 - [ ] **Step 3: Commit**
@@ -828,9 +828,9 @@ git commit -m "feat(billing): Stripe customer, checkout, and portal helpers"
 
 ```typescript
 // packages/api/src/billing/bootstrap-stripe.ts
-// Run once per Stripe environment: `pnpm --filter @wherabouts.com/api billing:bootstrap`
+// Run once per Stripe environment: `pnpm --filter @locnative/api billing:bootstrap`
 // Prints the meter id, price id, and event name to put in env.
-import { serverEnv } from "@wherabouts.com/env/server";
+import { serverEnv } from "@locnative/env/server";
 import { getStripeClient } from "./stripe.ts";
 
 async function main(): Promise<void> {
@@ -848,7 +848,7 @@ async function main(): Promise<void> {
 		// $1.00 per 1,000 requests = 0.1 cents per request.
 		unit_amount_decimal: "0.1",
 		recurring: { interval: "month", usage_type: "metered", meter: meter.id },
-		product_data: { name: "Wherabouts API usage" },
+		product_data: { name: "Locnative API usage" },
 	});
 
 	process.stdout.write(
@@ -867,14 +867,14 @@ main().catch((err) => {
 ```json
 		"billing:bootstrap": "tsx src/billing/bootstrap-stripe.ts"
 ```
-Add `tsx` if missing: `pnpm --filter @wherabouts.com/api add -D tsx`.
+Add `tsx` if missing: `pnpm --filter @locnative/api add -D tsx`.
 
 - [ ] **Step 3: Run it against Stripe test mode**
 
 Set `STRIPE_SECRET_KEY`, `STRIPE_METER_EVENT_NAME=api_request`, and a placeholder
 `STRIPE_PRICE_ID=price_placeholder` in your `.env`, then:
 ```bash
-pnpm --filter @wherabouts.com/api billing:bootstrap
+pnpm --filter @locnative/api billing:bootstrap
 ```
 Expected: prints `STRIPE_PRICE_ID=price_...` and `METER_ID=mtr_...`. Put the real
 `STRIPE_PRICE_ID` into your env / Worker secrets.
@@ -893,13 +893,13 @@ git commit -m "feat(billing): Stripe meter + metered price bootstrap script"
 **Files:**
 - Modify: `apps/server/src/index.ts`
 
-- [ ] **Step 1: Add imports** near the other `@wherabouts.com/api` imports:
+- [ ] **Step 1: Add imports** near the other `@locnative/api` imports:
 
 ```typescript
-import { applyStripeEvent, db, getStripeClient, stripeCryptoProvider } from "@wherabouts.com/api";
-import { serverEnv } from "@wherabouts.com/env/server";
+import { applyStripeEvent, db, getStripeClient, stripeCryptoProvider } from "@locnative/api";
+import { serverEnv } from "@locnative/env/server";
 ```
-(`db` is already exported from `@wherabouts.com/api`; `serverEnv` may already be imported —
+(`db` is already exported from `@locnative/api`; `serverEnv` may already be imported —
 do not duplicate. Add the new symbols to the existing import where possible.)
 
 Then re-export the billing functions from the api barrel so the server can import them —
@@ -948,15 +948,15 @@ app.post("/api/stripe/webhook", async (context) => {
 
 Run:
 ```bash
-pnpm --filter @wherabouts.com/api check-types
-pnpm --filter wherabouts-server exec tsc --noEmit
+pnpm --filter @locnative/api check-types
+pnpm --filter locnative-server exec tsc --noEmit
 ```
 Expected: PASS.
 
 - [ ] **Step 4: Test locally with Stripe CLI** (manual)
 
 ```bash
-pnpm --filter wherabouts-server dev   # starts Worker on :3003
+pnpm --filter locnative-server dev   # starts Worker on :3003
 stripe listen --forward-to localhost:3003/api/stripe/webhook
 stripe trigger checkout.session.completed
 ```
@@ -1019,7 +1019,7 @@ describe("nextCounterState", () => {
 
 - [ ] **Step 2: Run to verify it fails**
 
-Run: `pnpm --filter @wherabouts.com/api test account`
+Run: `pnpm --filter @locnative/api test account`
 Expected: FAIL — `nextCounterState` not exported.
 
 - [ ] **Step 3: Implement `nextCounterState`** in `account.ts`:
@@ -1083,7 +1083,7 @@ export async function incrementBillingUsage(
 
 - [ ] **Step 5: Run tests**
 
-Run: `pnpm --filter @wherabouts.com/api test account`
+Run: `pnpm --filter @locnative/api test account`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
@@ -1121,7 +1121,7 @@ import {
 
 - [ ] **Step 2: Type check**
 
-Run: `pnpm --filter @wherabouts.com/api check-types`
+Run: `pnpm --filter @locnative/api check-types`
 Expected: PASS.
 
 - [ ] **Step 3: Commit**
@@ -1177,8 +1177,8 @@ with `requestSource`.)
 
 Run:
 ```bash
-pnpm --filter @wherabouts.com/api check-types
-pnpm --filter wherabouts-server exec tsc --noEmit
+pnpm --filter @locnative/api check-types
+pnpm --filter locnative-server exec tsc --noEmit
 ```
 Expected: PASS.
 
@@ -1248,16 +1248,16 @@ describe("recentUsageDates", () => {
 
 - [ ] **Step 2: Run to verify it fails**
 
-Run: `pnpm --filter @wherabouts.com/api test meter-reporting`
+Run: `pnpm --filter @locnative/api test meter-reporting`
 Expected: FAIL — module not found.
 
 - [ ] **Step 3: Implement the pure helpers**
 
 ```typescript
 // packages/api/src/billing/meter-reporting.ts
-import type { Database } from "@wherabouts.com/database";
-import { apiUsageDaily, billingAccounts, billingMeterReports } from "@wherabouts.com/database";
-import { serverEnv } from "@wherabouts.com/env/server";
+import type { Database } from "@locnative/database";
+import { apiUsageDaily, billingAccounts, billingMeterReports } from "@locnative/database";
+import { serverEnv } from "@locnative/env/server";
 import { and, eq, gte, inArray, isNotNull, sql } from "drizzle-orm";
 import { getStripeClient } from "./stripe.ts";
 
@@ -1304,7 +1304,7 @@ export function computeMeterDeltas(
 
 - [ ] **Step 4: Run to verify it passes**
 
-Run: `pnpm --filter @wherabouts.com/api test meter-reporting`
+Run: `pnpm --filter @locnative/api test meter-reporting`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1406,7 +1406,7 @@ export { reportUsageToStripe } from "./billing/meter-reporting.ts";
 
 - [ ] **Step 3: Type check**
 
-Run: `pnpm --filter @wherabouts.com/api check-types`
+Run: `pnpm --filter @locnative/api check-types`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -1434,7 +1434,7 @@ of `queues`):
 ```
 
 - [ ] **Step 2: Add the `scheduled` handler** to the default export in
-`apps/server/src/index.ts`. Add `reportUsageToStripe` to the `@wherabouts.com/api` import,
+`apps/server/src/index.ts`. Add `reportUsageToStripe` to the `@locnative/api` import,
 then:
 
 ```typescript
@@ -1459,17 +1459,17 @@ export default {
 };
 ```
 (Keep the existing `queue` handler body exactly as-is; only add the `scheduled` method and
-ensure `db` and `reportUsageToStripe` are imported from `@wherabouts.com/api`.)
+ensure `db` and `reportUsageToStripe` are imported from `@locnative/api`.)
 
 - [ ] **Step 3: Type check**
 
-Run: `pnpm --filter wherabouts-server exec tsc --noEmit`
+Run: `pnpm --filter locnative-server exec tsc --noEmit`
 Expected: PASS.
 
 - [ ] **Step 4: Test the scheduled handler locally**
 
 ```bash
-pnpm --filter wherabouts-server dev
+pnpm --filter locnative-server dev
 # in another shell:
 curl "http://localhost:3003/__scheduled?cron=0+*+*+*+*"
 ```
@@ -1501,8 +1501,8 @@ import {
 	billingAccounts,
 	teamMembers,
 	teams,
-} from "@wherabouts.com/database";
-import { serverEnv } from "@wherabouts.com/env/server";
+} from "@locnative/database";
+import { serverEnv } from "@locnative/env/server";
 import { and, eq, gte, sql, sum } from "drizzle-orm";
 import { z } from "zod";
 import {
@@ -1655,7 +1655,7 @@ to the `appRouter` object.
 
 - [ ] **Step 3: Type check**
 
-Run: `pnpm --filter @wherabouts.com/api check-types`
+Run: `pnpm --filter @locnative/api check-types`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -1677,16 +1677,16 @@ git commit -m "feat(billing): billing oRPC router (account, usage, checkout, por
 
 ```tsx
 import { createFileRoute } from "@tanstack/react-router";
-import { Badge } from "@wherabouts.com/ui/components/badge";
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Badge } from "@locnative/ui/components/badge";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
-import { Progress } from "@wherabouts.com/ui/components/progress";
+} from "@locnative/ui/components/card";
+import { Progress } from "@locnative/ui/components/progress";
 import { CreditCardIcon, SparklesIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { orpcClient } from "@/lib/orpc";

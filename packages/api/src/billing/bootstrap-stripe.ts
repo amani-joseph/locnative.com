@@ -1,6 +1,6 @@
-// Run once per Stripe environment: `pnpm --filter @wherabouts.com/api billing:bootstrap`
+// Run once per Stripe environment: `pnpm --filter @locnative/api billing:bootstrap`
 // Prints the meter id, price id, and event name to put in env.
-import { serverEnv } from "@wherabouts.com/env/server";
+import { serverEnv } from "@locnative/env/server";
 import { getStripeClient } from "./stripe.ts";
 
 async function main(): Promise<void> {
@@ -18,7 +18,7 @@ async function main(): Promise<void> {
 		// $0.70 per 1,000 requests = 0.07 cents per request.
 		unit_amount_decimal: stripe.Decimal.from("0.07"),
 		recurring: { interval: "month", usage_type: "metered", meter: meter.id },
-		product_data: { name: "Wherabouts API usage" },
+		product_data: { name: "Locnative API usage" },
 	});
 
 	process.stdout.write(

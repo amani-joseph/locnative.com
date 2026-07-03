@@ -363,7 +363,7 @@ function DemoSuggestionsPanel({
 			<div className="mt-2 flex items-center justify-center gap-1.5 border-white/5 border-t px-2.5 pt-2">
 				<MapPin className="size-3 text-emerald-300/70" />
 				<p className="font-medium text-[10px] text-muted-foreground uppercase tracking-[0.22em]">
-					Powered by <span className="text-foreground">Wherabouts</span>
+					Powered by <span className="text-foreground">Locnative</span>
 				</p>
 			</div>
 		</motion.div>

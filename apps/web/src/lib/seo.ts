@@ -1,5 +1,5 @@
-export const SITE_URL = "https://wherabouts.com";
-export const SITE_NAME = "Wherabouts";
+export const SITE_URL = "https://locnative.com";
+export const SITE_NAME = "Locnative";
 export const DEFAULT_OG_IMAGE = "/brand/png/og-image-1200x630.png";
 
 export type SeoMetaTag = Record<string, string>;

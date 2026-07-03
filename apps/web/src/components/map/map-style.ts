@@ -7,16 +7,16 @@ import { layers, namedTheme } from "protomaps-themes-base";
  * the free, no-key OpenFreeMap dark style.
  */
 
-export type MapStyleSpec = {
-	version: 8;
+export interface MapStyleSpec {
 	glyphs: string;
-	sprite: string;
+	// biome-ignore lint/suspicious/noExplicitAny: maplibre LayerSpecification array
+	layers: any[];
 	sources: Record<string, unknown> & {
 		protomaps: { type: "vector"; tiles: string[]; maxzoom: number };
 	};
-	// biome-ignore lint/suspicious/noExplicitAny: maplibre LayerSpecification array
-	layers: any[];
-};
+	sprite: string;
+	version: 8;
+}
 
 export type MapStyle = string | MapStyleSpec;
 
@@ -28,12 +28,13 @@ export const OPENFREEMAP_LIGHT =
 
 const SOURCE_NAME = "protomaps";
 const MAX_ZOOM = 15;
+const TRAILING_SLASH_REGEX = /\/$/;
 
 export function buildMapStyle(tilesBaseUrl?: string): MapStyle {
 	if (!tilesBaseUrl) {
 		return OPENFREEMAP_DARK;
 	}
-	const base = tilesBaseUrl.replace(/\/$/, "");
+	const base = tilesBaseUrl.replace(TRAILING_SLASH_REGEX, "");
 	return {
 		version: 8,
 		glyphs: `${base}/tiles/v1/fonts/{fontstack}/{range}.pbf`,

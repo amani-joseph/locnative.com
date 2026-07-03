@@ -496,7 +496,7 @@ export const apiExplorerEndpoints: ApiEndpoint[] = [
 			"Subscribe to zone boundary crossing events. POST with JSON body — use the curl example in the docs page to test.",
 		params: [],
 		exampleBody: {
-			url: "https://example.com/webhooks/wherabouts",
+			url: "https://example.com/webhooks/locnative",
 			events: ["entry", "exit"],
 		},
 	},

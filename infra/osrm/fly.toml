@@ -1,4 +1,4 @@
-app = "wherabouts-osrm"
+app = "locnative-osrm"
 primary_region = "syd"
 
 [build]

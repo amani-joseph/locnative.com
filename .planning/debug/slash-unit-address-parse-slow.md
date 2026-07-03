@@ -17,7 +17,7 @@ next_action: Human verifies against local or deployed autocomplete endpoint
 expected: Input "5/120 Main St" should autocomplete quickly (sub-second) and return unit 5 at 120 Main St. Should match experience of typing "120 Main St".
 actual: Inputs with slash-separated unit prefix either miss the index entirely or return wrong matches. Request latency is visibly high.
 errors: None reported — silent miss or wrong results.
-reproduction: Type "5/120 Main St" into address autocomplete on wherabouts.com.
+reproduction: Type "5/120 Main St" into address autocomplete on locnative.com.
 started: Long-standing / never worked reliably.
 
 ## Eliminated

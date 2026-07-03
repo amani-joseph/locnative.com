@@ -32,7 +32,7 @@
 
 **UI:**
 - Tailwind CSS 4.x - Utility-first styling via `@tailwindcss/vite` plugin
-- shadcn/ui 3.6.x - Component primitives (via `@wherabouts.com/ui` package)
+- shadcn/ui 3.6.x - Component primitives (via `@locnative/ui` package)
 - Base UI React 1.x - Unstyled accessible component primitives
 - Framer Motion / Motion 12.x - Animations
 - Lucide React - Icon library
@@ -57,25 +57,25 @@
 
 ## Monorepo Packages
 
-**`@wherabouts.com/backend`** (`../../packages/backend/`):
+**`@locnative/backend`** (`../../packages/backend/`):
 - Convex backend with Better Auth integration
 - Scripts: `convex dev`, `convex dev --configure --until-success`
 
-**`@wherabouts.com/database`** (`../../packages/database/`):
+**`@locnative/database`** (`../../packages/database/`):
 - Drizzle ORM schema and queries
 - Exports: `.` (client/types), `./schema` (table definitions), `./queries` (query functions)
 - Neon serverless PostgreSQL driver
 
-**`@wherabouts.com/env`** (`../../packages/env/`):
+**`@locnative/env`** (`../../packages/env/`):
 - Type-safe environment variables via `@t3-oss/env-core` + Zod
 - Exports: `./web` (client-side VITE_ vars), `./server` (server-side vars)
 
-**`@wherabouts.com/ui`** (`../../packages/ui/`):
+**`@locnative/ui`** (`../../packages/ui/`):
 - Shared UI component library (shadcn-based)
 - Exports: `./components/*`, `./lib/*`, `./hooks/*`, `./globals.css`
 - Uses class-variance-authority, clsx, tailwind-merge for styling
 
-**`@wherabouts.com/config`** (`../../packages/config/`):
+**`@locnative/config`** (`../../packages/config/`):
 - Shared TypeScript config (`tsconfig.base.json`)
 
 ## Key Dependencies
@@ -107,7 +107,7 @@
 
 **TypeScript:**
 - `tsconfig.json` at app root - strict mode, bundler module resolution, ES2022 target
-- Path aliases: `@/*` maps to `./src/*`, `@wherabouts.com/ui/*` maps to UI package
+- Path aliases: `@/*` maps to `./src/*`, `@locnative/ui/*` maps to UI package
 - Shared base config: `../../packages/config/tsconfig.base.json`
 
 **Build:**

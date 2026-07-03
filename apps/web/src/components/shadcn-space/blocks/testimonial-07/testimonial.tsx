@@ -151,7 +151,7 @@ export default function Testimonial() {
 								className="text-center font-medium text-3xl sm:text-4xl lg:text-5xl"
 								variants={itemVariants}
 							>
-								What teams are building with Wherabouts
+								What teams are building with Locnative
 							</motion.h2>
 							<motion.p
 								className="max-w-xs text-center text-lg text-muted-foreground sm:max-w-2xl sm:text-xl"

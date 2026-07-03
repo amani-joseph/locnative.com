@@ -1,14 +1,14 @@
+import { apiKeys } from "@locnative/database/schema";
+import { serverEnv } from "@locnative/env/server";
 import { ORPCError } from "@orpc/server";
-import { apiKeys } from "@wherabouts.com/database/schema";
-import { serverEnv } from "@wherabouts.com/env/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { protectedProcedure } from "../../procedures.ts";
 
-const INTERNAL_API_AUTH_HEADER = "x-wherabouts-internal-auth";
-const INTERNAL_API_KEY_ID_HEADER = "x-wherabouts-internal-api-key-id";
-const INTERNAL_REQUEST_SOURCE_HEADER = "x-wherabouts-request-source";
+const INTERNAL_API_AUTH_HEADER = "x-locnative-internal-auth";
+const INTERNAL_API_KEY_ID_HEADER = "x-locnative-internal-api-key-id";
+const INTERNAL_REQUEST_SOURCE_HEADER = "x-locnative-request-source";
 const REQUEST_SOURCE_EXPLORER_TEST = "explorer_test";
 const RAW_KEY_FORMAT_RE = /^wh_[^_]+_.+$/i;
 

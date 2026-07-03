@@ -7,7 +7,7 @@
 ## Problem
 
 The landing page composes five shadcn-space template blocks (Hero → Integration →
-Feature → Testimonial → Footer). The copy was largely rewritten for Wherabouts and
+Feature → Testimonial → Footer). The copy was largely rewritten for Locnative and
 is honest/hedged, but several blocks still carry **template residue and fabricated
 content** that misrepresents the product, and the positioning **understates what is
 actually shipped**.
@@ -39,7 +39,7 @@ actually shipped**.
 **Decisions taken (from brainstorming)**
 
 - **Testimonials:** keep as-is for now (no removal/replacement this pass).
-- **Integration orbit:** replace with Wherabouts' own surfaces.
+- **Integration orbit:** replace with Locnative' own surfaces.
 - **Positioning:** international coverage — US + Australia at the core, several
   European countries, actively expanding across South America, Europe, Africa, Asia.
 - **Scope:** content + light rebuild → grew to **medium rebuild** (all four rebuild
@@ -59,8 +59,8 @@ From `packages/sdk/README.md` (authoritative). All capability/code content must 
 | `client.regions` | `classify` |
 | `client.routing` | `directions`, `matrix`, `isochrone` |
 
-- SDK package: `@wherabouts/sdk`; entry `createWheraboutsClient({ apiKey })`.
-- Base URL: `https://api.wherabouts.com`; OpenAPI at `/api/v1/openapi.json`.
+- SDK package: `@locnative/sdk`; entry `createLocnativeClient({ apiKey })`.
+- Base URL: `https://api.locnative.com`; OpenAPI at `/api/v1/openapi.json`.
 - **Coverage truth:** G-NAF Australian addresses are *authoritative*; international
   (US, parts of EU, more) is *in beta, rolling out*. Marketing copy must say
   "US + Australia at the core, expanding" — never imply complete global coverage.
@@ -85,8 +85,8 @@ Hero → Integration → Capabilities (NEW) → API in action (NEW) → Feature 
 ### 2. Integration — `integration-01/integration.tsx`
 
 - Keep heading "Drop-in HTTP, not a maps widget" and copy; retune to international.
-- **Replace the orbit's external brand SVGs** with Wherabouts' own surfaces as
-  labeled icon nodes: REST API, `@wherabouts/sdk`, React UI, Vue UI, Webhooks.
+- **Replace the orbit's external brand SVGs** with Locnative' own surfaces as
+  labeled icon nodes: REST API, `@locnative/sdk`, React UI, Vue UI, Webhooks.
   Use lucide icons (no `images.shadcnspace.com` URLs). Keep the orbit animation.
 
 ### 3. Capabilities grid (NEW) — `apps/web/src/components/landing/capabilities.tsx`
@@ -100,7 +100,7 @@ Hero → Integration → Capabilities (NEW) → API in action (NEW) → Feature 
 ### 4. API in action (NEW) — `apps/web/src/components/landing/api-in-action.tsx`
 
 - `id="api"`. Replaces the placeholder feature image. Two halves:
-  - **Quickstart code sample** — real SDK snippet (install + `createWheraboutsClient`
+  - **Quickstart code sample** — real SDK snippet (install + `createLocnativeClient`
     + an `addresses.autocomplete` call) and a representative JSON response.
   - **Endpoints showcase** — small tabbed list of real endpoints with example params.
 - Static, copy-accurate content; no live network calls.

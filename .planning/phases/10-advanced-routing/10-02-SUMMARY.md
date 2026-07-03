@@ -16,7 +16,7 @@ date: 2026-06-12
 | 3 — Reachable filter + hull + overlap | `1f9ac82` | `reachablePoints` (pure), `hullPolygon` (`ST_ConcaveHull(…, 0.3)` → GeoJSON, `IsochroneError` on <3 pts), `regionsOverlappingIsochrone` (`ST_Intersects`, mirrors `regionsContainingPoint`). |
 | 4 — `/api/v1/routing/isochrone` | `55a8d56` | GET endpoint; origin (lat,lng or addressId) + profile + one of `durationSeconds`/`distanceMeters` + optional `includeRegions`/`layers`. Registered as `routing.isochrone`. |
 
-**Verification:** `pnpm -F @wherabouts.com/api test` → **100/100** green; `check-types` clean; ultracite clean.
+**Verification:** `pnpm -F @locnative/api test` → **100/100** green; `check-types` clean; ultracite clean.
 
 ## Decisions resolved
 - **D3 → `ST_ConcaveHull`** (GEOS 3.11.1 on Neon — probed live). Concaveness `0.3`.

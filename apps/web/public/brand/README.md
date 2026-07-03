@@ -1,6 +1,6 @@
-# wherabouts · Obsidian Brand Package
+# locnative · Flow Brand Package
 
-**Brand System 2026** — complete asset package for the wherabouts Locations API.
+**Brand System 2026** — complete asset package for the locnative Locations API. The identity is the **"LN Flow" monogram**: an L and an N drawn on a nine-dot grid, signal mint on void green-black.
 
 ---
 
@@ -8,15 +8,15 @@
 
 | Colour | Hex | Use |
 |--------|-----|-----|
-| Void (brand black) | `#0C0C0C` | Primary background |
-| White | `#FFFFFF` | Mark, type on dark |
-| Silver | `#C8C8C8` | Destination pin, accent |
-| Surface | `#161616` | Raised panels, cards |
-| Overlay | `#222222` | Modals, dropdowns |
-| Border | `#2C2C2C` | Dividers, outlines |
-| Mist | `#5A5A5A` | Secondary / subdued text |
+| Void | `#0A0F0D` | Primary background (green-black) |
+| Paper | `#EEF5F0` | The L, headline text on void, light-mode ground |
+| Signal Mint | `#4EE0A0` | The N, CTAs, live indicators — always means "active" |
+| Pale Mint | `#A9E8CB` | Dot fields, secondary data-viz, subtle accents |
+| Deep Fern | `#1E6B4A` | Gradients, hover states, glow halos |
+| Panel (Surface) | `#111A15` | Raised panels, cards, code blocks |
+| Mist | `#75857C` | Secondary / subdued text |
 
-**Typeface:** JetBrains Mono (300 Light · 400 Regular · 500 Medium · 600 SemiBold)
+**Typefaces:** JetBrains Mono (display / code) · Space Grotesk (UI / headings / body)
 **Brand guide:** `/brand.html`
 **CSS tokens:** `/brand/tokens.css`
 
@@ -29,7 +29,7 @@
 | File | Description | Background |
 |------|-------------|------------|
 | `logo.svg` | Primary stacked lockup — mark above wordmark | Dark |
-| `logo-mark.svg` | Route W mark only, no wordmark | Dark |
+| `logo-mark.svg` | LN Flow mark only, no wordmark | Dark |
 | `logo-horizontal.svg` | Horizontal lockup — mark + rule + wordmark | Dark |
 | `logo-wordmark.svg` | Wordmark only — no mark | Dark |
 | `logo-inverted.svg` | Stacked lockup for light backgrounds | Light |
@@ -37,7 +37,7 @@
 | `logo-wordmark-inverted.svg` | Wordmark only for light backgrounds | Light |
 | `logo-monochrome.svg` | All-black — print, emboss, engraving | Light |
 | `logo-monochrome-white.svg` | All-white — photographic / dark backgrounds | Dark |
-| `favicon.svg` | Rounded-square app icon (simplified W route) | #0C0C0C |
+| `favicon.svg` | Rounded-square app icon (fused LN monogram) | #0A0F0D |
 | `apple-touch-icon.svg` | iOS home-screen icon (180 × 180) | #0C0C0C |
 | `og-image.svg` | Open Graph / Twitter card (1200 × 630) | #0C0C0C |
 
@@ -119,7 +119,7 @@
 ### ✓ Do
 - Use the **primary dark lockup** (`logo.svg`) on all dark backgrounds (`#0C0C0C`, `#161616`)
 - Use the **inverted lockup** (`logo-inverted.svg`) on white and light neutral backgrounds
-- Maintain **clear space** equal to the height of the origin ring on all four sides of the mark
+- Maintain **clear space** equal to one grid-dot on all four sides of the mark
 - Scale proportionally from the original SVG source files — never stretch or squish
 - Use `favicon.svg` as the primary favicon; provide `favicon-32x32.png` as a fallback
 
@@ -128,7 +128,7 @@
 - Apply shadows, glows, gradients, or other effects to the mark
 - Rearrange, recolour, or reconstruct the mark elements
 - Use the logo at widths narrower than **80 px** (full lockup) or **32 px** (mark only)
-- Modify the `stroke-dasharray` values — the pill-dash proportions are fixed
+- Tilt, skew, flip, or rotate the mark — the dot grid is the geometry and must stay square
 
 ---
 
@@ -142,11 +142,11 @@
 ```css
 /* In your stylesheets */
 .button {
-  background: var(--whr-color-void);
-  color: var(--whr-color-white);
-  font-family: var(--whr-font-brand);
-  border-radius: var(--whr-radius-md);
-  transition: background var(--whr-transition-base);
+  background: var(--ln-color-void);
+  color: var(--ln-color-white);
+  font-family: var(--ln-font-brand);
+  border-radius: var(--ln-radius-md);
+  transition: background var(--ln-transition-base);
 }
 ```
 
@@ -164,11 +164,11 @@
 <!-- icons: favicon-192x192.png (purpose: any maskable), favicon-512x512.png -->
 
 <!-- Open Graph -->
-<meta property="og:image" content="https://wherabouts.com/brand/png/og-image-1200x630.png">
-<meta name="twitter:image" content="https://wherabouts.com/brand/png/og-image-1200x630.png">
+<meta property="og:image" content="https://locnative.com/brand/png/og-image-1200x630.png">
+<meta name="twitter:image" content="https://locnative.com/brand/png/og-image-1200x630.png">
 <meta name="twitter:card" content="summary_large_image">
 ```
 
 ---
 
-*wherabouts.com · Obsidian Brand System · April 2026*
+*locnative.com · Flow Brand System · July 2026*

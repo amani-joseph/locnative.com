@@ -1,7 +1,7 @@
-# API Endpoint Audit (Re-test) — wherabouts.com
+# API Endpoint Audit (Re-test) — locnative.com
 
 **Date:** 2026-06-14
-**Target:** Production — `https://api.wherabouts.com`
+**Target:** Production — `https://api.locnative.com`
 **Auth:** Project-scoped Bearer API key (owner-supplied).
 **Methodology:** Idempotent `GET`s sampled **N=10 warm → p50 / p95**, with the first (cold) call reported separately. Mutations are **single-shot** (not repeatable). Scope this run: **full coverage incl. mutations, artifacts left in place** (per owner instruction). Forward-geocode timeout: **quick confirm** only.
 **Test params:** Sydney CBD `lat=-33.8688, lng=151.2093`; `country=AU` (data is G-NAF Australia).
@@ -188,4 +188,4 @@ Fixes implemented per `docs/superpowers/specs/2026-06-14-api-latency-cost-design
 - **A5 (`regions` empty `{}`):** confirmed a **data-ingestion gap** (the `regions` table has 0 rows), not a code/latency defect. Out of scope here — load region/boundary data, then re-test.
 
 ### ⚠️ Deployment note (critical)
-The live prod audit above reflects a **stale deployment**: prod was running code older than master and still hangs on `nearby` even though A1 landed on master 2026-06-10. There is **no CI/CD** — the server is deployed manually via `pnpm --filter @wherabouts.com/server deploy` (`wrangler deploy`, needs Cloudflare auth). **A1 and A2 only reach users after a deploy.** A deploy fixes the `nearby` hang (A1, already on master) but the `geocode` hang fix (A2) ships with this branch's merge + deploy.
+The live prod audit above reflects a **stale deployment**: prod was running code older than master and still hangs on `nearby` even though A1 landed on master 2026-06-10. There is **no CI/CD** — the server is deployed manually via `pnpm --filter @locnative/server deploy` (`wrangler deploy`, needs Cloudflare auth). **A1 and A2 only reach users after a deploy.** A deploy fixes the `nearby` hang (A1, already on master) but the `geocode` hang fix (A2) ships with this branch's merge + deploy.

@@ -560,13 +560,13 @@ Success criteria:
 Generate migration metadata after schema changes:
 
 ```bash
-pnpm --filter @wherabouts.com/database db:generate
+pnpm --filter @locnative/database db:generate
 ```
 
 Apply migrations:
 
 ```bash
-pnpm --filter @wherabouts.com/database db:migrate
+pnpm --filter @locnative/database db:migrate
 ```
 
 If you need manual SQL verification against Neon:

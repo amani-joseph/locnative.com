@@ -22,12 +22,12 @@ export const getOpenApiDocument = () =>
 	({
 		openapi: "3.1.0",
 		info: {
-			title: "Wherabouts Public API",
+			title: "Locnative Public API",
 			version: "1.0.0",
 			description:
 				"Production-grade address lookup endpoints for autocomplete, reverse geocoding, nearby search, and canonical address retrieval.",
 		},
-		servers: [{ url: "https://api.wherabouts.com" }],
+		servers: [{ url: "https://api.locnative.com" }],
 		components: {
 			securitySchemes: {
 				bearerAuth: {

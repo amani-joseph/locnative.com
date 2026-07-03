@@ -1,15 +1,15 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Badge } from "@wherabouts.com/ui/components/badge";
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Badge } from "@locnative/ui/components/badge";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
-import { Progress } from "@wherabouts.com/ui/components/progress";
-import { Skeleton } from "@wherabouts.com/ui/components/skeleton";
+} from "@locnative/ui/components/card";
+import { Progress } from "@locnative/ui/components/progress";
+import { Skeleton } from "@locnative/ui/components/skeleton";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
 	ArrowRightIcon,
 	BarChart3Icon,
@@ -82,7 +82,7 @@ function EmptyDashboard() {
 					<RocketIcon className="size-8 text-muted-foreground" />
 				</div>
 				<div>
-					<p className="font-semibold text-lg">Get started with Wherabouts</p>
+					<p className="font-semibold text-lg">Get started with Locnative</p>
 					<p className="mx-auto max-w-sm text-muted-foreground text-sm">
 						Create your first API key and start geocoding addresses in minutes.
 					</p>
@@ -337,7 +337,7 @@ function DashboardContent({ stats }: { stats: DashboardStats }) {
 				</CardHeader>
 				<CardContent>
 					<pre className="overflow-x-auto rounded-lg bg-muted p-4 font-mono text-sm">
-						<code>{`curl "https://api.wherabouts.com/api/v1/addresses/autocomplete?q=123+Main+St&country=AU" \\
+						<code>{`curl "https://api.locnative.com/api/v1/addresses/autocomplete?q=123+Main+St&country=AU" \\
   -H "Authorization: Bearer YOUR_API_KEY"`}</code>
 					</pre>
 					<div className="mt-3 flex gap-2">

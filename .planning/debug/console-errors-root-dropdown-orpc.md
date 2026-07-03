@@ -51,7 +51,7 @@ started: Current rollback-test branch
 
 - timestamp: 2026-04-17T00:00:00Z
   checked: packages/api/src/context.ts createContext() and packages/api/src/auth.ts
-  found: Session resolution uses auth.api.getSession({ headers: req.raw.headers }). Cookie has sameSite="none" + secure=true + domain=".wherabouts.com". In local dev (localhost), secure cookies are NOT sent over plain HTTP, so the auth cookie is never forwarded → session is null → protectedProcedure throws UNAUTHORIZED → 500.
+  found: Session resolution uses auth.api.getSession({ headers: req.raw.headers }). Cookie has sameSite="none" + secure=true + domain=".locnative.com". In local dev (localhost), secure cookies are NOT sent over plain HTTP, so the auth cookie is never forwarded → session is null → protectedProcedure throws UNAUTHORIZED → 500.
   implication: The 500 on /rpc/dashboard/getStats is caused by the session cookie not being sent in local dev because secure=true + sameSite=none requires HTTPS. The orpcClient sends credentials:"include" but the browser blocks the cookie on non-HTTPS localhost.
 
 - timestamp: 2026-04-17T02:00:00Z

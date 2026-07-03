@@ -138,7 +138,7 @@ function assertSourceColumn(db: string): void {
 	if (exists !== "1") {
 		throw new Error(
 			"addresses.source column missing — apply drizzle migration 0015 first " +
-				"(pnpm --filter @wherabouts.com/database db:migrate)."
+				"(pnpm --filter @locnative/database db:migrate)."
 		);
 	}
 }

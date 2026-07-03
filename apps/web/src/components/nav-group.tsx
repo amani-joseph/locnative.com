@@ -1,11 +1,10 @@
 "use client";
 
-import { useRouterState } from "@tanstack/react-router";
 import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
-} from "@wherabouts.com/ui/components/collapsible";
+} from "@locnative/ui/components/collapsible";
 import {
 	SidebarGroup,
 	SidebarGroupLabel,
@@ -15,7 +14,8 @@ import {
 	SidebarMenuSub,
 	SidebarMenuSubButton,
 	SidebarMenuSubItem,
-} from "@wherabouts.com/ui/components/sidebar";
+} from "@locnative/ui/components/sidebar";
+import { useRouterState } from "@tanstack/react-router";
 import { ChevronRightIcon } from "lucide-react";
 import type { SidebarNavGroup } from "@/components/app-shared";
 import { sidebarNavRender } from "@/components/sidebar-nav-link";

@@ -1,11 +1,11 @@
-import { Badge } from "@wherabouts.com/ui/components/badge";
+import { Badge } from "@locnative/ui/components/badge";
 import {
 	Sheet,
 	SheetContent,
 	SheetDescription,
 	SheetHeader,
 	SheetTitle,
-} from "@wherabouts.com/ui/components/sheet";
+} from "@locnative/ui/components/sheet";
 
 export interface DeliveryAttemptItem {
 	attempt: number;

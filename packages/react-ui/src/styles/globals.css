@@ -1,69 +1,69 @@
 /* ───────────────────────────────────────────────────────────────
-   Wherabouts React UI — Design Tokens & Component Styles
+   Locnative React UI — Design Tokens & Component Styles
    ─────────────────────────────────────────────────────────────── */
 
 /* ── Light theme (default) ──────────────────────────────────── */
 :root {
 	/* Colors — WCAG AA compliant (4.5:1+ contrast ratios) */
-	--wherabouts-color-border: hsl(214.3 31.8% 91.4%);
-	--wherabouts-color-input-bg: hsl(0 0% 100%);
-	--wherabouts-color-input-text: hsl(222.2 84% 4.9%);
-	--wherabouts-color-placeholder: hsl(215.4 16.3% 46.9%);
-	--wherabouts-color-focus-ring: hsl(221.2 83.2% 53.3%);
-	--wherabouts-color-dropdown-bg: hsl(0 0% 100%);
-	--wherabouts-color-dropdown-border: hsl(214.3 31.8% 91.4%);
-	--wherabouts-color-dropdown-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-	--wherabouts-color-item-bg: hsl(0 0% 100%);
-	--wherabouts-color-item-bg-hover: hsl(210 40% 96.1%);
-	--wherabouts-color-item-bg-active: hsl(221.2 83.2% 53.3% / 0.1);
-	--wherabouts-color-item-text: hsl(222.2 84% 4.9%);
-	--wherabouts-color-error: hsl(0 84.2% 60.2%);
-	--wherabouts-color-error-border: hsl(0 84.2% 60.2%);
-	--wherabouts-color-text-muted: hsl(215.4 16.3% 46.9%);
+	--locnative-color-border: hsl(214.3 31.8% 91.4%);
+	--locnative-color-input-bg: hsl(0 0% 100%);
+	--locnative-color-input-text: hsl(222.2 84% 4.9%);
+	--locnative-color-placeholder: hsl(215.4 16.3% 46.9%);
+	--locnative-color-focus-ring: hsl(221.2 83.2% 53.3%);
+	--locnative-color-dropdown-bg: hsl(0 0% 100%);
+	--locnative-color-dropdown-border: hsl(214.3 31.8% 91.4%);
+	--locnative-color-dropdown-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+	--locnative-color-item-bg: hsl(0 0% 100%);
+	--locnative-color-item-bg-hover: hsl(210 40% 96.1%);
+	--locnative-color-item-bg-active: hsl(221.2 83.2% 53.3% / 0.1);
+	--locnative-color-item-text: hsl(222.2 84% 4.9%);
+	--locnative-color-error: hsl(0 84.2% 60.2%);
+	--locnative-color-error-border: hsl(0 84.2% 60.2%);
+	--locnative-color-text-muted: hsl(215.4 16.3% 46.9%);
 
 	/* Spacing */
-	--wherabouts-spacing-xs: 0.25rem;
-	--wherabouts-spacing-sm: 0.5rem;
-	--wherabouts-spacing-md: 1rem;
-	--wherabouts-spacing-lg: 1.5rem;
+	--locnative-spacing-xs: 0.25rem;
+	--locnative-spacing-sm: 0.5rem;
+	--locnative-spacing-md: 1rem;
+	--locnative-spacing-lg: 1.5rem;
 
 	/* Typography */
-	--wherabouts-font-size-xs: 0.75rem;
-	--wherabouts-font-size-sm: 0.875rem;
-	--wherabouts-font-size-base: 1rem;
-	--wherabouts-font-weight-normal: 400;
-	--wherabouts-font-weight-medium: 500;
+	--locnative-font-size-xs: 0.75rem;
+	--locnative-font-size-sm: 0.875rem;
+	--locnative-font-size-base: 1rem;
+	--locnative-font-weight-normal: 400;
+	--locnative-font-weight-medium: 500;
 
 	/* Borders & Radius */
-	--wherabouts-border-radius: 0.5rem;
-	--wherabouts-border-radius-sm: 0.375rem;
-	--wherabouts-border-width: 1px;
+	--locnative-border-radius: 0.5rem;
+	--locnative-border-radius-sm: 0.375rem;
+	--locnative-border-width: 1px;
 
 	/* Z-Index */
-	--wherabouts-z-dropdown: 50;
+	--locnative-z-dropdown: 50;
 
 	/* Transitions */
-	--wherabouts-transition-fast: 150ms ease-in-out;
-	--wherabouts-transition-base: 200ms ease-in-out;
+	--locnative-transition-fast: 150ms ease-in-out;
+	--locnative-transition-base: 200ms ease-in-out;
 }
 
 /* ── Dark theme ─────────────────────────────────────────────── */
 .dark {
-	--wherabouts-color-border: hsl(217.2 32.6% 17.5%);
-	--wherabouts-color-input-bg: hsl(222.2 84% 4.9%);
-	--wherabouts-color-input-text: hsl(210 40% 98%);
-	--wherabouts-color-placeholder: hsl(215.4 16.3% 56.9%);
-	--wherabouts-color-focus-ring: hsl(221.2 83.2% 63.3%);
-	--wherabouts-color-dropdown-bg: hsl(222.2 84% 4.9%);
-	--wherabouts-color-dropdown-border: hsl(217.2 32.6% 17.5%);
-	--wherabouts-color-dropdown-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3);
-	--wherabouts-color-item-bg: hsl(222.2 84% 4.9%);
-	--wherabouts-color-item-bg-hover: hsl(222.2 84% 10%);
-	--wherabouts-color-item-bg-active: hsl(221.2 83.2% 53.3% / 0.2);
-	--wherabouts-color-item-text: hsl(210 40% 98%);
-	--wherabouts-color-error: hsl(0 84.2% 70.2%);
-	--wherabouts-color-error-border: hsl(0 84.2% 70.2%);
-	--wherabouts-color-text-muted: hsl(215.4 16.3% 56.9%);
+	--locnative-color-border: hsl(217.2 32.6% 17.5%);
+	--locnative-color-input-bg: hsl(222.2 84% 4.9%);
+	--locnative-color-input-text: hsl(210 40% 98%);
+	--locnative-color-placeholder: hsl(215.4 16.3% 56.9%);
+	--locnative-color-focus-ring: hsl(221.2 83.2% 63.3%);
+	--locnative-color-dropdown-bg: hsl(222.2 84% 4.9%);
+	--locnative-color-dropdown-border: hsl(217.2 32.6% 17.5%);
+	--locnative-color-dropdown-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3);
+	--locnative-color-item-bg: hsl(222.2 84% 4.9%);
+	--locnative-color-item-bg-hover: hsl(222.2 84% 10%);
+	--locnative-color-item-bg-active: hsl(221.2 83.2% 53.3% / 0.2);
+	--locnative-color-item-text: hsl(210 40% 98%);
+	--locnative-color-error: hsl(0 84.2% 70.2%);
+	--locnative-color-error-border: hsl(0 84.2% 70.2%);
+	--locnative-color-text-muted: hsl(215.4 16.3% 56.9%);
 }
 
 /* ── AddressAutocomplete & Input ────────────────────────────── */
@@ -75,25 +75,25 @@
 [data-slot="address-input"] {
 	display: block;
 	width: 100%;
-	padding: var(--wherabouts-spacing-sm) var(--wherabouts-spacing-md);
-	font-size: var(--wherabouts-font-size-base);
-	font-weight: var(--wherabouts-font-weight-normal);
-	color: var(--wherabouts-color-input-text);
-	background-color: var(--wherabouts-color-input-bg);
-	border: var(--wherabouts-border-width) solid var(--wherabouts-color-border);
-	border-radius: var(--wherabouts-border-radius);
+	padding: var(--locnative-spacing-sm) var(--locnative-spacing-md);
+	font-size: var(--locnative-font-size-base);
+	font-weight: var(--locnative-font-weight-normal);
+	color: var(--locnative-color-input-text);
+	background-color: var(--locnative-color-input-bg);
+	border: var(--locnative-border-width) solid var(--locnative-color-border);
+	border-radius: var(--locnative-border-radius);
 	transition:
-		border-color var(--wherabouts-transition-fast),
-		box-shadow var(--wherabouts-transition-fast);
+		border-color var(--locnative-transition-fast),
+		box-shadow var(--locnative-transition-fast);
 }
 
 [data-slot="address-input"]::placeholder {
-	color: var(--wherabouts-color-placeholder);
+	color: var(--locnative-color-placeholder);
 }
 
 [data-slot="address-input"]:focus {
 	outline: none;
-	border-color: var(--wherabouts-color-focus-ring);
+	border-color: var(--locnative-color-focus-ring);
 	box-shadow: 0 0 0 3px hsl(221.2 83.2% 53.3% / 0.1);
 }
 
@@ -104,7 +104,7 @@
 }
 
 [data-slot="address-input"][aria-invalid="true"] {
-	border-color: var(--wherabouts-color-error);
+	border-color: var(--locnative-color-error);
 }
 
 [data-slot="address-input"][aria-invalid="true"]:focus {
@@ -116,13 +116,13 @@
    <body>, so no ancestor overflow can clip it. This rule supplies the visual
    chrome and clips the inner scroll area to the rounded corners. */
 [data-slot="address-dropdown"] {
-	z-index: var(--wherabouts-z-dropdown);
+	z-index: var(--locnative-z-dropdown);
 	overflow: hidden;
-	background-color: var(--wherabouts-color-dropdown-bg);
-	border: var(--wherabouts-border-width) solid
-		var(--wherabouts-color-dropdown-border);
-	border-radius: var(--wherabouts-border-radius);
-	box-shadow: var(--wherabouts-color-dropdown-shadow);
+	background-color: var(--locnative-color-dropdown-bg);
+	border: var(--locnative-border-width) solid
+		var(--locnative-color-dropdown-border);
+	border-radius: var(--locnative-border-radius);
+	box-shadow: var(--locnative-color-dropdown-shadow);
 }
 
 /* ── Dropdown Listbox ──────────────────────────────────────── */
@@ -131,7 +131,7 @@
    max-height instead of extending past the container and the viewport. */
 [data-slot="address-listbox"] {
 	max-height: 300px;
-	padding: var(--wherabouts-spacing-sm);
+	padding: var(--locnative-spacing-sm);
 	margin: 0;
 	overflow-y: auto;
 	list-style: none;
@@ -146,17 +146,17 @@
 }
 
 [data-slot="address-listbox"]::-webkit-scrollbar-thumb {
-	background: var(--wherabouts-color-border);
+	background: var(--locnative-color-border);
 	border-radius: 4px;
 }
 
 /* Branding footer — pinned below the scroll area, inside the dropdown border. */
 [data-slot="address-powered-by"] {
-	padding: var(--wherabouts-spacing-sm) var(--wherabouts-spacing-md);
-	font-size: var(--wherabouts-font-size-sm);
-	color: var(--wherabouts-color-text-muted);
-	border-top: var(--wherabouts-border-width) solid
-		var(--wherabouts-color-dropdown-border);
+	padding: var(--locnative-spacing-sm) var(--locnative-spacing-md);
+	font-size: var(--locnative-font-size-sm);
+	color: var(--locnative-color-text-muted);
+	border-top: var(--locnative-border-width) solid
+		var(--locnative-color-dropdown-border);
 }
 
 /* ── Suggestion Item ───────────────────────────────────────── */
@@ -164,22 +164,22 @@
 	display: flex;
 	align-items: center;
 	min-height: 44px;
-	padding: var(--wherabouts-spacing-sm) var(--wherabouts-spacing-md);
+	padding: var(--locnative-spacing-sm) var(--locnative-spacing-md);
 	margin: 2px 0;
-	font-size: var(--wherabouts-font-size-base);
-	color: var(--wherabouts-color-item-text);
+	font-size: var(--locnative-font-size-base);
+	color: var(--locnative-color-item-text);
 	cursor: pointer;
-	background-color: var(--wherabouts-color-item-bg);
-	border-radius: var(--wherabouts-border-radius-sm);
-	transition: background-color var(--wherabouts-transition-fast);
+	background-color: var(--locnative-color-item-bg);
+	border-radius: var(--locnative-border-radius-sm);
+	transition: background-color var(--locnative-transition-fast);
 }
 
 [data-slot="address-item"]:hover {
-	background-color: var(--wherabouts-color-item-bg-hover);
+	background-color: var(--locnative-color-item-bg-hover);
 }
 
 [data-slot="address-item"][aria-selected="true"] {
-	background-color: var(--wherabouts-color-item-bg-active);
+	background-color: var(--locnative-color-item-bg-active);
 }
 
 /* ── Loading / Error / Empty States ────────────────────────── */
@@ -188,52 +188,52 @@
 [data-slot="address-item"][data-status="empty"] {
 	justify-content: center;
 	min-height: 40px;
-	font-size: var(--wherabouts-font-size-sm);
-	color: var(--wherabouts-color-text-muted);
+	font-size: var(--locnative-font-size-sm);
+	color: var(--locnative-color-text-muted);
 	cursor: default;
 }
 
 [data-slot="address-item"][data-status="error"] {
-	color: var(--wherabouts-color-error);
+	color: var(--locnative-color-error);
 }
 
 /* ── Form Field ────────────────────────────────────────────── */
 [data-slot="address-form-field"] {
 	display: flex;
 	flex-direction: column;
-	gap: var(--wherabouts-spacing-sm);
+	gap: var(--locnative-spacing-sm);
 }
 
 [data-slot="address-form-field"] label {
 	display: block;
-	font-size: var(--wherabouts-font-size-sm);
-	font-weight: var(--wherabouts-font-weight-medium);
-	color: var(--wherabouts-color-input-text);
+	font-size: var(--locnative-font-size-sm);
+	font-weight: var(--locnative-font-weight-medium);
+	color: var(--locnative-color-input-text);
 }
 
 [data-slot="address-form-field"] label [aria-hidden="true"] {
 	margin-left: 2px;
-	color: var(--wherabouts-color-error);
+	color: var(--locnative-color-error);
 }
 
 [data-slot="address-form-field"] [role="alert"] {
 	display: block;
 	margin-top: 2px;
-	font-size: var(--wherabouts-font-size-sm);
-	color: var(--wherabouts-color-error);
+	font-size: var(--locnative-font-size-sm);
+	color: var(--locnative-color-error);
 }
 
 /* ── Field Group ───────────────────────────────────────────── */
 [data-slot="address-field-group"] {
 	display: flex;
 	flex-direction: column;
-	gap: var(--wherabouts-spacing-md);
+	gap: var(--locnative-spacing-md);
 }
 
 [data-slot="address-field-group-inputs"] {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
-	gap: var(--wherabouts-spacing-md);
+	gap: var(--locnative-spacing-md);
 }
 
 [data-slot="address-field-group-inputs"] > div:nth-child(4) {
@@ -258,13 +258,13 @@
 [data-slot="geocode-input"] {
 	display: block;
 	width: 100%;
-	padding: var(--wherabouts-spacing-sm) var(--wherabouts-spacing-md);
-	font-size: var(--wherabouts-font-size-base);
-	color: var(--wherabouts-color-input-text);
+	padding: var(--locnative-spacing-sm) var(--locnative-spacing-md);
+	font-size: var(--locnative-font-size-base);
+	color: var(--locnative-color-input-text);
 	cursor: default;
 	background-color: hsl(0 0% 97%);
-	border: var(--wherabouts-border-width) solid var(--wherabouts-color-border);
-	border-radius: var(--wherabouts-border-radius);
+	border: var(--locnative-border-width) solid var(--locnative-color-border);
+	border-radius: var(--locnative-border-radius);
 }
 
 .dark [data-slot="geocode-input"] {

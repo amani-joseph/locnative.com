@@ -1,10 +1,10 @@
 # 📋 Component Library Specification
 
-## @wherabouts/react-ui & @wherabouts/vue-ui
+## @locnative/react-ui & @locnative/vue-ui
 
 ### Executive Summary
 
-Wherabouts should publish framework-specific UI component libraries for React and Vue that provide production-ready, accessible, customizable components for all SDK features. These libraries bridge the gap between raw API data and intuitive user interfaces, dramatically improving developer experience.
+Locnative should publish framework-specific UI component libraries for React and Vue that provide production-ready, accessible, customizable components for all SDK features. These libraries bridge the gap between raw API data and intuitive user interfaces, dramatically improving developer experience.
 
 **Target:** Developers building checkout flows, address forms, location-based features in public-facing applications.
 
@@ -28,13 +28,13 @@ Wherabouts should publish framework-specific UI component libraries for React an
 ### Separate NPM Packages (Independent Versioning)
 
 ```
-@wherabouts/react-ui@1.0.0
+@locnative/react-ui@1.0.0
 ├── Address components (React)
 ├── Routing components (React)
 ├── Region/Zone components (React)
 └── Shared utilities & types
 
-@wherabouts/vue-ui@1.0.0
+@locnative/vue-ui@1.0.0
 ├── Address components (Vue 3)
 ├── Routing components (Vue 3)
 ├── Region/Zone components (Vue 3)
@@ -181,7 +181,7 @@ interface AddressWithParsed {
 ### Usage Example (React + TanStack Form)
 
 ```tsx
-import { AddressAutocomplete } from '@wherabouts/react-ui';
+import { AddressAutocomplete } from '@locnative/react-ui';
 import { useField } from '@tanstack/react-form';
 
 export function CheckoutForm() {
@@ -229,23 +229,23 @@ export function CheckoutForm() {
 
 ```css
 /* Colors */
---wherabouts-primary: #3b82f6;
---wherabouts-error: #ef4444;
---wherabouts-background: #ffffff;
---wherabouts-border: #e5e7eb;
+--locnative-primary: #3b82f6;
+--locnative-error: #ef4444;
+--locnative-background: #ffffff;
+--locnative-border: #e5e7eb;
 
 /* Spacing */
---wherabouts-spacing-xs: 0.25rem;
---wherabouts-spacing-sm: 0.5rem;
---wherabouts-spacing-md: 1rem;
+--locnative-spacing-xs: 0.25rem;
+--locnative-spacing-sm: 0.5rem;
+--locnative-spacing-md: 1rem;
 
 /* Typography */
---wherabouts-font-size-sm: 0.875rem;
---wherabouts-font-size-base: 1rem;
+--locnative-font-size-sm: 0.875rem;
+--locnative-font-size-base: 1rem;
 
 /* Shadows & Borders */
---wherabouts-shadow: 0 1px 3px rgba(0,0,0,0.1);
---wherabouts-border-radius: 0.5rem;
+--locnative-shadow: 0 1px 3px rgba(0,0,0,0.1);
+--locnative-border-radius: 0.5rem;
 ```
 
 ### Customization Methods
@@ -253,8 +253,8 @@ export function CheckoutForm() {
 **Method 1: CSS Variables (Easiest)**
 ```css
 :root {
-  --wherabouts-primary: #10b981;
-  --wherabouts-border-radius: 0.25rem;
+  --locnative-primary: #10b981;
+  --locnative-border-radius: 0.25rem;
 }
 ```
 
@@ -360,7 +360,7 @@ MOBILE (<640px)
 ```tsx
 import { useForm } from '@tanstack/react-form';
 import { zodValidator } from '@tanstack/zod-form-adapter';
-import { AddressAutocomplete } from '@wherabouts/react-ui';
+import { AddressAutocomplete } from '@locnative/react-ui';
 
 const checkoutForm = useForm({
   defaultValues: {
@@ -467,7 +467,7 @@ interface AddressAutocompleteState {
 ### Developer-Provided Tokens
 
 ```tsx
-import { newSessionToken } from '@wherabouts/sdk';
+import { newSessionToken } from '@locnative/sdk';
 
 export function CheckoutAddressForm() {
   const sessionTokenRef = useRef<string>('');
@@ -618,8 +618,8 @@ npm run a11y-test     # Accessibility testing
 
 ### Bundle Size Budget
 
-- @wherabouts/react-ui: <50KB gzipped
-- @wherabouts/vue-ui: <50KB gzipped
+- @locnative/react-ui: <50KB gzipped
+- @locnative/vue-ui: <50KB gzipped
 
 **Monitoring:** Bundle size checks on every PR.
 
@@ -689,8 +689,8 @@ npm run a11y-test     # Accessibility testing
 
 ### Code
 
-- React component package (@wherabouts/react-ui)
-- Vue component package (@wherabouts/vue-ui)
+- React component package (@locnative/react-ui)
+- Vue component package (@locnative/vue-ui)
 - TypeScript types (full coverage)
 - Tailwind CSS default styles
 - ShadCN/ui integration
@@ -732,7 +732,7 @@ npm run a11y-test     # Accessibility testing
 
 ---
 
-## 20. Open Questions for Wherabouts Team
+## 20. Open Questions for Locnative Team
 
 1. Development timeline: How many developers can dedicate to this?
 2. Support model: Who maintains components post-launch?
@@ -744,6 +744,6 @@ npm run a11y-test     # Accessibility testing
 
 ## Final Note
 
-This specification reflects a first-class developer experience. The component library should feel as intuitive as Google Places, but with the flexibility and depth that Wherabouts' data deserves.
+This specification reflects a first-class developer experience. The component library should feel as intuitive as Google Places, but with the flexibility and depth that Locnative' data deserves.
 
-**Next step:** Share this with the Wherabouts team and gather feedback before implementation begins.
+**Next step:** Share this with the Locnative team and gather feedback before implementation begins.

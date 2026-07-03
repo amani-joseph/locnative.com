@@ -1,5 +1,5 @@
+import { zones } from "@locnative/database/schema";
 import { ORPCError } from "@orpc/server";
-import { zones } from "@wherabouts.com/database/schema";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { o as baseBuilder } from "../../builder.ts";
@@ -20,15 +20,18 @@ import {
 	usageMiddleware,
 	type ValidatedApiKey,
 } from "../public-middleware.ts";
-import { type GeoJsonPolygon, geoJsonPolygonSchema } from "./zones-schema.ts";
+import { geoJsonPolygonSchema as geoJsonPolygonSchemaImpl } from "./zones-schema.ts";
 
-export { type GeoJsonPolygon, geoJsonPolygonSchema };
+export type { GeoJsonPolygon } from "./zones-schema.ts";
+export const geoJsonPolygonSchema = geoJsonPolygonSchemaImpl;
 
 // ---------------------------------------------------------------------------
 // Helper: cast context to include validatedApiKey
 // ---------------------------------------------------------------------------
 
-type AuthContext = { validatedApiKey: ValidatedApiKey };
+interface AuthContext {
+	validatedApiKey: ValidatedApiKey;
+}
 
 /** Assert projectId is non-null (all project-scoped API keys must have one). */
 function requireProjectId(projectId: string | null): string {
@@ -57,7 +60,7 @@ export const zoneCreate = baseBuilder
 		z.object({
 			name: z.string().min(1).max(255),
 			description: z.string().optional(),
-			geometry: geoJsonPolygonSchema,
+			geometry: geoJsonPolygonSchemaImpl,
 			metadata: z.record(z.string(), z.unknown()).optional(),
 		})
 	)
@@ -151,7 +154,7 @@ export const zoneUpdate = baseBuilder
 			id: z.coerce.number().int().min(1),
 			name: z.string().min(1).max(255).optional(),
 			description: z.string().optional(),
-			geometry: geoJsonPolygonSchema.optional(),
+			geometry: geoJsonPolygonSchemaImpl.optional(),
 			metadata: z.record(z.string(), z.unknown()).optional(),
 		})
 	)

@@ -40,7 +40,7 @@ const Integration = () => {
 						<p className="max-w-xl font-normal text-base text-muted-foreground">
 							Address autocomplete, geocoding, geofencing, routing, device
 							tracking, and webhooks — ship location features without the
-							complexity. Call Wherabouts with plain REST from your backend or
+							complexity. Call Locnative with plain REST from your backend or
 							edge, no map SDK required.
 						</p>
 					</div>
@@ -84,7 +84,7 @@ const Integration = () => {
 						duration: 18,
 						icons: [
 							{ icon: Terminal, alt: "REST API", angle: -60 },
-							{ icon: Package, alt: "@wherabouts/sdk", angle: 0 },
+							{ icon: Package, alt: "@locnative/sdk", angle: 0 },
 							{ icon: Webhook, alt: "Webhooks", angle: 60 },
 						],
 					},

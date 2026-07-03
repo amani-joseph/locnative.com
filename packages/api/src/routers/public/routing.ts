@@ -1,6 +1,6 @@
+import type { Database } from "@locnative/database";
+import { serverEnv } from "@locnative/env/server";
 import { ORPCError } from "@orpc/server";
-import type { Database } from "@wherabouts.com/database";
-import { serverEnv } from "@wherabouts.com/env/server";
 import { z } from "zod";
 import { o as baseBuilder } from "../../builder.ts";
 import {

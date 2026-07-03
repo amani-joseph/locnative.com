@@ -10,7 +10,7 @@ Radar ("Regions") and mappify ("classify coordinates").
 
 ## 1. Problem & motivation
 
-wherabouts.com today offers geocoding (forward/reverse/autocomplete/nearby),
+locnative.com today offers geocoding (forward/reverse/autocomplete/nearby),
 user-drawn **zones** (custom geofences), devices, boundary-crossings, and
 webhooks. It has **no way to map a coordinate onto *official* administrative
 boundaries** — ABS Statistical Areas, LGAs, postcodes, or electoral divisions.

@@ -1,6 +1,6 @@
 # Technology Stack: Projects & API Key Management
 
-**Project:** Wherabouts — Project-Scoped API Key Management
+**Project:** Locnative — Project-Scoped API Key Management
 **Researched:** 2026-04-12
 
 ## Approach: Extend, Don't Replace
@@ -72,8 +72,8 @@ No cron job or background worker needed for a service at this scale. Expired key
 
 ```bash
 # After schema changes:
-pnpm --filter @wherabouts.com/database db:generate
-pnpm --filter @wherabouts.com/database db:migrate
+pnpm --filter @locnative/database db:generate
+pnpm --filter @locnative/database db:migrate
 ```
 
 Migration order matters:

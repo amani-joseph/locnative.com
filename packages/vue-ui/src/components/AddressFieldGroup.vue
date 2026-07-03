@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import type { WheraboutsClient } from "@wherabouts/sdk";
+import type { LocnativeClient } from "@locnative/sdk";
 import { computed } from "vue";
 import type { AddressFieldGroupValue, AddressWithParsed } from "../types";
 import { cn } from "../utils/cn";
-import AddressAutocomplete from "./AddressAutocomplete.vue";
 
 const props = withDefaults(
 	defineProps<{
-		/** Required. SDK client created with `createWheraboutsClient`. */
-		client: WheraboutsClient;
+		/** Required. SDK client created with `createLocnativeClient`. */
+		client: LocnativeClient;
 		/** Class applied to the root container. */
 		class?: string;
 		/** Disable all fields. */
@@ -36,9 +35,8 @@ const props = withDefaults(
 	}
 );
 
-const emit = defineEmits<{
-	(e: "change", value: AddressFieldGroupValue): void;
-}>();
+const emit =
+	defineEmits<(e: "change", value: AddressFieldGroupValue) => void>();
 
 const baseInputClass =
 	"block h-8 w-full rounded-none border border-input bg-transparent px-2.5 py-1 text-foreground text-xs outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30";

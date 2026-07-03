@@ -18,7 +18,7 @@ describe("resolveDemoConfig", () => {
 		const cfg = resolveDemoConfig({});
 		expect(cfg).toEqual({
 			apiKey: "",
-			baseUrl: "https://api.wherabouts.com",
+			baseUrl: "https://api.locnative.com",
 			configured: false,
 		});
 	});

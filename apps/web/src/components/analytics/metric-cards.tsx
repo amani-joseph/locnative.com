@@ -1,5 +1,5 @@
-import { Card, CardContent } from "@wherabouts.com/ui/components/card";
-import { cn } from "@wherabouts.com/ui/lib/utils";
+import { Card, CardContent } from "@locnative/ui/components/card";
+import { cn } from "@locnative/ui/lib/utils";
 import {
 	ActivityIcon,
 	CrownIcon,

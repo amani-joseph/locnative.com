@@ -1,5 +1,5 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import { env } from "@wherabouts.com/env/web";
+import { env } from "@locnative/env/web";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import { useEffect, useRef, useState } from "react";
 import { buildMapStyle } from "./map-style.ts";
@@ -58,9 +58,7 @@ export function MapCanvas({
 			map?.remove();
 			mapRef.current = null;
 		};
-		// Mount-once: center/zoom changes after mount are driven via the map instance.
-		// biome-ignore lint/correctness/useExhaustiveDependencies: intentional mount-once
-	}, []);
+	}, [zoom, onMapReady, center]);
 
 	return (
 		<div className="relative h-full w-full" style={{ minHeight: 360 }}>

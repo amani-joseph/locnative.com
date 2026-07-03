@@ -11,7 +11,7 @@ export const navigationData: NavigationSection[] = [
 		href: "/dashboard",
 	},
 	{
-		name: "Why Wherabouts",
+		name: "Why Locnative",
 		href: "/#why",
 	},
 	{

@@ -68,7 +68,7 @@ Output: Working GitHub OAuth config with validated env vars; Google buttons remo
     This ensures the app fails fast at startup if GitHub OAuth credentials are missing, rather than silently passing `undefined` to Better Auth.
   </action>
   <verify>
-    Run `cd /Users/mac/Developer/projects/wherabouts.com && pnpm dlx ultracite check packages/env/src/server.ts` to confirm no lint errors.
+    Run `cd /Users/mac/Developer/projects/locnative.com && pnpm dlx ultracite check packages/env/src/server.ts` to confirm no lint errors.
   </verify>
   <done>GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET are declared in the Zod server env schema with min(1) validation.</done>
 </task>
@@ -91,7 +91,7 @@ Output: Working GitHub OAuth config with validated env vars; Google buttons remo
     Do NOT add Google OAuth config to auth.ts -- Google is not configured and adding non-functional config would break startup.
   </action>
   <verify>
-    Run `cd /Users/mac/Developer/projects/wherabouts.com && pnpm dlx ultracite check apps/web/src/components/shadcn-space/blocks/login-03/login.tsx apps/web/src/components/shadcn-space/blocks/register-03/register.tsx` to confirm no lint errors.
+    Run `cd /Users/mac/Developer/projects/locnative.com && pnpm dlx ultracite check apps/web/src/components/shadcn-space/blocks/login-03/login.tsx apps/web/src/components/shadcn-space/blocks/register-03/register.tsx` to confirm no lint errors.
   </verify>
   <done>Google OAuth buttons removed from both login and register forms. Only GitHub sign-in button remains. No references to "google" provider in form state or handlers.</done>
 </task>

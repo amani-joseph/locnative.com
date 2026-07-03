@@ -1,18 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
-import { Skeleton } from "@wherabouts.com/ui/components/skeleton";
-import {
-	Tabs,
-	TabsList,
-	TabsTrigger,
-} from "@wherabouts.com/ui/components/tabs";
-import { cn } from "@wherabouts.com/ui/lib/utils";
+} from "@locnative/ui/components/card";
+import { Skeleton } from "@locnative/ui/components/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@locnative/ui/components/tabs";
+import { cn } from "@locnative/ui/lib/utils";
+import { createFileRoute } from "@tanstack/react-router";
 import { BarChart3Icon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MetricCards } from "@/components/analytics/metric-cards";

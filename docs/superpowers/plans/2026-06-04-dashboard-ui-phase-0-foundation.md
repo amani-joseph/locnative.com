@@ -78,8 +78,8 @@ VITE_MAPTILER_KEY=
 - [ ] **Step 3: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add packages/env/src/web.ts apps/web/.env
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(env): add optional VITE_MAPTILER_KEY for dashboard maps"
+git -C /Users/mac/Developer/projects/locnative.com add packages/env/src/web.ts apps/web/.env
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(env): add optional VITE_MAPTILER_KEY for dashboard maps"
 ```
 
 ---
@@ -92,21 +92,21 @@ git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(env): add op
 - [ ] **Step 1: Install**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm add maplibre-gl terra-draw
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm add maplibre-gl terra-draw
 ```
 
 - [ ] **Step 2: Verify they resolve**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && node -e "console.log(require.resolve('maplibre-gl/package.json')); console.log(require.resolve('terra-draw/package.json'))"
+cd /Users/mac/Developer/projects/locnative.com/apps/web && node -e "console.log(require.resolve('maplibre-gl/package.json')); console.log(require.resolve('terra-draw/package.json'))"
 ```
 Expected: two resolved paths printed, no error.
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/package.json pnpm-lock.yaml
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "build(web): add maplibre-gl and terra-draw dependencies"
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/package.json pnpm-lock.yaml
+git -C /Users/mac/Developer/projects/locnative.com commit -m "build(web): add maplibre-gl and terra-draw dependencies"
 ```
 
 ---
@@ -146,7 +146,7 @@ describe("buildMapStyleUrl", () => {
 - [ ] **Step 2: Run it to verify it fails**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm vitest run src/components/map/map-style.test.ts
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm vitest run src/components/map/map-style.test.ts
 ```
 Expected: FAIL — cannot find module `./map-style.ts`.
 
@@ -188,7 +188,7 @@ export function buildMapStyleUrl(maptilerKey: string | undefined): MapStyle {
 - [ ] **Step 4: Run the test to verify it passes**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm vitest run src/components/map/map-style.test.ts
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm vitest run src/components/map/map-style.test.ts
 ```
 Expected: PASS (3 tests).
 
@@ -200,7 +200,7 @@ Create `apps/web/src/components/map/map-canvas.tsx`. It mounts MapLibre only on 
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import { useEffect, useRef } from "react";
-import { env } from "@wherabouts.com/env/web";
+import { env } from "@locnative/env/web";
 import { buildMapStyleUrl } from "./map-style.ts";
 
 export interface MapCanvasProps {
@@ -273,15 +273,15 @@ export function MapCanvas({
 - [ ] **Step 6: Type-check**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm dlx tsc --noEmit -p tsconfig.json 2>&1 | grep -i "map-canvas\|map-style" || echo "no map errors"
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm dlx tsc --noEmit -p tsconfig.json 2>&1 | grep -i "map-canvas\|map-style" || echo "no map errors"
 ```
 Expected: `no map errors`.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/src/components/map/
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): add client-only MapCanvas + style helper (MapTiler/OSM fallback)"
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/src/components/map/
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(web): add client-only MapCanvas + style helper (MapTiler/OSM fallback)"
 ```
 
 ---
@@ -337,7 +337,7 @@ describe("requireProjectOwnership", () => {
 - [ ] **Step 2: Run it to verify it fails**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/packages/api && pnpm vitest run src/shared/project-ownership.test.ts
+cd /Users/mac/Developer/projects/locnative.com/packages/api && pnpm vitest run src/shared/project-ownership.test.ts
 ```
 Expected: FAIL — cannot find module `./project-ownership.ts`.
 
@@ -347,8 +347,8 @@ Create `packages/api/src/shared/project-ownership.ts`:
 
 ```typescript
 import { ORPCError } from "@orpc/server";
-import type { Database } from "@wherabouts.com/database";
-import { projects } from "@wherabouts.com/database/schema";
+import type { Database } from "@locnative/database";
+import { projects } from "@locnative/database/schema";
 import { and, eq, isNull } from "drizzle-orm";
 
 /**
@@ -385,15 +385,15 @@ export async function requireProjectOwnership(
 - [ ] **Step 4: Run the test to verify it passes**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/packages/api && pnpm vitest run src/shared/project-ownership.test.ts
+cd /Users/mac/Developer/projects/locnative.com/packages/api && pnpm vitest run src/shared/project-ownership.test.ts
 ```
 Expected: PASS (2 tests).
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add packages/api/src/shared/project-ownership.ts packages/api/src/shared/project-ownership.test.ts
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(api): add requireProjectOwnership helper for session-authed procedures"
+git -C /Users/mac/Developer/projects/locnative.com add packages/api/src/shared/project-ownership.ts packages/api/src/shared/project-ownership.test.ts
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(api): add requireProjectOwnership helper for session-authed procedures"
 ```
 
 ---
@@ -411,8 +411,8 @@ This removes drift risk: the deployed public zone handlers and the Phase 1 dashb
 Create `packages/api/src/shared/zone-queries.ts`. These are auth-free, project-scoped functions (caller supplies an already-verified `projectId`). Copy the exact SQL/logic currently in `public/zones.ts` so behavior is identical:
 
 ```typescript
-import type { Database } from "@wherabouts.com/database";
-import { addresses, zones } from "@wherabouts.com/database/schema";
+import type { Database } from "@locnative/database";
+import { addresses, zones } from "@locnative/database/schema";
 import { and, eq, sql } from "drizzle-orm";
 import type { GeoJsonPolygon } from "../routers/public/zones-schema.ts";
 
@@ -578,22 +578,22 @@ Also refactor the `zoneList`, `zoneContains`, and `zoneDelete` handlers to call 
 - [ ] **Step 3: Type-check the api package**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/packages/api && pnpm check-types 2>&1 | grep -v "api-explorer.ts(204" | grep -i error || echo "no new errors"
+cd /Users/mac/Developer/projects/locnative.com/packages/api && pnpm check-types 2>&1 | grep -v "api-explorer.ts(204" | grep -i error || echo "no new errors"
 ```
 Expected: `no new errors` (only the known pre-existing api-explorer.ts:204 error may appear and is filtered out).
 
 - [ ] **Step 4: Run existing zone tests (no regression)**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/packages/api && pnpm vitest run src/routers/public/zones.test.ts
+cd /Users/mac/Developer/projects/locnative.com/packages/api && pnpm vitest run src/routers/public/zones.test.ts
 ```
 Expected: PASS (existing schema tests unchanged).
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add packages/api/src/shared/zone-queries.ts packages/api/src/routers/public/zones.ts
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "refactor(api): extract shared zone query functions; public handlers delegate to them"
+git -C /Users/mac/Developer/projects/locnative.com add packages/api/src/shared/zone-queries.ts packages/api/src/routers/public/zones.ts
+git -C /Users/mac/Developer/projects/locnative.com commit -m "refactor(api): extract shared zone query functions; public handlers delegate to them"
 ```
 
 ---
@@ -643,7 +643,7 @@ describe("active-project store", () => {
 	it("write then read round-trips via localStorage", () => {
 		writeStoredProjectId("xyz");
 		expect(readStoredProjectId()).toBe("xyz");
-		expect(ACTIVE_PROJECT_STORAGE_KEY).toBe("wherabouts.activeProjectId");
+		expect(ACTIVE_PROJECT_STORAGE_KEY).toBe("locnative.activeProjectId");
 	});
 });
 ```
@@ -651,7 +651,7 @@ describe("active-project store", () => {
 - [ ] **Step 2: Run it to verify it fails**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm vitest run src/lib/active-project.test.ts
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm vitest run src/lib/active-project.test.ts
 ```
 Expected: FAIL — cannot find module `./active-project.ts`.
 
@@ -662,7 +662,7 @@ Create `apps/web/src/lib/active-project.ts`:
 ```typescript
 import { useCallback, useEffect, useState } from "react";
 
-export const ACTIVE_PROJECT_STORAGE_KEY = "wherabouts.activeProjectId";
+export const ACTIVE_PROJECT_STORAGE_KEY = "locnative.activeProjectId";
 
 export function readStoredProjectId(): string | null {
 	if (typeof window === "undefined") {
@@ -714,7 +714,7 @@ export function useActiveProject(availableIds: string[]) {
 - [ ] **Step 4: Run the test to verify it passes**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm vitest run src/lib/active-project.test.ts
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm vitest run src/lib/active-project.test.ts
 ```
 Expected: PASS (5 tests).
 
@@ -729,7 +729,7 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@wherabouts.com/ui/components/select";
+} from "@locnative/ui/components/select";
 
 export interface ProjectOption {
 	id: string;
@@ -772,15 +772,15 @@ export function ActiveProjectSelector({
 - [ ] **Step 6: Type-check**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm dlx tsc --noEmit -p tsconfig.json 2>&1 | grep -i "active-project" || echo "no active-project errors"
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm dlx tsc --noEmit -p tsconfig.json 2>&1 | grep -i "active-project" || echo "no active-project errors"
 ```
 Expected: `no active-project errors`.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/src/lib/active-project.ts apps/web/src/lib/active-project.test.ts apps/web/src/components/active-project-selector.tsx
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): add active-project store + selector"
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/src/lib/active-project.ts apps/web/src/lib/active-project.test.ts apps/web/src/components/active-project-selector.tsx
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(web): add active-project store + selector"
 ```
 
 ---
@@ -822,7 +822,7 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
+} from "@locnative/ui/components/card";
 import { MapCanvas } from "@/components/map/map-canvas";
 
 export const Route = createFileRoute("/_protected/zones")({
@@ -859,7 +859,7 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
+} from "@locnative/ui/components/card";
 
 export const Route = createFileRoute("/_protected/webhooks")({
 	component: RouteComponent,
@@ -886,7 +886,7 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
+} from "@locnative/ui/components/card";
 
 export const Route = createFileRoute("/_protected/batch")({
 	component: RouteComponent,
@@ -913,7 +913,7 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
+} from "@locnative/ui/components/card";
 
 export const Route = createFileRoute("/_protected/devices")({
 	component: RouteComponent,
@@ -934,15 +934,15 @@ function RouteComponent() {
 - [ ] **Step 4: Build to confirm routes register + bundle compiles**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm build 2>&1 | tail -15
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm build 2>&1 | tail -15
 ```
 Expected: build succeeds; the TanStack router plugin regenerates `routeTree.gen.ts` with the four new routes (no route-not-found or type errors).
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/src/components/app-shared.tsx apps/web/src/routes/_protected/zones.tsx apps/web/src/routes/_protected/webhooks.tsx apps/web/src/routes/_protected/batch.tsx apps/web/src/routes/_protected/devices.tsx apps/web/src/routeTree.gen.ts
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): add Geocoding nav group + placeholder routes (zones renders MapCanvas)"
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/src/components/app-shared.tsx apps/web/src/routes/_protected/zones.tsx apps/web/src/routes/_protected/webhooks.tsx apps/web/src/routes/_protected/batch.tsx apps/web/src/routes/_protected/devices.tsx apps/web/src/routeTree.gen.ts
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(web): add Geocoding nav group + placeholder routes (zones renders MapCanvas)"
 ```
 
 ---

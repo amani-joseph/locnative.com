@@ -1,4 +1,4 @@
-import { auth } from "@wherabouts.com/auth";
+import { auth } from "@locnative/auth";
 import { z } from "zod";
 import { protectedProcedure, publicProcedure } from "../../procedures.ts";
 
@@ -9,7 +9,7 @@ const signUpInputSchema = z.object({
 });
 
 export const authRouter = {
-	healthCheck: publicProcedure.handler(async () => ({
+	healthCheck: publicProcedure.handler(() => ({
 		message: "Auth server is healthy",
 		status: "ok" as const,
 	})),
@@ -17,7 +17,7 @@ export const authRouter = {
 	signUp: publicProcedure
 		.input(signUpInputSchema)
 		.handler(async ({ context, input }) => {
-			return auth.api.signUpEmail({
+			return await auth.api.signUpEmail({
 				headers: context.req.raw.headers,
 				body: {
 					email: input.email,

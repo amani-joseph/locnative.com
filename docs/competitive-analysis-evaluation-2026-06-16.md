@@ -25,7 +25,7 @@ should be treated as a snapshot, not current truth — and this one has aged pas
 
 The deeper methodological weakness: **it under-scoped the comparison to a feature presence/absence
 matrix.** It never examined *how* competitors build their SDKs, what DX patterns they standardise
-on, or where their approaches have gaps Wherabouts could exploit. That is the widening this
+on, or where their approaches have gaps Locnative could exploit. That is the widening this
 evaluation adds (§4).
 
 ---
@@ -36,10 +36,10 @@ Verified against code/npm/manifest on 2026-06-16:
 
 | 06-08 claim | Status now | Evidence |
 |---|---|---|
-| "P0: actually publish the SDK … not yet installable … `UNLICENSED`" | **DONE** | `@wherabouts/sdk@0.4.2` live on npm, **MIT** (`npm view`; commits `df09671`, `2111813`) |
+| "P0: actually publish the SDK … not yet installable … `UNLICENSED`" | **DONE** | `@locnative/sdk@0.4.2` live on npm, **MIT** (`npm view`; commits `df09671`, `2111813`) |
 | "Distance matrix / optimisation / map-matching ❌" | **SHIPPED** | Phase 10 / PR#14 `6e1a0ce`: matrix, isochrone, match, optimize + OSRM 3-profile |
 | "Routing ⚠️ driving only" | **Multi-profile + advanced** | OSRM foot/bike/car wired; `routing.ts` SDK surface |
-| "Client / mobile SDKs ❌ (unchanged)" | **Partially false** | `@wherabouts/react@0.2.0` on npm — web client SDK: `use-autocomplete`, `use-routing`, `use-reverse-geocode`, `use-zone-contains`, WAI-ARIA `combobox`, autocomplete cache. *(Native iOS/Android/RN/Flutter still absent — see §5.)* |
+| "Client / mobile SDKs ❌ (unchanged)" | **Partially false** | `@locnative/react@0.2.0` on npm — web client SDK: `use-autocomplete`, `use-routing`, `use-reverse-geocode`, `use-zone-contains`, WAI-ARIA `combobox`, autocomplete cache. *(Native iOS/Android/RN/Flutter still absent — see §5.)* |
 | "Global coverage ❌ / AU-authoritative only" | **Being dismantled** | `addresses.country` varchar(2) + country indexes; Overture + ODA adapters; manifest shows IS/LU/FO/LI promoted to prod; intl ingestion PRs #15/#19; full US queue |
 | "Python SDK: none" | **Still true** | only TS + React packages exist |
 | Autocomplete = basic | **Google-grade** | session tokens + proximity biasing (`4447042`); `google-inspired-optimizations-review.md` |
@@ -67,7 +67,7 @@ Rows that should flip from the 06-08 matrix:
 - **Client SDKs:** ❌ → **⚠️ (web yes; native mobile no)**
 - **Global coverage:** ❌ → **⚠️ (multi-country live, expanding)**
 
-This is a large swing. On the **server-developer surface Wherabouts is now at or above parity
+This is a large swing. On the **server-developer surface Locnative is now at or above parity
 with everyone except Radar**, and with the routing block closed it has reached **Mappify/Mapbox
 routing-feature parity** (depth/scale untested, but the surface exists).
 
@@ -76,7 +76,7 @@ routing-feature parity** (depth/scale untested, but the surface exists).
 ## 4. Widening the scope — competitor SDK *approaches* & best practices
 
 The 06-08 report scored SDKs as a checklist. Here is the qualitative comparison it omitted —
-*how* each competitor builds, what they standardise on, and where Wherabouts now lands.
+*how* each competitor builds, what they standardise on, and where Locnative now lands.
 
 ### Radar — the bar for *client* SDKs
 - **Approach:** native-first. iOS (Swift), Android (Kotlin), RN, Flutter, Capacitor, Cordova,
@@ -85,7 +85,7 @@ The 06-08 report scored SDKs as a checklist. Here is the qualitative comparison 
 - **Best practice they own:** the hard, unglamorous mobile-runtime work (Doze mode, iOS
   significant-location-change, motion-activity fusion). This is a multi-quarter moat, not a
   feature.
-- **Wherabouts vs:** server SDK now at parity (namespaced, retries, idempotency, typed errors).
+- **Locnative vs:** server SDK now at parity (namespaced, retries, idempotency, typed errors).
   **Native mobile is the one true remaining gap** — and it is the expensive one.
 
 ### Google Maps Platform — the *billing-aware* DX bar
@@ -93,9 +93,9 @@ The 06-08 report scored SDKs as a checklist. Here is the qualitative comparison 
   `@googlemaps/js-api-loader` + Places library (client), and **session tokens** for autocomplete
   to control per-keystroke billing. Pushing agentic/MCP grounding.
 - **Best practice they own:** autocomplete **session tokens** (bill per session, not keystroke)
-  and proximity/`locationBias`. **Wherabouts has now adopted both** (`4447042`) — a concrete DX
+  and proximity/`locationBias`. **Locnative has now adopted both** (`4447042`) — a concrete DX
   parity win the 06-08 doc predates.
-- **Wherabouts vs:** ahead on resilience (Google's JS client has no idempotency/typed-error
+- **Locnative vs:** ahead on resilience (Google's JS client has no idempotency/typed-error
   envelope); behind on POI/global breadth.
 
 ### Mapbox — the bar for *framework-native* components & routing depth
@@ -104,7 +104,7 @@ The 06-08 report scored SDKs as a checklist. Here is the qualitative comparison 
   Scoped tokens, large ecosystem.
 - **Best practice they own:** drop-in **framework-native UI components** (not just hooks) and
   routing depth (matrix/isochrone/optimization/map-matching).
-- **Wherabouts vs:** routing depth now matched; `@wherabouts/react` gives hooks + a combobox but
+- **Locnative vs:** routing depth now matched; `@locnative/react` gives hooks + a combobox but
   **not yet a batteries-included `<AddressAutofill>`-style component** — a cheap, high-leverage
   next step that would close the visible-DX gap with Mapbox/Geoapify.
 
@@ -112,14 +112,14 @@ The 06-08 report scored SDKs as a checklist. Here is the qualitative comparison 
 - **Approach:** thin REST + a **React Geocoder Autocomplete** component + Leaflet plugins.
   Open data (OSM/OpenAddresses/**Overture-class**), generous free tier, transparent pricing.
 - **Best practice they own:** frictionless self-serve + a ready-made autocomplete widget.
-- **Wherabouts vs:** **this is now the most dangerous comparison** — see §5. SDK resilience is
+- **Locnative vs:** **this is now the most dangerous comparison** — see §5. SDK resilience is
   ahead; the open-data-global story is converging.
 
 ### HERE / Mappify — SDK-light
 - HERE: enterprise REST, heavyweight onboarding, not self-serve-friendly.
-- Mappify: essentially SDK-less (REST + spreadsheet UI). Wherabouts is decisively ahead on DX.
+- Mappify: essentially SDK-less (REST + spreadsheet UI). Locnative is decisively ahead on DX.
 
-### Scorecard — Wherabouts SDK posture, 2026-06-16
+### Scorecard — Locnative SDK posture, 2026-06-16
 - **Leads the field on:** server-SDK resilience (retry/backoff/idempotency/typed errors w/
   `requestId`/`docUrl`/`fields`) — Stripe-grade, beyond every geocoder and on par with Radar's
   server tier.
@@ -127,7 +127,7 @@ The 06-08 report scored SDKs as a checklist. Here is the qualitative comparison 
   tokens/proximity, React hooks, routing-feature surface.
 - **Behind on:** **native mobile SDKs** (Radar), **Python/multi-language** server SDKs (Google/
   HERE/Mapbox), **drop-in framework UI components** (Mapbox/Geoapify), **OpenAPI-generated client
-  fan-out** (most majors auto-generate; Wherabouts hand-writes — fine now, a scaling tax later).
+  fan-out** (most majors auto-generate; Locnative hand-writes — fine now, a scaling tax later).
 
 ---
 
@@ -137,7 +137,7 @@ This is the most important finding and **neither dated report addresses it.**
 
 The entire 06-08/06-07 positioning rests on one sentence: *"AU-authoritative G-NAF/ABS data that
 global players won't match."* But the live intl ingestion uses **Overture Maps** (open data) — the
-**same class of open data Geoapify already ships globally.** As Wherabouts adds Overture-backed
+**same class of open data Geoapify already ships globally.** As Locnative adds Overture-backed
 countries it is **walking out of the uncontested AU-authoritative quadrant and into the crowded
 global-generic open-data quadrant** where Geoapify, and ultimately Google/HERE/Mapbox, are
 stronger and better-funded.
@@ -186,4 +186,4 @@ as the cheap win is **largely won**: published, hardened, multi-profile routing,
 autocomplete, a web React SDK. **Two things now define the competitive frontier:** (1) the
 **native-mobile gap vs Radar** (the real, expensive moat), and (2) an **unacknowledged strategic
 fork** — the Overture global ingestion quietly trades the AU-authoritative moat for a fight
-Wherabouts is not yet equipped to win. Decide §5 before funding anything else.
+Locnative is not yet equipped to win. Decide §5 before funding anything else.

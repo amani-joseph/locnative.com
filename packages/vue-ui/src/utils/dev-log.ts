@@ -10,6 +10,5 @@ export function logDevError(message: string, error: unknown): void {
 	) {
 		return;
 	}
-	// biome-ignore lint/suspicious/noConsole: dev-only diagnostic
-	console.error(`[wherabouts/vue-ui] ${message}`, error);
+	console.error(`[locnative/vue-ui] ${message}`, error);
 }

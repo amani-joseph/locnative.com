@@ -1,13 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Badge } from "@wherabouts.com/ui/components/badge";
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Badge } from "@locnative/ui/components/badge";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
+} from "@locnative/ui/components/card";
 import {
 	Dialog,
 	DialogContent,
@@ -16,17 +15,18 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-} from "@wherabouts.com/ui/components/dialog";
-import { Input } from "@wherabouts.com/ui/components/input";
-import { Label } from "@wherabouts.com/ui/components/label";
+} from "@locnative/ui/components/dialog";
+import { Input } from "@locnative/ui/components/input";
+import { Label } from "@locnative/ui/components/label";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@wherabouts.com/ui/components/select";
-import { Skeleton } from "@wherabouts.com/ui/components/skeleton";
+} from "@locnative/ui/components/select";
+import { Skeleton } from "@locnative/ui/components/skeleton";
+import { createFileRoute } from "@tanstack/react-router";
 import {
 	CheckIcon,
 	CopyIcon,
@@ -232,7 +232,7 @@ function CreateProjectDialog({
 						<DialogHeader>
 							<DialogTitle>Create Project</DialogTitle>
 							<DialogDescription>
-								Choose an existing API key or let Wherabouts generate a new key
+								Choose an existing API key or let Locnative generate a new key
 								named after this project.
 							</DialogDescription>
 						</DialogHeader>

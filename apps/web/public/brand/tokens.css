@@ -1,6 +1,6 @@
 /**
- * wherabouts.com — Obsidian Brand Design Tokens
- * Brand System 2026
+ * locnative.com — Flow Brand Design Tokens
+ * Brand System 2026 — "LN Flow" mark · signal mint on void green-black
  *
  * Import this file at the root of your stylesheet:
  *   @import url('/brand/tokens.css');
@@ -14,203 +14,218 @@
      COLOUR — Core
   ───────────────────────────────────────── */
 
-	/** Primary dark background — the brand's dominant colour */
-	--whr-color-void: #0c0c0c;
+	/** Primary dark background — void green-black, the brand's dominant colour */
+	--ln-color-void: #0a0f0d;
 
 	/** Primary light / mark colour on dark backgrounds */
-	--whr-color-white: #ffffff;
+	--ln-color-white: #ffffff;
 
-	/** Silver accent — used for destination pin and secondary elements */
-	--whr-color-silver: #c8c8c8;
+	/** Paper — near-white headline text / light-mode ground (the L) */
+	--ln-color-paper: #eef5f0;
+
+	/** Signal mint — the N, CTAs, live indicators. Use sparingly: always means "active". */
+	--ln-color-mint: #4ee0a0;
+
+	/** Bright mint — hover / emphasis on the accent */
+	--ln-color-mint-bright: #6bedb4;
+
+	/** Pale mint — dot fields, secondary data-viz, subtle accents */
+	--ln-color-mint-pale: #a9e8cb;
+
+	/** Deep fern — gradients, glow halos, green mark on light backgrounds */
+	--ln-color-fern: #1e6b4a;
+
+	/** Silver — legacy neutral accent (retained for backwards compatibility) */
+	--ln-color-silver: #c8c8c8;
 
 	/* ─────────────────────────────────────────
      COLOUR — Surfaces (dark theme)
   ───────────────────────────────────────── */
 
 	/** Raised surface — cards, panels */
-	--whr-color-surface: #161616;
+	--ln-color-surface: #111a15;
 
 	/** Overlay — modals, dropdowns */
-	--whr-color-overlay: #222222;
+	--ln-color-overlay: #16221c;
 
 	/** Subtle element background */
-	--whr-color-ghost: #2a2a2a;
+	--ln-color-ghost: #1c2a23;
 
 	/** Primary border */
-	--whr-color-border: #2c2c2c;
+	--ln-color-border: #1e2b24;
 
 	/** Secondary border / separator */
-	--whr-color-border-2: #3a3a3a;
+	--ln-color-border-2: #2a3a33;
 
 	/** Secondary / subdued text */
-	--whr-color-mist: #5a5a5a;
+	--ln-color-mist: #75857c;
 
 	/* ─────────────────────────────────────────
      COLOUR — Semantic
   ───────────────────────────────────────── */
 
-	--whr-color-success: #50c878;
-	--whr-color-warning: #f5a623;
-	--whr-color-error: #e05555;
-	--whr-color-info: #4a90d9;
+	--ln-color-success: #50c878;
+	--ln-color-warning: #f5a623;
+	--ln-color-error: #e05555;
+	--ln-color-info: #4a90d9;
 
 	/* ─────────────────────────────────────────
      COLOUR — Alpha utilities
   ───────────────────────────────────────── */
 
-	--whr-white-10: rgba(255, 255, 255, 0.1);
-	--whr-white-20: rgba(255, 255, 255, 0.2);
-	--whr-white-40: rgba(255, 255, 255, 0.4);
-	--whr-white-60: rgba(255, 255, 255, 0.6);
-	--whr-white-80: rgba(255, 255, 255, 0.8);
+	--ln-white-10: rgba(255, 255, 255, 0.1);
+	--ln-white-20: rgba(255, 255, 255, 0.2);
+	--ln-white-40: rgba(255, 255, 255, 0.4);
+	--ln-white-60: rgba(255, 255, 255, 0.6);
+	--ln-white-80: rgba(255, 255, 255, 0.8);
 
-	--whr-black-10: rgba(0, 0, 0, 0.1);
-	--whr-black-20: rgba(0, 0, 0, 0.2);
-	--whr-black-40: rgba(0, 0, 0, 0.4);
-	--whr-black-60: rgba(0, 0, 0, 0.6);
-	--whr-black-80: rgba(0, 0, 0, 0.8);
+	--ln-black-10: rgba(0, 0, 0, 0.1);
+	--ln-black-20: rgba(0, 0, 0, 0.2);
+	--ln-black-40: rgba(0, 0, 0, 0.4);
+	--ln-black-60: rgba(0, 0, 0, 0.6);
+	--ln-black-80: rgba(0, 0, 0, 0.8);
 
 	/* ─────────────────────────────────────────
      TYPOGRAPHY — Fonts
   ───────────────────────────────────────── */
 
 	/**
-	 * Brand typeface — used for the wordmark, hero headings, and display text.
-	 * Load via: @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap')
-	 * Fallback stack is system monospace (JetBrains Mono preferred per project convention).
+	 * Brand / display typeface — the monospace voice of the hero and wordmark.
+	 * Load via: @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap')
 	 */
-	--whr-font-brand:
-		"JetBrains Mono", "DM Sans", ui-monospace, system-ui, sans-serif;
+	--ln-font-brand: "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
 
-	/** UI typeface — navigation, labels, captions, buttons */
-	--whr-font-ui: "Inter", system-ui, sans-serif;
+	/**
+	 * UI / heading typeface — navigation, headings, labels, buttons, body.
+	 * Load via: @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap')
+	 */
+	--ln-font-ui: "Space Grotesk", "Inter", system-ui, sans-serif;
 
 	/** Code / monospace — API examples, code blocks */
-	--whr-font-mono:
+	--ln-font-mono:
 		"JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
 
 	/* ─────────────────────────────────────────
      TYPOGRAPHY — Scale
   ───────────────────────────────────────── */
 
-	--whr-text-xs: 0.6875rem; /* 11px */
-	--whr-text-sm: 0.8125rem; /* 13px */
-	--whr-text-base: 0.9375rem; /* 15px */
-	--whr-text-md: 1rem; /* 16px */
-	--whr-text-lg: 1.125rem; /* 18px */
-	--whr-text-xl: 1.375rem; /* 22px */
-	--whr-text-2xl: 1.75rem; /* 28px */
-	--whr-text-3xl: 2.25rem; /* 36px */
-	--whr-text-4xl: 3rem; /* 48px */
-	--whr-text-5xl: 4rem; /* 64px */
-	--whr-text-6xl: 6rem; /* 96px */
+	--ln-text-xs: 0.6875rem; /* 11px */
+	--ln-text-sm: 0.8125rem; /* 13px */
+	--ln-text-base: 0.9375rem; /* 15px */
+	--ln-text-md: 1rem; /* 16px */
+	--ln-text-lg: 1.125rem; /* 18px */
+	--ln-text-xl: 1.375rem; /* 22px */
+	--ln-text-2xl: 1.75rem; /* 28px */
+	--ln-text-3xl: 2.25rem; /* 36px */
+	--ln-text-4xl: 3rem; /* 48px */
+	--ln-text-5xl: 4rem; /* 64px */
+	--ln-text-6xl: 6rem; /* 96px */
 
 	/* ─────────────────────────────────────────
      TYPOGRAPHY — Weight
   ───────────────────────────────────────── */
 
-	--whr-weight-light: 300;
-	--whr-weight-regular: 400;
-	--whr-weight-medium: 500;
-	--whr-weight-semibold: 600;
+	--ln-weight-light: 300;
+	--ln-weight-regular: 400;
+	--ln-weight-medium: 500;
+	--ln-weight-semibold: 600;
 
 	/* ─────────────────────────────────────────
      TYPOGRAPHY — Letter spacing
   ───────────────────────────────────────── */
 
-	--whr-tracking-tight: -0.04em;
-	--whr-tracking-snug: -0.02em;
-	--whr-tracking-normal: 0em;
-	--whr-tracking-wide: 0.04em;
-	--whr-tracking-wider: 0.1em;
-	--whr-tracking-widest: 0.18em;
+	--ln-tracking-tight: -0.04em;
+	--ln-tracking-snug: -0.02em;
+	--ln-tracking-normal: 0em;
+	--ln-tracking-wide: 0.04em;
+	--ln-tracking-wider: 0.1em;
+	--ln-tracking-widest: 0.18em;
 
 	/* ─────────────────────────────────────────
      TYPOGRAPHY — Line height
   ───────────────────────────────────────── */
 
-	--whr-leading-none: 1;
-	--whr-leading-tight: 1.25;
-	--whr-leading-snug: 1.4;
-	--whr-leading-normal: 1.6;
-	--whr-leading-relaxed: 1.75;
-	--whr-leading-loose: 2;
+	--ln-leading-none: 1;
+	--ln-leading-tight: 1.25;
+	--ln-leading-snug: 1.4;
+	--ln-leading-normal: 1.6;
+	--ln-leading-relaxed: 1.75;
+	--ln-leading-loose: 2;
 
 	/* ─────────────────────────────────────────
      SPACING
   ───────────────────────────────────────── */
 
-	--whr-space-1: 4px;
-	--whr-space-2: 8px;
-	--whr-space-3: 12px;
-	--whr-space-4: 16px;
-	--whr-space-5: 20px;
-	--whr-space-6: 24px;
-	--whr-space-8: 32px;
-	--whr-space-10: 40px;
-	--whr-space-12: 48px;
-	--whr-space-14: 56px;
-	--whr-space-16: 64px;
-	--whr-space-20: 80px;
-	--whr-space-24: 96px;
-	--whr-space-32: 128px;
+	--ln-space-1: 4px;
+	--ln-space-2: 8px;
+	--ln-space-3: 12px;
+	--ln-space-4: 16px;
+	--ln-space-5: 20px;
+	--ln-space-6: 24px;
+	--ln-space-8: 32px;
+	--ln-space-10: 40px;
+	--ln-space-12: 48px;
+	--ln-space-14: 56px;
+	--ln-space-16: 64px;
+	--ln-space-20: 80px;
+	--ln-space-24: 96px;
+	--ln-space-32: 128px;
 
 	/* ─────────────────────────────────────────
      BORDER RADIUS
   ───────────────────────────────────────── */
 
-	--whr-radius-sm: 4px;
-	--whr-radius-md: 6px;
-	--whr-radius-lg: 12px;
-	--whr-radius-xl: 20px;
-	--whr-radius-2xl: 32px;
-	--whr-radius-full: 9999px;
+	--ln-radius-sm: 4px;
+	--ln-radius-md: 6px;
+	--ln-radius-lg: 12px;
+	--ln-radius-xl: 20px;
+	--ln-radius-2xl: 32px;
+	--ln-radius-full: 9999px;
 
 	/* ─────────────────────────────────────────
      SHADOWS
   ───────────────────────────────────────── */
 
-	--whr-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+	--ln-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
 
-	--whr-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+	--ln-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
 
-	--whr-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
+	--ln-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
 
-	--whr-shadow-xl:
-		0 24px 64px rgba(0, 0, 0, 0.6), 0 8px 16px rgba(0, 0, 0, 0.4);
+	--ln-shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.6), 0 8px 16px rgba(0, 0, 0, 0.4);
 
 	/* ─────────────────────────────────────────
      TRANSITIONS
   ───────────────────────────────────────── */
 
-	--whr-ease-default: cubic-bezier(0.16, 1, 0.3, 1);
-	--whr-ease-in: cubic-bezier(0.4, 0, 1, 1);
-	--whr-ease-out: cubic-bezier(0, 0, 0.2, 1);
+	--ln-ease-default: cubic-bezier(0.16, 1, 0.3, 1);
+	--ln-ease-in: cubic-bezier(0.4, 0, 1, 1);
+	--ln-ease-out: cubic-bezier(0, 0, 0.2, 1);
 
-	--whr-duration-fast: 120ms;
-	--whr-duration-base: 200ms;
-	--whr-duration-slow: 350ms;
+	--ln-duration-fast: 120ms;
+	--ln-duration-base: 200ms;
+	--ln-duration-slow: 350ms;
 
-	--whr-transition-base: var(--whr-duration-base) var(--whr-ease-default);
+	--ln-transition-base: var(--ln-duration-base) var(--ln-ease-default);
 
 	/* ─────────────────────────────────────────
      LAYOUT
   ───────────────────────────────────────── */
 
 	/** Maximum content width */
-	--whr-max-width: 1260px;
+	--ln-max-width: 1260px;
 
 	/** Page-level horizontal padding (fluid) */
-	--whr-gutter: clamp(20px, 5vw, 80px);
+	--ln-gutter: clamp(20px, 5vw, 80px);
 
 	/* ─────────────────────────────────────────
      Z-INDEX SCALE
   ───────────────────────────────────────── */
 
-	--whr-z-base: 0;
-	--whr-z-raised: 10;
-	--whr-z-overlay: 100;
-	--whr-z-modal: 200;
-	--whr-z-toast: 300;
-	--whr-z-nav: 400;
+	--ln-z-base: 0;
+	--ln-z-raised: 10;
+	--ln-z-overlay: 100;
+	--ln-z-modal: 200;
+	--ln-z-toast: 300;
+	--ln-z-nav: 400;
 }

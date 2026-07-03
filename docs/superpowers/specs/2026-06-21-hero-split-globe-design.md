@@ -7,7 +7,7 @@
 ## Goal
 
 Rebuild the landing hero in the bold dark aesthetic of design **Variant 03**
-(from the `whereabouts-hero-section-variants` handoff bundle), as a two-column
+(from the `locnative-hero-section-variants` handoff bundle), as a two-column
 split: the existing auto-playing **address-search demo on the left**, an
 interactive **cobe globe on the right**. When the demo "selects" an address,
 the globe **spins/flies to that address's coordinates** and drops a marker —

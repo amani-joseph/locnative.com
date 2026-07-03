@@ -39,7 +39,7 @@
 ```js
 // /tmp/preflight.mjs
 import fs from "node:fs";
-const ROOT = "/Users/mac/Developer/projects/wherabouts.com";
+const ROOT = "/Users/mac/Developer/projects/locnative.com";
 const url = fs.readFileSync(`${ROOT}/packages/database/.env`, "utf8")
   .match(/^DATABASE_URL=(.+)$/m)[1].trim().replace(/^["']|["']$/g, "");
 const base = `${ROOT}/node_modules/.pnpm`;
@@ -88,7 +88,7 @@ Expected: `OK`. This file is the rollback source for Task 5 — do not delete un
 - [ ] **Step 1: Archive the old lineage**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/packages/database
+cd /Users/mac/Developer/projects/locnative.com/packages/database
 mkdir -p drizzle/_archive/meta
 git mv drizzle/*.sql drizzle/_archive/ 2>/dev/null || mv drizzle/*.sql drizzle/_archive/
 git mv drizzle/meta/* drizzle/_archive/meta/ 2>/dev/null || mv drizzle/meta/* drizzle/_archive/meta/
@@ -100,8 +100,8 @@ Expected: `drizzle/` contains only `_archive/`; `drizzle/meta` is empty/absent.
 - [ ] **Step 2: Generate the fresh baseline**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com
-pnpm --filter @wherabouts.com/database db:generate
+cd /Users/mac/Developer/projects/locnative.com
+pnpm --filter @locnative/database db:generate
 ```
 Expected: drizzle-kit writes a new `drizzle/0000_<random>.sql`, `drizzle/meta/0000_snapshot.json`, and `drizzle/meta/_journal.json` with exactly ONE entry. It may print "No schema changes" warnings for nothing — that's fine; we want the full CREATE from empty.
 
@@ -120,7 +120,7 @@ Expected: a count matching the number of tables in `/tmp/prod_objects_2026-06-07
 - [ ] **Step 5: Commit the archive + raw baseline**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com
+cd /Users/mac/Developer/projects/locnative.com
 git add packages/database/drizzle
 git commit -m "refactor(db): squash migrations into single generated baseline (raw)"
 ```
@@ -161,7 +161,7 @@ CREATE INDEX IF NOT EXISTS "idx_addresses_search_text_trgm" ON "addresses" USING
 ```js
 // /tmp/diff_baseline.mjs
 import fs from "node:fs";
-const ROOT = "/Users/mac/Developer/projects/wherabouts.com";
+const ROOT = "/Users/mac/Developer/projects/locnative.com";
 const prod = JSON.parse(fs.readFileSync("/tmp/prod_objects_2026-06-07.json", "utf8"));
 const sqlFile = fs.readdirSync(`${ROOT}/packages/database/drizzle`).find(f => /^0000_.*\.sql$/.test(f));
 const baseline = fs.readFileSync(`${ROOT}/packages/database/drizzle/${sqlFile}`, "utf8");
@@ -199,7 +199,7 @@ Expected: prints a statement count and `has postgis: true`.
 - [ ] **Step 6: Commit the completed baseline**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com
+cd /Users/mac/Developer/projects/locnative.com
 git add packages/database/drizzle
 git commit -m "refactor(db): complete baseline with extensions + opclass indexes"
 ```
@@ -222,7 +222,7 @@ Expected: shows drizzle computes `crypto.createHash("sha256").update(<query stri
 // /tmp/derive_hash.mjs
 import fs from "node:fs";
 import crypto from "node:crypto";
-const ROOT = "/Users/mac/Developer/projects/wherabouts.com";
+const ROOT = "/Users/mac/Developer/projects/locnative.com";
 const dir = `${ROOT}/packages/database/drizzle`;
 const sqlFile = fs.readdirSync(dir).find(f => /^0000_.*\.sql$/.test(f));
 const content = fs.readFileSync(`${dir}/${sqlFile}`, "utf8");
@@ -262,7 +262,7 @@ Confirm with the human operator: Tasks 1–4 are green, `/tmp/drizzle_migrations
 ```js
 // /tmp/reconcile.mjs
 import fs from "node:fs";
-const ROOT = "/Users/mac/Developer/projects/wherabouts.com";
+const ROOT = "/Users/mac/Developer/projects/locnative.com";
 const url = fs.readFileSync(`${ROOT}/packages/database/.env`, "utf8")
   .match(/^DATABASE_URL=(.+)$/m)[1].trim().replace(/^["']|["']$/g, "");
 const base = `${ROOT}/node_modules/.pnpm`;
@@ -300,7 +300,7 @@ Expected: `rows after: 1 | hash: <first16> | created_at: <when>`.
 
 - [ ] **Step 1: `db:migrate` must be a no-op on prod**
 
-Run: `cd /Users/mac/Developer/projects/wherabouts.com && pnpm --filter @wherabouts.com/database db:migrate`
+Run: `cd /Users/mac/Developer/projects/locnative.com && pnpm --filter @locnative/database db:migrate`
 Expected: drizzle reports nothing to apply / completes without running the baseline (no `CREATE TABLE` errors). 
 
 > If it ATTEMPTS the baseline and errors with "relation already exists", the hash did not match. ROLLBACK: run a script that `DELETE FROM drizzle.__drizzle_migrations` then re-inserts the 12 rows from `/tmp/drizzle_migrations_backup_2026-06-07.json`, then return to Task 4 Step 1 to re-derive the hash (the hashed string was wrong).
@@ -313,9 +313,9 @@ Expected: `MISSING TABLES: none`, `MISSING INDEXES: none`, `MISSING EXTENSIONS: 
 - [ ] **Step 3: Typecheck + db tests pass**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com
-pnpm --filter @wherabouts.com/database test 2>&1 | tail -5
-pnpm --filter @wherabouts.com/api exec tsc --noEmit && echo API_TYPES_CLEAN
+cd /Users/mac/Developer/projects/locnative.com
+pnpm --filter @locnative/database test 2>&1 | tail -5
+pnpm --filter @locnative/api exec tsc --noEmit && echo API_TYPES_CLEAN
 ```
 Expected: db tests pass; `API_TYPES_CLEAN`.
 
@@ -330,7 +330,7 @@ If a scratch `DATABASE_URL` is provided, point `db:migrate` at it and confirm it
 ## Task 7: Cleanup + documentation
 
 **Files:**
-- Modify: `/Users/mac/.claude/projects/-Users-mac-Developer-projects-wherabouts-com/memory/drizzle-dual-migration-lineage.md`
+- Modify: `/Users/mac/.claude/projects/-Users-mac-Developer-projects-locnative-com/memory/drizzle-dual-migration-lineage.md`
 - Create/Modify: `packages/database/README.md` (migration workflow note)
 
 - [ ] **Step 1: Update the memory to reflect the resolved state**
@@ -346,7 +346,7 @@ Create or append `packages/database/README.md`:
 
 Single drizzle-managed lineage. To change schema:
 1. Edit `src/schema/*.ts`.
-2. `pnpm --filter @wherabouts.com/database db:generate` (creates a journaled migration + snapshot).
+2. `pnpm --filter @locnative/database db:generate` (creates a journaled migration + snapshot).
 3. For objects drizzle can't model (extensions, opclass/partial indexes), use
    `db:generate --custom --name=<desc>` and write the raw SQL — it still gets a
    journal entry so it is applied by `db:migrate`.
@@ -365,7 +365,7 @@ rm -f /tmp/preflight.mjs /tmp/diff_baseline.mjs /tmp/derive_hash.mjs /tmp/reconc
 - [ ] **Step 4: Commit docs**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com
+cd /Users/mac/Developer/projects/locnative.com
 git add packages/database/README.md
 git commit -m "docs(db): document single-lineage migration workflow"
 ```
@@ -373,7 +373,7 @@ git commit -m "docs(db): document single-lineage migration workflow"
 - [ ] **Step 5: Final push**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com
+cd /Users/mac/Developer/projects/locnative.com
 git push
 ```
 Expected: archive + baseline + docs commits land on the remote.

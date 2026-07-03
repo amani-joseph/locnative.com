@@ -11,7 +11,7 @@ import { jsonLdScript, softwareApplicationJsonLd } from "@/lib/structured-data";
 export const Route = createFileRoute("/")({
 	head: () => {
 		const seo = buildSeo({
-			title: "Geocoding, Geofencing & Routing APIs for Developers | Wherabouts",
+			title: "Geocoding, Geofencing & Routing APIs for Developers | Locnative",
 			description:
 				"Production-ready location APIs — address autocomplete, geocoding, geofencing, routing, and device tracking. Ship location features fast with US & Australia coverage.",
 			path: "/",

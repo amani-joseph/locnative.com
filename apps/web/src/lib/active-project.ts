@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-export const ACTIVE_PROJECT_STORAGE_KEY = "wherabouts.activeProjectId";
+export const ACTIVE_PROJECT_STORAGE_KEY = "locnative.activeProjectId";
 
 export function readStoredProjectId(): string | null {
 	if (typeof window === "undefined") {

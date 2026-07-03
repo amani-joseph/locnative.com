@@ -13,7 +13,7 @@ export default function Footer() {
 		{ label: "API in action", href: "/#api" },
 	];
 	const footerLinksCompany = [
-		{ label: "Contact", href: "mailto:hello@wherabouts.com" },
+		{ label: "Contact", href: "mailto:hello@locnative.com" },
 	];
 	const footerLinksLegal = [
 		{ label: "Privacy Policy", href: "/legal/privacy" },
@@ -30,7 +30,7 @@ export default function Footer() {
 							id="pricing"
 						>
 							<p className="mb-2 font-medium text-muted-foreground text-sm">
-								Wherabouts
+								Locnative
 							</p>
 							<h2 className="mb-6 font-medium text-3xl text-foreground sm:text-5xl">
 								Predictable pricing for international location workloads in
@@ -46,7 +46,7 @@ export default function Footer() {
 									buttonVariants({ variant: "default" }),
 									"h-auto rounded-full bg-teal-400 px-6 py-3.5 text-teal-950 hover:bg-teal-400/80"
 								)}
-								href="mailto:hello@wherabouts.com"
+								href="mailto:hello@locnative.com"
 							>
 								Talk to us
 							</a>
@@ -101,7 +101,7 @@ export default function Footer() {
 					<div className="flex flex-col gap-12">
 						<Separator />
 						<p className="fade-in slide-in-from-bottom-10 animate-in fill-mode-both text-muted-foreground text-sm delay-300 duration-1000 ease-in-out">
-							© {new Date().getFullYear()} Wherabouts. All rights reserved.
+							© {new Date().getFullYear()} Locnative. All rights reserved.
 						</p>
 					</div>
 				</div>

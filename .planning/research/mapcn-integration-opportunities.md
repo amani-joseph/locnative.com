@@ -1,4 +1,4 @@
-# mapcn integration opportunities — wherabouts.com
+# mapcn integration opportunities — locnative.com
 
 Source: https://www.mapcn.dev (docs: /basic-map, /markers, /clusters, /routes, /arcs)
 Indexed under ctx sources: `mapcn-home`, `mapcn-docs`, `mapcn-basic-map`, `mapcn-markers`, `mapcn-clusters`, `mapcn-routes`, `mapcn-arcs`.
@@ -10,7 +10,7 @@ Components: **Map** (controlled `viewport`/`onViewportChange`, custom `styles`, 
 
 ## Why it fits this project almost perfectly
 - **Same engine.** We already ship `maplibre-gl` (~1.5 MB already in the web bundle). mapcn adds no new map engine and no duplicate dependency.
-- **Same design system.** We already use shadcn/ui via `@wherabouts.com/ui` + Tailwind v4 → components drop into the UI package and inherit our theme tokens. Dark dashboard ⇒ theme-aware maps are free.
+- **Same design system.** We already use shadcn/ui via `@locnative/ui` + Tailwind v4 → components drop into the UI package and inherit our theme tokens. Dark dashboard ⇒ theme-aware maps are free.
 - **Copy-paste model** suits our Cloudflare Workers SSR app and Ultracite/Biome: vendor the files, run `pnpm dlx ultracite fix` to match tabs/double-quotes/sorted-classes.
 - **Honest scope:** mapcn is for **displaying/visualizing** geodata, NOT drawing. Keep **terra-draw** for zone editing; use mapcn for everything that *shows* data.
 - **Adaptation needed:** examples are Next-flavored (`"use client"`, `next/image`). On TanStack Start drop the directive and swap to `<img>`. Minor.

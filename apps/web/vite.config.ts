@@ -10,7 +10,11 @@ export default defineConfig({
 		cloudflare({ viteEnvironment: { name: "ssr" } }),
 		tsconfigPaths(),
 		tailwindcss(),
-		tanstackStart(),
+		tanstackStart({
+			router: {
+				routeFileIgnorePattern: "\\.test\\.ts$",
+			},
+		}),
 		viteReact(),
 	],
 	resolve: {
@@ -18,6 +22,7 @@ export default defineConfig({
 		dedupe: ["react", "react-dom"],
 	},
 	server: {
+		host: "0.0.0.0",
 		port: 3001,
 	},
 });

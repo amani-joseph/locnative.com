@@ -32,7 +32,7 @@ Account Deletion.
 - Migrations run to `0015`. Next migration is `0016`.
 - API: oRPC routers in `packages/api/src/routers/domains/`
   (`protectedProcedure` / `publicProcedure`).
-- UI: `@wherabouts.com/ui` provides `dialog`, `tabs`, `table`, `switch`,
+- UI: `@locnative/ui` provides `dialog`, `tabs`, `table`, `switch`,
   `badge`, `card`, `button`, `input`, `password-input`, `field`, `separator`,
   `skeleton`, `sonner` (toasts). No `alert-dialog` — use `dialog`.
 
@@ -95,7 +95,7 @@ import { twoFactor } from "better-auth/plugins";
 import { createAuthMiddleware } from "better-auth/api";
 
 betterAuth({
-  appName: "Wherabouts",
+  appName: "Locnative",
   // ...existing...
   plugins: [twoFactor()],
   user: {

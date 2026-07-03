@@ -6,7 +6,7 @@ const ringSchema = z
 	.refine(
 		(coords) => {
 			const first = coords[0];
-			const last = coords[coords.length - 1];
+			const last = coords.at(-1);
 			return first && last && first[0] === last[0] && first[1] === last[1];
 		},
 		{

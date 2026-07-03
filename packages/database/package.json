@@ -1,5 +1,5 @@
 {
-  "name": "@wherabouts.com/database",
+  "name": "@locnative/database",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.19.39",
-    "@wherabouts.com/config": "workspace:*",
+    "@locnative/config": "workspace:*",
     "drizzle-kit": "^0.31.0",
     "typescript": "^5",
     "vitest": "^4.1.4"

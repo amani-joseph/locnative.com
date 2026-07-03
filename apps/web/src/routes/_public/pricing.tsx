@@ -1,14 +1,14 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Badge } from "@wherabouts.com/ui/components/badge";
-import { buttonVariants } from "@wherabouts.com/ui/components/button";
+import { Badge } from "@locnative/ui/components/badge";
+import { buttonVariants } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
-import { cn } from "@wherabouts.com/ui/lib/utils";
+} from "@locnative/ui/components/card";
+import { cn } from "@locnative/ui/lib/utils";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckIcon } from "lucide-react";
 import { PricingBackground } from "@/components/backgrounds/pricing-background";
 import { PricingCalculator } from "@/components/pricing/pricing-calculator";
@@ -145,7 +145,7 @@ function PricingPage() {
 								buttonVariants({ variant: "default", size: "lg" }),
 								"shrink-0"
 							)}
-							href="mailto:hello@wherabouts.com"
+							href="mailto:hello@locnative.com"
 						>
 							Talk to us
 						</a>
@@ -160,7 +160,7 @@ function PricingPage() {
 					. Questions about pricing?{" "}
 					<a
 						className="underline underline-offset-4"
-						href="mailto:hello@wherabouts.com"
+						href="mailto:hello@locnative.com"
 					>
 						Get in touch
 					</a>

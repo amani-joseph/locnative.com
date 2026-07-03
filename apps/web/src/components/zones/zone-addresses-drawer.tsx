@@ -4,7 +4,7 @@ import {
 	SheetDescription,
 	SheetHeader,
 	SheetTitle,
-} from "@wherabouts.com/ui/components/sheet";
+} from "@locnative/ui/components/sheet";
 import {
 	Table,
 	TableBody,
@@ -12,7 +12,7 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@wherabouts.com/ui/components/table";
+} from "@locnative/ui/components/table";
 
 export interface ZoneAddressItem {
 	id: number;

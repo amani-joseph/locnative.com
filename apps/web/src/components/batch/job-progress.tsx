@@ -1,4 +1,4 @@
-import { Progress } from "@wherabouts.com/ui/components/progress";
+import { Progress } from "@locnative/ui/components/progress";
 
 export interface JobProgressProps {
 	error?: string | null;

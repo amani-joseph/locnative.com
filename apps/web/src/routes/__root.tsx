@@ -1,3 +1,4 @@
+import { Toaster } from "@locnative/ui/components/sonner";
 import type { QueryClient } from "@tanstack/react-query";
 import {
 	createRootRouteWithContext,
@@ -7,7 +8,6 @@ import {
 	useRouter,
 } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { Toaster } from "@wherabouts.com/ui/components/sonner";
 import { ThemeProvider } from "next-themes";
 import { lazy, Suspense, useEffect } from "react";
 import {
@@ -55,7 +55,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 					"width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover",
 			},
 			{
-				title: "Wherabouts — Locations API for developers",
+				title: "Locnative — Locations API for developers",
 			},
 			{
 				name: "description",
@@ -82,7 +82,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 			},
 			{
 				rel: "apple-touch-icon",
-				href: "/brand/favicon.svg",
+				href: "/brand/png/apple-touch-icon-180x180.png",
 			},
 			{
 				rel: "stylesheet",
@@ -163,7 +163,7 @@ function RootDocument() {
 					disableTransitionOnChange={false}
 					enableColorScheme
 					enableSystem
-					storageKey="wherabouts-theme"
+					storageKey="locnative-theme"
 				>
 					<LiveAnnouncerProvider>
 						<SkipLink />

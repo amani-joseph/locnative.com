@@ -41,7 +41,7 @@ Code complete; blocked on **Stripe credentials** and **DB migration apply** (DB 
 **Action:** provide Stripe test creds, approve the migration, run E2E checklist.
 
 ### 4. SDK npm publish (Phase 09) at human checkpoint
-Plan `09-01` ready (LICENSE, manifest, publint/attw, dry-run). Blocked on npm org + auth and the irreversible `npm publish` of `@wherabouts/sdk@0.2.0`. Worktree `worktree-sdk-phase1-publish-harden` exists.
+Plan `09-01` ready (LICENSE, manifest, publint/attw, dry-run). Blocked on npm org + auth and the irreversible `npm publish` of `@locnative/sdk@0.2.0`. Worktree `worktree-sdk-phase1-publish-harden` exists.
 **Action:** create/verify npm org, run the plan, publish.
 
 ### 5. SDK Playground PR ready but unshipped

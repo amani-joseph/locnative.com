@@ -1,6 +1,6 @@
 # Launch Copy — Show HN & Product Hunt
 
-**For:** Wherabouts.com launch (90-day sprint, §10 of `docs/go-to-market-plan-2026-06.md`)
+**For:** Locnative.com launch (90-day sprint, §10 of `docs/go-to-market-plan-2026-06.md`)
 **Date drafted:** 2026-06-11
 **How to use:** Launch both Tue/Wed. Post Show HN early AM AEST/PT; submit PH 12:01am PT. Replace `[LINK]`, `[npm link]`, `[docs link]`, `[X handle]` before posting. Reply to every comment in the first 4 hours.
 
@@ -12,7 +12,7 @@
 
 ### Title options (pick one — keep under ~80 chars)
 
-1. **Show HN: Wherabouts – Geocoding + geofencing API for Australia on G-NAF/ABS**
+1. **Show HN: Locnative – Geocoding + geofencing API for Australia on G-NAF/ABS**
 2. **Show HN: An Australian geocoding and geofencing API built on government data**
 3. **Show HN: Radar-style geofencing for Australia, on authoritative G-NAF/ABS data**
 
@@ -21,7 +21,7 @@
 ### Post body (the URL field gets `[LINK]`; this goes in the text/first comment)
 
 ```
-Hi HN — I built Wherabouts, a location API for Australia: forward/reverse
+Hi HN — I built Locnative, a location API for Australia: forward/reverse
 geocoding, address autocomplete, batch geocoding, ABS/ASGS region
 classification, custom geofencing (zones), device tracking, and enter/exit
 webhooks. Point-to-point driving directions too.
@@ -71,7 +71,7 @@ Tear it apart.
 > You absolutely can — I did first. The work isn't getting the data, it's keeping the monthly G-NAF/ASGS releases loaded, building fast fuzzy autocomplete on top, and adding the geofencing/device/webhook layer that G-NAF doesn't give you. If you only need a static lookup, self-hosting is genuinely fine. This is for people who'd rather not run that pipeline.
 
 **"How is this different from Mappify?"**
-> Mappify is great at AU geocoding + routing, but has no geofencing, devices, or webhooks. Wherabouts geocodes *and* tells you when something enters a zone. Overlap on geocoding; the real-time stack is the difference.
+> Mappify is great at AU geocoding + routing, but has no geofencing, devices, or webhooks. Locnative geocodes *and* tells you when something enters a zone. Overlap on geocoding; the real-time stack is the difference.
 
 **"Why not global?"**
 > Authoritative AU data (G-NAF/ABS) is the whole point — global players don't have it and I'd rather be the best at one country than mediocre everywhere. Global is a much later question.
@@ -89,7 +89,7 @@ Tear it apart.
 > PH norms: benefit-led, scannable, emoji OK, a strong tagline, a gallery story, and a warm maker's first comment. Less technical than HN, more "what it unlocks."
 
 ### Name
-**Wherabouts**
+**Locnative**
 
 ### Tagline (60 char max — pick one)
 1. **The official location API for Australia** *(recommended)*
@@ -101,7 +101,7 @@ Developer Tools · APIs · Maps · SaaS · Location
 
 ### Description (260 char max)
 ```
-Wherabouts is the location API for Australia: geocoding, address autocomplete,
+Locnative is the location API for Australia: geocoding, address autocomplete,
 ABS boundary classification, and real-time geofencing with webhooks — all on
 authoritative G-NAF + ABS government data. Typed SDK, transparent AUD pricing,
 generous free tier.
@@ -111,7 +111,7 @@ generous free tier.
 1. **One API, the whole AU location stack** — geocode, classify, geofence, route.
 2. **Built on authoritative data** — G-NAF addresses + ABS ASGS boundaries, hosted in Australia.
 3. **Real-time geofencing** — define zones, track devices, get enter/exit webhooks. The part Google and Mappify don't do.
-4. **Address autocomplete in minutes** — `npm i @wherabouts/sdk`, typed, with retries and idempotency built in.
+4. **Address autocomplete in minutes** — `npm i @locnative/sdk`, typed, with retries and idempotency built in.
 5. **Classify any coordinate** — SA1–SA4, LGA, postcode, electoral division, mesh block from one endpoint.
 6. **Honest, AUD pricing** — generous free tier, transparent per-1k overage, no contracts, no sales call.
 
@@ -119,13 +119,13 @@ generous free tier.
 ```
 Hey Product Hunt 👋
 
-I'm the maker of Wherabouts. I built it because building location features in
+I'm the maker of Locnative. I built it because building location features in
 Australia is weirdly hard: Google is global, opaque, and priced in USD; doing it
 yourself means hosting G-NAF and ABS data and gluing PostGIS together — and even
 then you don't get the thing I actually needed most: "tell me when a device or
 asset enters this zone."
 
-Wherabouts puts the whole stack on one authoritative, AU-hosted dataset:
+Locnative puts the whole stack on one authoritative, AU-hosted dataset:
 
 🇦🇺 Official data — G-NAF addresses + ABS ASGS boundaries (open government data)
 📍 Geocoding & autocomplete — forward/reverse, batch, nearby, sub-100ms search

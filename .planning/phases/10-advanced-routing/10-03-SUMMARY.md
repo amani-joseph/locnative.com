@@ -14,7 +14,7 @@ date: 2026-06-12
 | 1 — `fetchOsrmMatch` + `no_match` kind | `ae7a445` | `fetchOsrmMatch` calls OSRM `/match/v1/{profile}/{coords}` (geojson, overview=full, optional timestamps/radiuses/gaps/tidy) → `{ matchings, tracepoints }`, **null outliers preserved**. New `RoutingErrorKind "no_match"` (NoMatch → 422) distinct from `unavailable` (→500). `osrmRequest` service union widened to `route\|table\|match`. |
 | 2 — `/api/v1/routing/match` | `a2fd602` | **POST** endpoint (D5): `profile` + `coordinates[{lat,lng,timestamp?,radius?}]` (min 2) + `gaps` + `tidy`. `buildMatchArrays` (pure, exported, unit-tested) splits per-point timestamp/radius into parallel arrays, enforcing all-or-none + strictly-increasing timestamps. Registered as `routing.match`. |
 
-**Verification:** `pnpm -F @wherabouts.com/api test` → **109/109** green; `check-types` clean; ultracite clean.
+**Verification:** `pnpm -F @locnative/api test` → **109/109** green; `check-types` clean; ultracite clean.
 
 ## SC #4 status
 ✅ **Code-complete** — `/match` snaps a multi-point trace via OSRM `/match`, returns matchings + tracepoints (null outliers kept), `NoMatch`→422 vs service→500, uses the profile-aware bound-fetch client. Live OSRM smoke deferred to deploy (no OSRM in vitest).

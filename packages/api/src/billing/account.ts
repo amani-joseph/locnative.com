@@ -1,5 +1,5 @@
-import type { BillingAccount, Database } from "@wherabouts.com/database";
-import { billingAccounts } from "@wherabouts.com/database";
+import type { BillingAccount, Database } from "@locnative/database";
+import { billingAccounts } from "@locnative/database";
 import { eq, sql } from "drizzle-orm";
 
 export interface BillingOwner {

@@ -1,4 +1,4 @@
-import { cn } from "@wherabouts.com/ui/lib/utils";
+import { cn } from "@locnative/ui/lib/utils";
 import type * as React from "react";
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {

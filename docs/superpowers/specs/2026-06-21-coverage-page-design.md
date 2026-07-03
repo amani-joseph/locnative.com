@@ -6,7 +6,7 @@
 
 ## Problem
 
-Developers evaluating the Wherabouts location API and SDKs have no way to see which
+Developers evaluating the Locnative location API and SDKs have no way to see which
 countries have address data before integrating. They risk building against the
 platform only to discover their country of operation is unsupported. We need a public,
 self-serve page that lists supported countries and what each supports.
@@ -77,21 +77,21 @@ Both are pure and unit-testable without a DOM renderer.
 Route file `apps/web/src/routes/coverage.tsx`:
 
 - `createFileRoute("/coverage")` — public, **no** `beforeLoad` auth guard.
-- `head`: title + meta description for SEO (e.g. "Coverage — Wherabouts | Countries
+- `head`: title + meta description for SEO (e.g. "Coverage — Locnative | Countries
   with address data").
 
 Layout (top to bottom):
 
 1. **Header** — `<h1>Coverage</h1>`, one-line subtitle ("Countries with address data
-   available through the Wherabouts API."), and a live count line that reflects the
+   available through the Locnative API."), and a live count line that reflects the
    current filter ("17 countries" / "3 of 17 countries").
-2. **Search** — single `Input` (`@wherabouts.com/ui/components/input`), `value`/`onChange`
+2. **Search** — single `Input` (`@locnative/ui/components/input`), `value`/`onChange`
    wired to local `useState`; results computed with `useMemo(() => filterCountries(...))`.
-3. **Table** — `@wherabouts.com/ui/components/table`:
+3. **Table** — `@locnative/ui/components/table`:
    | Country | Code | Capabilities |
    |---|---|---|
    | `🇺🇸 United States` | `US` | `Geocode` `Reverse` `Autocomplete` badges |
-   - Capabilities rendered as `Badge` (`@wherabouts.com/ui/components/badge`), one per
+   - Capabilities rendered as `Badge` (`@locnative/ui/components/badge`), one per
      capability, with a stable `key`.
 4. **Empty state** — when the filtered list is empty, render a single full-width row:
    "No countries match \"<query>\"."

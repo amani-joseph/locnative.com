@@ -33,7 +33,7 @@ describe("buildSdkSnippet", () => {
 			undefined
 		);
 		expect(snippet).toContain(
-			'import { createWheraboutsClient } from "@wherabouts/sdk";'
+			'import { createLocnativeClient } from "@locnative/sdk";'
 		);
 		expect(snippet).toContain("client.regions.classify({");
 		expect(snippet).toContain("lat: -37.8");

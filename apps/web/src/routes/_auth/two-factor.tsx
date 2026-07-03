@@ -1,14 +1,14 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
-import { Input } from "@wherabouts.com/ui/components/input";
-import { Label } from "@wherabouts.com/ui/components/label";
+} from "@locnative/ui/components/card";
+import { Input } from "@locnative/ui/components/input";
+import { Label } from "@locnative/ui/components/label";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { twoFactor } from "@/lib/auth-client";

@@ -1,13 +1,13 @@
-# Wherabouts.com — Competitive Assessment Report
+# Locnative.com — Competitive Assessment Report
 
 **Date:** 2026-06-07 · **Updated:** 2026-06-10 (added Mapbox) · **2026-06-16 (current-state refresh)**
 **Prepared for:** product/strategy review
-**Scope:** Feature & market comparison of wherabouts.com against 6 competitors —
+**Scope:** Feature & market comparison of locnative.com against 6 competitors —
 Radar, Mappify, Google Maps Platform, HERE Technologies, Geoapify, and Mapbox.
 
 > **🔄 2026-06-16 current-state refresh.** Verified against npm + the live codebase, several
 > gaps in this baseline have closed: the **TypeScript server SDK is published**
-> (`@wherabouts/sdk@0.4.2`, MIT) and a **web client SDK** shipped (`@wherabouts/react@0.2.0` —
+> (`@locnative/sdk@0.4.2`, MIT) and a **web client SDK** shipped (`@locnative/react@0.2.0` —
 > hooks + WAI-ARIA combobox); **advanced routing is live** (distance matrix, isochrones,
 > map-matching, optimisation, multi-profile — Phase 10 / PR#14); and **international address
 > data is being ingested** (Overture/ODA, multiple countries + US), softening the "AU-only"
@@ -24,7 +24,7 @@ Radar, Mappify, Google Maps Platform, HERE Technologies, Geoapify, and Mapbox.
 
 ## 1. Executive summary
 
-Wherabouts.com occupies a **genuinely uncontested niche**: *authoritative
+Locnative.com occupies a **genuinely uncontested niche**: *authoritative
 Australian location data (G-NAF + ABS ASGS) combined with a real-time geofencing /
 device / webhook stack.* No single competitor sits in exactly that square:
 
@@ -41,7 +41,7 @@ The strategic one-liner the product can credibly own is **"Radar for Australia,
 built on authoritative government data."**
 
 The three biggest competitive gaps, in priority order, are: **(1) no *native* mobile
-SDKs** (Radar's core moat — a web client SDK `@wherabouts/react` has since shipped, but native
+SDKs** (Radar's core moat — a web client SDK `@locnative/react` has since shipped, but native
 iOS/Android/RN/Flutter background geofencing has not), **(2) no places/POI dataset**, and **(3)
 no postal address validation/standardisation.** Two gaps this baseline listed have since closed:
 the **region/boundary classification** endpoint (ASGS) matched Radar "Regions"/Mappify "area
@@ -50,7 +50,7 @@ optimisation / map-matching / isochrones), reaching Mappify/Mapbox routing-featu
 
 ---
 
-## 2. Wherabouts.com feature inventory (as of this review)
+## 2. Locnative.com feature inventory (as of this review)
 
 **Shipped / in active development:**
 - **Geocoding:** autocomplete, forward geocode, reverse geocode, nearby search,
@@ -67,8 +67,8 @@ optimisation / map-matching / isochrones), reaching Mappify/Mapbox routing-featu
 - **Platform:** API explorer, projects/teams, analytics, billing, dashboard,
   self-hosted Protomaps basemap.
 - **Developer surface:** OpenAPI 3.1 spec; a **TypeScript server SDK**
-  (`@wherabouts/sdk@0.4.2` — published to npm, MIT, full resource-namespaced coverage, hardened
-  with retries/idempotency/typed errors); a **web client SDK** (`@wherabouts/react@0.2.0` —
+  (`@locnative/sdk@0.4.2` — published to npm, MIT, full resource-namespaced coverage, hardened
+  with retries/idempotency/typed errors); a **web client SDK** (`@locnative/react@0.2.0` —
   hooks + WAI-ARIA combobox, autocomplete session tokens + proximity). *🆕 2026-06-16.*
 
 **Data foundation:** G-NAF (Geoscape, authoritative AU address file) + ABS ASGS
@@ -102,7 +102,7 @@ validation, routing (distance/matrix/route-matching), base maps, static maps.
 **Developer surface (its moat):** native SDKs for iOS, Android, React Native,
 Flutter, Capacitor, Cordova, Web; ~30 prebuilt integrations (Segment, Braze,
 Amplitude, mParticle, AWS, Salesforce…). Global, hundreds of millions of devices.
-**Overlap with wherabouts:** very high on geofencing/devices/webhooks — but wherabouts
+**Overlap with locnative:** very high on geofencing/devices/webhooks — but locnative
 matches the *engine*, not the *breadth*.
 
 ### 3.2 Mappify (mappify.io) — the closest AU competitor
@@ -110,15 +110,15 @@ AU-only geocoding + routing on G-NAF. Forward/reverse geocode, **area lookups**
 (LGA / postcode / ABS SA units), road distances (driveStats), directions, spreadsheet
 paste-to-geocode UI; "DIY spatial analytics" (heatmaps, matrices) marked *coming
 soon*. Pricing: **2,500 free requests/day, then ~$1/1,000; $1,000/mo unlimited**, AUD,
-no contracts. **Gap vs wherabouts:** no geofencing, no device tracking, no webhooks,
-no real-time eventing. Effectively "wherabouts minus the geofencing stack, plus
+no contracts. **Gap vs locnative:** no geofencing, no device tracking, no webhooks,
+no real-time eventing. Effectively "locnative minus the geofencing stack, plus
 routing."
 
 ### 3.3 Google Maps Platform — the incumbent gorilla
 Geocoding, Places, autocomplete, geolocation (cell/WiFi), **Address Validation Pro**,
 Routes, Time Zone, plus new agentic/MCP grounding. Subscription tiers (Starter $100,
 Essentials $275/mo) + PAYG; global, deepest POI dataset, strongest brand. **Weakness
-relative to wherabouts:** no managed geofencing-as-a-service product; generic global
+relative to locnative:** no managed geofencing-as-a-service product; generic global
 address data (not G-NAF-authoritative for AU edge cases like rural/unit addressing);
 cost and complexity at scale.
 
@@ -126,14 +126,14 @@ cost and complexity at scale.
 Location *data* platform: maps + data (200 countries, 1,000+ attributes), geocoding,
 routing, positioning/tracking, low-code/no-code tooling, a data marketplace.
 Enterprise/fleet/logistics oriented, heavyweight onboarding. **Relative to
-wherabouts:** strong on tracking/routing/data breadth; not developer-self-serve
+locnative:** strong on tracking/routing/data breadth; not developer-self-serve
 friendly, not AU-specialised, geofencing aimed at fleet rather than app developers.
 
 ### 3.5 Geoapify — the developer-friendly open-data player
 Open-data (OSM, GeoNames, OpenAddresses, GTFS) APIs: geocoding/autocomplete,
 maps/tiles, routing, **isolines/reachability**, places/POI, postcode API. Generous
 commercial free tier, transparent pricing, indie-developer friendly — the closest
-*positioning* analogue to wherabouts' likely go-to-market. **Gap:** no geofencing,
+*positioning* analogue to locnative' likely go-to-market. **Gap:** no geofencing,
 device tracking, or webhooks; global open data rather than AU-authoritative.
 
 ### 3.6 Mapbox (mapbox.com) — the global map-rendering & dev-tooling platform
@@ -145,7 +145,7 @@ Boundaries, Tilequery. **Navigation (deep):** Directions (driving/traffic/walkin
 cycling), **Matrix, Isochrone, Map Matching, Optimization (TSP/VRP)**, turn-by-turn
 Navigation SDK. **Search:** Geocoding v6 (forward/reverse/batch), Search Box (POI +
 category), Address Autofill. **Developer surface:** mature multi-language SDKs, scoped
-tokens, large ecosystem; global coverage. **Overlap with wherabouts:** moderate on
+tokens, large ecosystem; global coverage. **Overlap with locnative:** moderate on
 geocoding/boundaries/basemap; **near-zero on the thing we sell** — Mapbox has **no
 hosted geofencing, no device-state tracking, and no enter/exit webhook product** (its
 "geofencing" is an on-device SDK primitive, not a hosted zone-state engine). **Where it
@@ -161,7 +161,7 @@ authoritative-data turf we own — the two products barely contest the same buye
 
 Legend: ✅ strong / native · ⚠️ partial or indirect · ❌ absent
 
-| Capability | Wherabouts | Radar | Mappify | Google | HERE | Geoapify | Mapbox |
+| Capability | Locnative | Radar | Mappify | Google | HERE | Geoapify | Mapbox |
 |---|---|---|---|---|---|---|---|
 | Forward/reverse geocoding | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Autocomplete | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -204,7 +204,7 @@ and *(y) capability — pure geocoding ↔ full geofencing/real-time platform.*
 - **Mapbox** sits global-generic and high-capability, but on a *different capability
   axis* — map rendering & dev tooling — not the geofencing/real-time axis that defines
   our quadrant. It is strong in a direction orthogonal to ours.
-- **Wherabouts is the only player in the AU-authoritative + high-capability quadrant.**
+- **Locnative is the only player in the AU-authoritative + high-capability quadrant.**
 
 That quadrant is defensible because the two moats compound: the **G-NAF/ABS data
 authority** is hard for global players to care about, and the **geofencing/device/
@@ -212,7 +212,7 @@ webhook engine** is hard for Mappify-class geocoders to build. Owning both is th
 strategy.
 
 **Risks to the position:**
-- **Radar could enter AU** with localised data and instantly out-feature wherabouts on
+- **Radar could enter AU** with localised data and instantly out-feature locnative on
   SDKs/POI/routing. Speed to entrench the AU-data moat matters.
 - **Mappify could add geofencing** — lower likelihood (different architecture) but it
   is the most direct flanking move.
@@ -232,9 +232,9 @@ strategy.
 **Priority 1 — *Native* mobile SDKs (closes Radar's core moat). (Re-scoped 2026-06-16.)**
 Radar's defensibility is a drop-in iOS/Android/RN SDK handling background location,
 battery, permissions, and on-device geofence evaluation. A **web client SDK**
-(`@wherabouts/react`) has now shipped — useful, but *not* a substitute for on-device
+(`@locnative/react`) has now shipped — useful, but *not* a substitute for on-device
 background geofencing. The isolated remaining gap is **native iOS/Android/RN/Flutter**;
-without it, wherabouts cannot win consumer-app/mobile use cases — the highest-value
+without it, locnative cannot win consumer-app/mobile use cases — the highest-value
 geofencing segment. *This is the single most strategic investment.* (Large, multi-quarter
 native effort — scope as its own milestone.)
 
@@ -244,9 +244,9 @@ parity has shipped (Phase 10 / PR#14): multi-profile directions, distance matrix
 `/trip`) + PostGIS stack. *Caveat: depth/scale not yet benchmarked against Mapbox/Google.*
 
 **Priority 3 — ~~Publish the TypeScript SDK~~ ✅ DONE; then add Python.**
-`@wherabouts/sdk@0.4.2` is **live on npm under MIT** (full coverage, hardened). The remaining
+`@locnative/sdk@0.4.2` is **live on npm under MIT** (full coverage, hardened). The remaining
 half is a **Python SDK** mirroring the namespaced surface — still materially lowers integration
-friction for the server-side/data buyer, the segment wherabouts can win *today* without native
+friction for the server-side/data buyer, the segment locnative can win *today* without native
 mobile SDKs.
 
 **Priority 4 — Places/POI + address validation.**
@@ -277,7 +277,7 @@ feature — cheap to add on the Protomaps basemap).
 
 ## 7. Bottom line
 
-Wherabouts is **not** a "me-too geocoder." It is the only product pairing
+Locnative is **not** a "me-too geocoder." It is the only product pairing
 Australian authoritative data with a working real-time geofencing/device/webhook
 platform. The recent ASGS region-classification work and the in-progress TypeScript
 SDK both reinforce that position. To convert the niche into a durable business:

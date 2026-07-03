@@ -21,21 +21,21 @@
 - Entry: `src/start.ts` (server middleware), `src/router.tsx` (client router)
 
 **`packages/database`** - Drizzle ORM schema + queries for Neon Postgres
-- Exports: `@wherabouts.com/database`, `@wherabouts.com/database/schema`, `@wherabouts.com/database/queries`
+- Exports: `@locnative/database`, `@locnative/database/schema`, `@locnative/database/queries`
 - Contains: address schema with PostGIS geometry, API key schema, usage tracking schema
 
 **`packages/backend`** - Convex backend (currently empty schema, placeholder)
-- Exports: `@wherabouts.com/backend`
+- Exports: `@locnative/backend`
 - Contains: Convex schema, auth config, health check
 
 **`packages/env`** - T3 Env validated environment variables
-- Exports: `@wherabouts.com/env/web` (client-safe VITE_ vars), `@wherabouts.com/env/server`
+- Exports: `@locnative/env/web` (client-safe VITE_ vars), `@locnative/env/server`
 
 **`packages/ui`** - Shared UI component library (shadcn/ui based)
-- Exports: `@wherabouts.com/ui/components/*`, `@wherabouts.com/ui/lib/utils`
+- Exports: `@locnative/ui/components/*`, `@locnative/ui/lib/utils`
 
 **`packages/config`** - Shared TypeScript config
-- Exports: `@wherabouts.com/config`
+- Exports: `@locnative/config`
 
 ## Layers
 
@@ -50,7 +50,7 @@
 - Purpose: Server-side data fetching called from client components via RPC
 - Location: `src/lib/*-server.ts`
 - Contains: `createServerFn` wrappers that authenticate via Better Auth and query Neon DB
-- Depends on: `@/lib/auth-server`, `@wherabouts.com/database`
+- Depends on: `@/lib/auth-server`, `@locnative/database`
 - Used by: Protected route components (dashboard, api-keys)
 - Key files:
   - `src/lib/dashboard-server.ts` - Dashboard stats aggregation
@@ -60,7 +60,7 @@
 - Purpose: Public geocoding API authenticated via API keys (not Better Auth)
 - Location: `src/routes/api/v1/`
 - Contains: TanStack Router server handlers using `Route.server.handlers.GET`
-- Depends on: `src/lib/with-api-key.ts`, `src/lib/api-key-auth.ts`, `@wherabouts.com/database`
+- Depends on: `src/lib/with-api-key.ts`, `src/lib/api-key-auth.ts`, `@locnative/database`
 - Used by: External API consumers
 
 **Authentication Layer:**
@@ -83,7 +83,7 @@
 - Purpose: React UI components for the dashboard shell and marketing pages
 - Location: `src/components/`
 - Contains: App shell (sidebar + header), navigation, marketing blocks
-- Depends on: `@wherabouts.com/ui`, TanStack Router, Clerk React
+- Depends on: `@locnative/ui`, TanStack Router, Clerk React
 - Key files:
   - `src/components/app-shell.tsx` - Protected layout with sidebar + header
   - `src/components/app-sidebar.tsx` - Navigation sidebar

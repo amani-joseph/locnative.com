@@ -1,9 +1,9 @@
-import { ORPCError } from "@orpc/server";
 import {
 	autocompleteAddresses,
 	formatAddress,
-} from "@wherabouts.com/database/queries";
-import { addresses } from "@wherabouts.com/database/schema";
+} from "@locnative/database/queries";
+import { addresses } from "@locnative/database/schema";
+import { ORPCError } from "@orpc/server";
 import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { o as baseBuilder } from "../builder.ts";

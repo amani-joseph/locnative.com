@@ -4,7 +4,7 @@
 set -uo pipefail
 
 API_KEY="${1:?Pass your wh_ API key}"
-URL="https://api.wherabouts.com/api/v1/routing/directions?from=-37.8136,144.9631&to=-33.8688,151.2093"
+URL="https://api.locnative.com/api/v1/routing/directions?from=-37.8136,144.9631&to=-33.8688,151.2093"
 
 for i in $(seq 1 16); do
   code=$(curl -s -o /tmp/poll-body.json -w "%{http_code}" "$URL" -H "authorization: Bearer ${API_KEY}")

@@ -17,11 +17,11 @@
 - No GitHub OAuth app changes.
 
 ### Claude's Discretion
-- Scope of email template files to include. Mydeffo has four templates (verify-email, reset-password, organization-invite, payment-confirmation). Wherabouts currently uses zero (no email send configured). Researcher to confirm whether to include empty email stubs or omit email directory entirely.
+- Scope of email template files to include. Mydeffo has four templates (verify-email, reset-password, organization-invite, payment-confirmation). Locnative currently uses zero (no email send configured). Researcher to confirm whether to include empty email stubs or omit email directory entirely.
 
 ### Deferred Ideas (OUT OF SCOPE)
-- Adding email sending (Resend) to wherabouts.
-- Adding organization/admin BetterAuth plugins to wherabouts.
+- Adding email sending (Resend) to locnative.
+- Adding organization/admin BetterAuth plugins to locnative.
 - Changing the Neon/Drizzle adapter.
 - Any UI changes.
 </user_constraints>
@@ -30,11 +30,11 @@
 
 ## Summary
 
-Phase 07 moves the BetterAuth server configuration from `packages/api/src/auth.ts` into a new dedicated `packages/auth/` workspace package, and ensures `apps/web/src/lib/auth-client.ts` is the canonical client entry point (it already exists and is self-contained — no move needed). The new package becomes `@wherabouts.com/auth`, matching the workspace naming convention. The `packages/api` package loses its `auth.ts` file and its `better-auth` dependency; `apps/server` switches its import of `auth` from `@wherabouts.com/api` to `@wherabouts.com/auth`.
+Phase 07 moves the BetterAuth server configuration from `packages/api/src/auth.ts` into a new dedicated `packages/auth/` workspace package, and ensures `apps/web/src/lib/auth-client.ts` is the canonical client entry point (it already exists and is self-contained — no move needed). The new package becomes `@locnative/auth`, matching the workspace naming convention. The `packages/api` package loses its `auth.ts` file and its `better-auth` dependency; `apps/server` switches its import of `auth` from `@locnative/api` to `@locnative/auth`.
 
-The mydeffo reference package (`packages/auth/src/index.ts`) is a single-file barrel that exports `auth` (the `betterAuth({...})` instance) and email utility functions. It has no client setup — the client lives in `apps/web/src/lib/auth/auth-client.ts` in mydeffo, mirrored by `apps/web/src/lib/auth-client.ts` in wherabouts (already in place).
+The mydeffo reference package (`packages/auth/src/index.ts`) is a single-file barrel that exports `auth` (the `betterAuth({...})` instance) and email utility functions. It has no client setup — the client lives in `apps/web/src/lib/auth/auth-client.ts` in mydeffo, mirrored by `apps/web/src/lib/auth-client.ts` in locnative (already in place).
 
-**Primary recommendation:** Create `packages/auth/` with one source file (`src/index.ts`) containing the server auth config, zero email templates initially (wherabouts has no Resend key or email flow), and the same `package.json` / `tsconfig.json` shape as mydeffo. Wire `apps/server` to import `auth` from `@wherabouts.com/auth` instead of `@wherabouts.com/api`.
+**Primary recommendation:** Create `packages/auth/` with one source file (`src/index.ts`) containing the server auth config, zero email templates initially (locnative has no Resend key or email flow), and the same `package.json` / `tsconfig.json` shape as mydeffo. Wire `apps/server` to import `auth` from `@locnative/auth` instead of `@locnative/api`.
 
 ---
 
@@ -76,7 +76,7 @@ Key observations:
 - Depends on `@mydeffo.com-web/db` (for the Drizzle `db` client and `authSchema`), `@mydeffo.com-web/env` (for secrets), `better-auth`, `resend`, `react` + `@react-email/components` (for email templates).
 - No `peerDependencies`.
 
-**Wherabouts equivalent name:** `@wherabouts.com/auth` (follows workspace pattern — see Section 13).
+**Locnative equivalent name:** `@locnative/auth` (follows workspace pattern — see Section 13).
 
 ---
 
@@ -103,11 +103,11 @@ Key observations:
 Key observations:
 - `composite: true` + `outDir: dist` — prepared for project references and a build step, but the package is consumed source-first (no `dist/` is actually required for local workspace consumption).
 - `jsx: react-jsx` is needed because the email templates are `.tsx` files.
-- Extends the shared `@mydeffo.com-web/config/tsconfig.base.json`, which in wherabouts is `@wherabouts.com/config/tsconfig.base.json` at `packages/config/tsconfig.base.json`.
-- Wherabouts base tsconfig does NOT include `jsx` — it must be added in the auth package tsconfig override.
+- Extends the shared `@mydeffo.com-web/config/tsconfig.base.json`, which in locnative is `@locnative/config/tsconfig.base.json` at `packages/config/tsconfig.base.json`.
+- Locnative base tsconfig does NOT include `jsx` — it must be added in the auth package tsconfig override.
 - `strictNullChecks` is inherited from the base (which has `strict: true`), so listing it explicitly is redundant but harmless.
 
-**Note on `jsx`:** Wherabouts's `tsconfig.base.json` has no `jsx` setting. If wherabouts omits email templates entirely, `jsx: react-jsx` is not needed. If email stubs are included as `.tsx` files, it must be added.
+**Note on `jsx`:** Locnative's `tsconfig.base.json` has no `jsx` setting. If locnative omits email templates entirely, `jsx: react-jsx` is not needed. If email stubs are included as `.tsx` files, it must be added.
 
 ---
 
@@ -149,7 +149,7 @@ The `.js` files alongside `.tsx` are compiled outputs that leaked into the sourc
 
 The `verifyLegacyFastHash`, `buildInviteUrl`, `buildVerificationUrl`, `buildResetPasswordUrl` helpers are unexported module-level functions.
 
-**Wherabouts scope:** Only `auth` is needed. `resend`, `sendInviteEmail`, `sendPaymentConfirmationEmail` are specific to mydeffo's email flow which wherabouts does not have. The wherabouts `packages/auth/src/index.ts` will export only `auth`.
+**Locnative scope:** Only `auth` is needed. `resend`, `sendInviteEmail`, `sendPaymentConfirmationEmail` are specific to mydeffo's email flow which locnative does not have. The locnative `packages/auth/src/index.ts` will export only `auth`.
 
 ---
 
@@ -217,7 +217,7 @@ export const signOut = async () => { ... };
 
 The auth client lives in `apps/web`, not in `packages/auth`. It imports from `better-auth/react` directly (not from `packages/auth`).
 
-**Wherabouts equivalent:** `apps/web/src/lib/auth-client.ts` already exists and is self-contained. It uses `createAuthClient` from `better-auth/react` with no plugins (wherabouts has no org/admin plugins). **No move or change is needed for the client file.**
+**Locnative equivalent:** `apps/web/src/lib/auth-client.ts` already exists and is self-contained. It uses `createAuthClient` from `better-auth/react` with no plugins (locnative has no org/admin plugins). **No move or change is needed for the client file.**
 
 ---
 
@@ -228,16 +228,16 @@ The auth client lives in `apps/web`, not in `packages/auth`. It imports from `be
 - `packages/auth` **depends on** `packages/db` (not vice versa).
 - Dependency direction: `packages/auth` → `packages/db` → (Neon, Drizzle).
 
-### wherabouts
+### locnative
 - Auth schema (`authSchema`) lives in `packages/database/src/schema/auth.ts` (lines 1–109, verified above).
 - It is exported from `packages/database/src/schema/index.ts` and re-exported by `packages/database` main index.
 - Currently `packages/api` depends on `packages/database` and `packages/env`.
 - After extraction: `packages/auth` will depend on `packages/database` (for `authSchema` and `db` client) and `packages/env` (for `serverEnv`).
 
-**Critical detail:** The wherabouts `db` client is currently created inside `packages/api/src/db.ts`:
+**Critical detail:** The locnative `db` client is currently created inside `packages/api/src/db.ts`:
 ```typescript
-import { createDb } from "@wherabouts.com/database";
-import { serverEnv } from "@wherabouts.com/env/server";
+import { createDb } from "@locnative/database";
+import { serverEnv } from "@locnative/env/server";
 export const db = createDb(serverEnv.DATABASE_URL);
 ```
 The new `packages/auth` will need its own db instance. Two options:
@@ -267,26 +267,26 @@ Template library: `@react-email/components` (Body, Button, Container, Heading, H
 
 Sending: Resend SDK (`resend.emails.send({ react: <Template /> })`).
 
-### wherabouts
+### locnative
 - No Resend key is configured.
 - No email templates exist anywhere.
 - `emailAndPassword.enabled: true` but no `sendResetPassword` or `sendVerificationEmail` callbacks are wired.
 - `emailVerification` block is absent from `packages/api/src/auth.ts`.
 
-**Conclusion:** The `emails/` directory should be **omitted** from the wherabouts `packages/auth/src/` for now. The phase is a pure refactor — no new email functionality.
+**Conclusion:** The `emails/` directory should be **omitted** from the locnative `packages/auth/src/` for now. The phase is a pure refactor — no new email functionality.
 
 ---
 
-## 9. Consumers in wherabouts
+## 9. Consumers in locnative
 
 ### `apps/server/src/index.ts`
-- Imports `{ auth }` from `@wherabouts.com/api` (line 8).
+- Imports `{ auth }` from `@locnative/api` (line 8).
 - Uses `auth.handler(context.req.raw)` on the `/api/auth/*` Hono route (line 55).
-- **Must change:** update import to `@wherabouts.com/auth`.
+- **Must change:** update import to `@locnative/auth`.
 
 ### `apps/web/src/lib/auth-client.ts`
 - Imports `createAuthClient` from `better-auth/react` directly.
-- No dependency on `@wherabouts.com/api` or `@wherabouts.com/auth`.
+- No dependency on `@locnative/api` or `@locnative/auth`.
 - **No change needed.**
 
 ### `apps/web/src/lib/auth-server.ts`
@@ -300,7 +300,7 @@ Sending: Resend SDK (`resend.emails.send({ react: <Template /> })`).
 
 ### `packages/api/src/index.ts`
 - Exports `{ auth }` re-exported from `./auth.ts` (line 1).
-- After extraction: remove this export (or keep a thin re-export if other api consumers need it — but currently only `apps/server` consumes `auth` from `@wherabouts.com/api`, so the re-export can be deleted).
+- After extraction: remove this export (or keep a thin re-export if other api consumers need it — but currently only `apps/server` consumes `auth` from `@locnative/api`, so the re-export can be deleted).
 
 ### `packages/api/src/context.ts` and `procedures.ts`
 - May reference `auth` for session reading (common pattern). Need to check.
@@ -330,7 +330,7 @@ catalog:
 Current tasks: `build` (dependsOn `^build`, outputs `dist/**`), `check-types` (dependsOn `^check-types`), `dev`, `dev:setup`. No named pipeline entries reference specific packages. The new package participates automatically through the glob.
 
 ### tsconfig project references
-No root-level `tsconfig.json` with `references` array was found in wherabouts. Each package/app has its own tsconfig that extends the base. **No root tsconfig change needed.**
+No root-level `tsconfig.json` with `references` array was found in locnative. Each package/app has its own tsconfig that extends the base. **No root tsconfig change needed.**
 
 ---
 
@@ -342,12 +342,12 @@ No root-level `tsconfig.json` with `references` array was found in wherabouts. E
 - No `build` script is defined in `package.json`.
 - **Conclusion:** Consumed source-first via TypeScript path resolution. No `dist/` build step required.
 
-### wherabouts
-Same pattern applies. All existing wherabouts packages (`api`, `database`, `env`, `ui`) use `"./src/*.ts"` in their exports maps and have no `build` script. The new `packages/auth` follows the same convention — no build step.
+### locnative
+Same pattern applies. All existing locnative packages (`api`, `database`, `env`, `ui`) use `"./src/*.ts"` in their exports maps and have no `build` script. The new `packages/auth` follows the same convention — no build step.
 
 ---
 
-## 12. Wherabouts Current Auth Code Inventory
+## 12. Locnative Current Auth Code Inventory
 
 Files that contain auth logic and their disposition:
 
@@ -357,7 +357,7 @@ Files that contain auth logic and their disposition:
 | `packages/api/src/db.ts` | Creates Drizzle db client for api package | **KEEP** — api still needs db for oRPC procedures. Auth package creates its own db instance. |
 | `packages/api/src/index.ts` | Re-exports `auth` among other things | **MODIFY** — remove `export { auth } from "./auth.ts"` |
 | `packages/api/package.json` | Lists `better-auth` as dependency | **MODIFY** — remove `better-auth` dep (if context.ts/procedures.ts don't use it; see open question) |
-| `apps/server/src/index.ts` | Imports `auth` from `@wherabouts.com/api` | **MODIFY** — change import to `@wherabouts.com/auth` |
+| `apps/server/src/index.ts` | Imports `auth` from `@locnative/api` | **MODIFY** — change import to `@locnative/auth` |
 | `apps/web/src/lib/auth-client.ts` | BetterAuth client (`createAuthClient`) | **NO CHANGE** — already standalone |
 | `apps/web/src/lib/auth-server.ts` | SSR session proxy helper | **NO CHANGE** — uses `fetch`, no package dep on auth |
 | `packages/database/src/schema/auth.ts` | Drizzle schema for BetterAuth tables | **NO CHANGE** — stays in `packages/database` |
@@ -372,17 +372,17 @@ Files that contain auth logic and their disposition:
 
 ## 13. Naming Convention
 
-All wherabouts workspace package names use the `@wherabouts.com/` scope:
-- `@wherabouts.com/api`
-- `@wherabouts.com/database`
-- `@wherabouts.com/env`
-- `@wherabouts.com/ui`
-- `@wherabouts.com/config`
-- `@wherabouts.com/sdk`
+All locnative workspace package names use the `@locnative/` scope:
+- `@locnative/api`
+- `@locnative/database`
+- `@locnative/env`
+- `@locnative/ui`
+- `@locnative/config`
+- `@locnative/sdk`
 
-**New package name:** `@wherabouts.com/auth`
+**New package name:** `@locnative/auth`
 
-Import path for consumers: `import { auth } from "@wherabouts.com/auth"`
+Import path for consumers: `import { auth } from "@locnative/auth"`
 
 ---
 
@@ -390,43 +390,43 @@ Import path for consumers: `import { auth } from "@wherabouts.com/auth"`
 
 ### Cookie attributes
 - **mydeffo** (`packages/auth/src/index.ts`, lines 276–283): `sameSite: "none"`, `secure: true`, `httpOnly: true`, conditional `domain` from `AUTH_COOKIE_DOMAIN`.
-- **wherabouts** (`packages/api/src/auth.ts`, lines 39–48): identical — `sameSite: "none"`, `secure: true`, `httpOnly: true`, conditional `domain` from `serverEnv.AUTH_COOKIE_DOMAIN`.
+- **locnative** (`packages/api/src/auth.ts`, lines 39–48): identical — `sameSite: "none"`, `secure: true`, `httpOnly: true`, conditional `domain` from `serverEnv.AUTH_COOKIE_DOMAIN`.
 - **Verdict:** No divergence. Copy as-is.
 
 ### Social providers
 - **mydeffo:** Google OAuth, conditionally enabled (`if GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET`).
-- **wherabouts:** GitHub OAuth only, always enabled (no conditional), with explicit `redirectURI`.
-- **Verdict:** Preserve wherabouts's GitHub-only config. Do not adopt mydeffo's Google provider or conditional guard.
+- **locnative:** GitHub OAuth only, always enabled (no conditional), with explicit `redirectURI`.
+- **Verdict:** Preserve locnative's GitHub-only config. Do not adopt mydeffo's Google provider or conditional guard.
 
 ### emailAndPassword
 - **mydeffo:** `enabled: true`, `minPasswordLength: 8`, `requireEmailVerification: true`, legacy SHA-256 password verify support, `sendResetPassword` + `sendVerificationEmail` callbacks.
-- **wherabouts:** `enabled: true`, no `minPasswordLength`, no `requireEmailVerification`, no callbacks.
-- **Verdict:** Preserve wherabouts's minimal config. Do not add mydeffo's email callbacks or legacy hash support.
+- **locnative:** `enabled: true`, no `minPasswordLength`, no `requireEmailVerification`, no callbacks.
+- **Verdict:** Preserve locnative's minimal config. Do not add mydeffo's email callbacks or legacy hash support.
 
 ### DB adapter
 - **mydeffo:** `drizzleAdapter(db, { provider: "pg", schema: authSchema })` — Neon Postgres via Drizzle.
-- **wherabouts:** identical — `drizzleAdapter(db, { provider: "pg", schema: authSchema })`.
+- **locnative:** identical — `drizzleAdapter(db, { provider: "pg", schema: authSchema })`.
 - **Verdict:** No divergence.
 
 ### Plugins
 - **mydeffo:** `organization({ membershipLimit: Number.MAX_SAFE_INTEGER })` + `adminPlugin()`.
-- **wherabouts:** No plugins.
-- **Verdict:** Preserve wherabouts's plugin-free config. Phase 07 is not adding org/admin features.
+- **locnative:** No plugins.
+- **Verdict:** Preserve locnative's plugin-free config. Phase 07 is not adding org/admin features.
 
 ### rateLimit
 - **mydeffo:** `rateLimit: { enabled: true, window: 10, max: 100 }`.
-- **wherabouts:** Not configured.
+- **locnative:** Not configured.
 - **Verdict:** Out of scope for this phase. Do not add.
 
 ### trustedOrigins
 - **mydeffo:** `[env.CORS_ORIGIN, DEPLOYED_WEB_ORIGIN, "http://localhost:3001"]`
-- **wherabouts:** `[serverEnv.WEB_BASE_URL, DEPLOYED_WEB_ORIGIN, "http://localhost:3001", "https://wherabouts.com", "https://api.wherabouts.com"]`
-- **Verdict:** Preserve wherabouts's full list.
+- **locnative:** `[serverEnv.WEB_BASE_URL, DEPLOYED_WEB_ORIGIN, "http://localhost:3001", "https://locnative.com", "https://api.locnative.com"]`
+- **Verdict:** Preserve locnative's full list.
 
 ### `secret` field
 - **mydeffo:** No explicit `secret` field in `betterAuth({...})` — relies on `BETTER_AUTH_SECRET` env var being picked up automatically.
-- **wherabouts:** Explicitly passes `secret: serverEnv.BETTER_AUTH_SECRET`.
-- **Verdict:** Preserve wherabouts's explicit `secret` — it's more defensive and already works.
+- **locnative:** Explicitly passes `secret: serverEnv.BETTER_AUTH_SECRET`.
+- **Verdict:** Preserve locnative's explicit `secret` — it's more defensive and already works.
 
 ---
 
@@ -434,11 +434,11 @@ Import path for consumers: `import { auth } from "@wherabouts.com/auth"`
 
 1. **`packages/api/src/context.ts` usage of `auth`**
    - What we know: `context.ts` is the oRPC context factory. It may import `auth` to read the session from incoming requests (common BetterAuth pattern: `auth.api.getSession({ headers })`).
-   - What's unclear: If `context.ts` imports from `./auth.ts`, it will need to be updated to import from `@wherabouts.com/auth` instead. This would also mean `packages/api` keeps `@wherabouts.com/auth` as a dependency rather than removing it entirely.
-   - Recommendation: Read `packages/api/src/context.ts` before finalizing the plan. If it references `auth`, `packages/api/package.json` gains `@wherabouts.com/auth` as a workspace dep instead of removing `better-auth`.
+   - What's unclear: If `context.ts` imports from `./auth.ts`, it will need to be updated to import from `@locnative/auth` instead. This would also mean `packages/api` keeps `@locnative/auth` as a dependency rather than removing it entirely.
+   - Recommendation: Read `packages/api/src/context.ts` before finalizing the plan. If it references `auth`, `packages/api/package.json` gains `@locnative/auth` as a workspace dep instead of removing `better-auth`.
 
 2. **Whether `packages/api` can fully drop `better-auth`**
-   - Depends on answer to #1. If `context.ts` or `procedures.ts` import from `better-auth/*` directly (e.g., type imports), the dependency must stay in `packages/api` or be transitive through `@wherabouts.com/auth`.
+   - Depends on answer to #1. If `context.ts` or `procedures.ts` import from `better-auth/*` directly (e.g., type imports), the dependency must stay in `packages/api` or be transitive through `@locnative/auth`.
    - Recommendation: Audit `packages/api/src/context.ts` and `packages/api/src/procedures.ts` before writing the plan.
 
 ---
@@ -450,7 +450,7 @@ Import path for consumers: `import { auth } from "@wherabouts.com/auth"`
 **`packages/auth/package.json`**
 ```json
 {
-  "name": "@wherabouts.com/auth",
+  "name": "@locnative/auth",
   "private": true,
   "type": "module",
   "exports": {
@@ -459,12 +459,12 @@ Import path for consumers: `import { auth } from "@wherabouts.com/auth"`
   },
   "scripts": {},
   "dependencies": {
-    "@wherabouts.com/database": "workspace:*",
-    "@wherabouts.com/env": "workspace:*",
+    "@locnative/database": "workspace:*",
+    "@locnative/env": "workspace:*",
     "better-auth": "^1.5.6"
   },
   "devDependencies": {
-    "@wherabouts.com/config": "workspace:*",
+    "@locnative/config": "workspace:*",
     "typescript": "^5"
   }
 }
@@ -473,12 +473,12 @@ Import path for consumers: `import { auth } from "@wherabouts.com/auth"`
 Notes:
 - No `resend`, `react`, `@react-email/components`, `@types/react` — email features excluded.
 - `better-auth` version matches current `packages/api/package.json`.
-- `private: true` matches all other wherabouts packages.
+- `private: true` matches all other locnative packages.
 
 **`packages/auth/tsconfig.json`**
 ```json
 {
-  "extends": "@wherabouts.com/config/tsconfig.base.json",
+  "extends": "@locnative/config/tsconfig.base.json",
   "compilerOptions": {
     "declaration": true,
     "declarationMap": true,
@@ -496,8 +496,8 @@ Notes:
 
 **`packages/auth/src/db.ts`**
 ```typescript
-import { createDb } from "@wherabouts.com/database";
-import { serverEnv } from "@wherabouts.com/env/server";
+import { createDb } from "@locnative/database";
+import { serverEnv } from "@locnative/env/server";
 
 export const db = createDb(serverEnv.DATABASE_URL);
 ```
@@ -508,19 +508,19 @@ export const db = createDb(serverEnv.DATABASE_URL);
 Move the content of `packages/api/src/auth.ts` here verbatim, then update the two import lines:
 ```typescript
 // Before (in packages/api/src/auth.ts):
-import { authSchema } from "@wherabouts.com/database";
-import { serverEnv } from "@wherabouts.com/env/server";
+import { authSchema } from "@locnative/database";
+import { serverEnv } from "@locnative/env/server";
 import { db } from "./db.ts";
 
 // After (in packages/auth/src/index.ts):
-import { authSchema } from "@wherabouts.com/database";
-import { serverEnv } from "@wherabouts.com/env/server";
+import { authSchema } from "@locnative/database";
+import { serverEnv } from "@locnative/env/server";
 import { db } from "./db.ts";
 
 export const auth = betterAuth({ ... });
 ```
 
-The import paths for `authSchema`, `serverEnv`, and `db` are identical — only `db` changes from a relative sibling to a local `./db.ts` in the new package. `authSchema` import path `@wherabouts.com/database` is unchanged.
+The import paths for `authSchema`, `serverEnv`, and `db` are identical — only `db` changes from a relative sibling to a local `./db.ts` in the new package. `authSchema` import path `@locnative/database` is unchanged.
 
 ### Files to Delete
 
@@ -533,9 +533,9 @@ The import paths for `authSchema`, `serverEnv`, and `db` are identical — only 
 | File | Change |
 |------|--------|
 | `packages/api/src/index.ts` | Remove `export { auth } from "./auth.ts"` |
-| `packages/api/package.json` | Remove `"better-auth": "^1.5.6"` (pending open question #1 — may need to become `"@wherabouts.com/auth": "workspace:*"` instead if context.ts uses auth) |
-| `apps/server/src/index.ts` | Change `import { ..., auth, ... } from "@wherabouts.com/api"` to `import { auth } from "@wherabouts.com/auth"` plus keep the other imports from `@wherabouts.com/api` |
-| `apps/server/package.json` | Add `"@wherabouts.com/auth": "workspace:*"` as a dependency |
+| `packages/api/package.json` | Remove `"better-auth": "^1.5.6"` (pending open question #1 — may need to become `"@locnative/auth": "workspace:*"` instead if context.ts uses auth) |
+| `apps/server/src/index.ts` | Change `import { ..., auth, ... } from "@locnative/api"` to `import { auth } from "@locnative/auth"` plus keep the other imports from `@locnative/api` |
+| `apps/server/package.json` | Add `"@locnative/auth": "workspace:*"` as a dependency |
 
 ### No Change Required
 
@@ -560,21 +560,21 @@ The import paths for `authSchema`, `serverEnv`, and `db` are identical — only 
 - Direct file reads of `mydeffo.com-web/packages/auth/src/index.ts` — full betterAuth config + exports (334 lines)
 - Direct file reads of `mydeffo.com-web/apps/web/src/lib/auth/auth-client.ts` — client setup
 - Direct file reads of `mydeffo.com-web/apps/server/src/index.ts` — server consumer pattern
-- Direct file reads of `wherabouts.com/packages/api/src/auth.ts` — current server config
-- Direct file reads of `wherabouts.com/packages/api/src/index.ts` — current export shape
-- Direct file reads of `wherabouts.com/packages/api/src/db.ts` — db factory pattern
-- Direct file reads of `wherabouts.com/apps/server/src/index.ts` — server consumer
-- Direct file reads of `wherabouts.com/apps/web/src/lib/auth-client.ts` — client (no change needed)
-- Direct file reads of `wherabouts.com/packages/database/src/schema/auth.ts` — schema ownership confirmed
-- Direct file reads of `wherabouts.com/pnpm-workspace.yaml` — naming convention
-- Direct file reads of `wherabouts.com/turbo.json` — pipeline structure
-- Direct file reads of `wherabouts.com/packages/config/tsconfig.base.json` — base TS config
+- Direct file reads of `locnative.com/packages/api/src/auth.ts` — current server config
+- Direct file reads of `locnative.com/packages/api/src/index.ts` — current export shape
+- Direct file reads of `locnative.com/packages/api/src/db.ts` — db factory pattern
+- Direct file reads of `locnative.com/apps/server/src/index.ts` — server consumer
+- Direct file reads of `locnative.com/apps/web/src/lib/auth-client.ts` — client (no change needed)
+- Direct file reads of `locnative.com/packages/database/src/schema/auth.ts` — schema ownership confirmed
+- Direct file reads of `locnative.com/pnpm-workspace.yaml` — naming convention
+- Direct file reads of `locnative.com/turbo.json` — pipeline structure
+- Direct file reads of `locnative.com/packages/config/tsconfig.base.json` — base TS config
 
 ## Metadata
 
 **Confidence breakdown:**
 - Mydeffo package structure: HIGH — direct file reads
-- Wherabouts consumer graph: HIGH — direct file reads + grep
+- Locnative consumer graph: HIGH — direct file reads + grep
 - Divergence analysis: HIGH — line-by-line comparison of both auth configs
 - Open questions: flagged rather than guessed
 

@@ -1,4 +1,4 @@
-import { isWheraboutsApiError } from "@wherabouts/sdk";
+import { isLocnativeApiError } from "@locnative/sdk";
 import type { ToolResult } from "./types.ts";
 
 export const ok = (data: unknown): ToolResult => ({
@@ -11,7 +11,7 @@ const errText = (text: string): ToolResult => ({
 });
 
 export const toToolError = (err: unknown): ToolResult => {
-	if (isWheraboutsApiError(err)) {
+	if (isLocnativeApiError(err)) {
 		const msg = err.payload?.error.message ?? err.message;
 		switch (true) {
 			case err.status === 400:

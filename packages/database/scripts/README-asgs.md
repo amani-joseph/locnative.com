@@ -32,11 +32,11 @@ and place the `.gpkg` files under `packages/database/scripts/data/asgs/`:
 ## Run
 Light subset (fast, good for local dev):
 
-    DATABASE_URL=... pnpm --filter @wherabouts.com/database exec tsx scripts/ingest-asgs.ts state sa4 lga poa
+    DATABASE_URL=... pnpm --filter @locnative/database exec tsx scripts/ingest-asgs.ts state sa4 lga poa
 
 Full ingest (mb + sa1 are large, ~430k polygons total):
 
-    DATABASE_URL=... pnpm --filter @wherabouts.com/database exec tsx scripts/ingest-asgs.ts
+    DATABASE_URL=... pnpm --filter @locnative/database exec tsx scripts/ingest-asgs.ts
 
 Re-running a layer is safe — each layer is deleted before reload.
 

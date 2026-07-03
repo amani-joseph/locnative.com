@@ -1,13 +1,13 @@
+import { Badge } from "@locnative/ui/components/badge";
 import { createFileRoute } from "@tanstack/react-router";
-import { Badge } from "@wherabouts.com/ui/components/badge";
 import { RouteBackground } from "@/components/backgrounds/route-background";
 import { CHANGELOG, type ChangelogTag } from "@/data/changelog";
 import { buildSeo } from "@/lib/seo";
 import { breadcrumbJsonLd, jsonLdScript } from "@/lib/structured-data";
 
-const CHANGELOG_TITLE = "Changelog | Wherabouts";
+const CHANGELOG_TITLE = "Changelog | Locnative";
 const CHANGELOG_DESCRIPTION =
-	"What's new in the Wherabouts location API and developer platform — new features, improvements, and fixes.";
+	"What's new in the Locnative location API and developer platform — new features, improvements, and fixes.";
 
 const TAG_VARIANT: Record<ChangelogTag, "default" | "secondary" | "outline"> = {
 	New: "default",
@@ -59,7 +59,7 @@ function RouteComponent() {
 				<header className="mb-12">
 					<h1 className="font-semibold text-3xl tracking-tight">Changelog</h1>
 					<p className="mt-2 max-w-xl text-muted-foreground text-sm">
-						New features, improvements, and fixes across the Wherabouts API and
+						New features, improvements, and fixes across the Locnative API and
 						platform.
 					</p>
 				</header>

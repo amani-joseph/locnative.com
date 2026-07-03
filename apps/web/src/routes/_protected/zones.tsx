@@ -1,6 +1,6 @@
+import type { GeoJsonPolygon } from "@locnative/api/routers/public/zones-schema";
+import { Button } from "@locnative/ui/components/button";
 import { createFileRoute } from "@tanstack/react-router";
-import type { GeoJsonPolygon } from "@wherabouts.com/api/routers/public/zones-schema";
-import { Button } from "@wherabouts.com/ui/components/button";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ActiveProjectSelector } from "@/components/active-project-selector";
@@ -57,9 +57,14 @@ function RouteComponent() {
 	const [addrZoneName, setAddrZoneName] = useState("");
 
 	useEffect(() => {
-		void import("maplibre-gl");
-		void import("terra-draw");
-		void import("terra-draw-maplibre-gl-adapter");
+		const preloadMapDependencies = async (): Promise<void> => {
+			await Promise.all([
+				import("maplibre-gl"),
+				import("terra-draw"),
+				import("terra-draw-maplibre-gl-adapter"),
+			]);
+		};
+		preloadMapDependencies().catch(() => undefined);
 	}, []);
 
 	useEffect(() => {
@@ -137,27 +142,30 @@ function RouteComponent() {
 		}
 	};
 
-	const handleTest = async (lat: number, lng: number) => {
-		if (!activeId || Number.isNaN(lat) || Number.isNaN(lng)) {
-			toast.error("Enter valid coordinates.");
-			return;
-		}
-		setTesting(true);
-		try {
-			const res = await orpcClient.zones.contains({
-				projectId: activeId,
-				lat,
-				lng,
-			});
-			setTestResult({
-				zones: res.zones.map((z) => ({ id: z.id, name: z.name })),
-			});
-		} catch (err) {
-			toast.error(err instanceof Error ? err.message : "Point test failed.");
-		} finally {
-			setTesting(false);
-		}
-	};
+	const handleTest = useCallback(
+		async (lat: number, lng: number) => {
+			if (!activeId || Number.isNaN(lat) || Number.isNaN(lng)) {
+				toast.error("Enter valid coordinates.");
+				return;
+			}
+			setTesting(true);
+			try {
+				const res = await orpcClient.zones.contains({
+					projectId: activeId,
+					lat,
+					lng,
+				});
+				setTestResult({
+					zones: res.zones.map((z) => ({ id: z.id, name: z.name })),
+				});
+			} catch (err) {
+				toast.error(err instanceof Error ? err.message : "Point test failed.");
+			} finally {
+				setTesting(false);
+			}
+		},
+		[activeId]
+	);
 
 	const handlePick = useCallback(
 		(lat: number, lng: number) => {

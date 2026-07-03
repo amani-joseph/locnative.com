@@ -4,7 +4,9 @@ import { accountUpdateForEvent } from "./stripe-sync.ts";
 describe("accountUpdateForEvent", () => {
 	it("activates on checkout.session.completed", () => {
 		expect(
-			accountUpdateForEvent("checkout.session.completed", { subscription: "sub_1" })
+			accountUpdateForEvent("checkout.session.completed", {
+				subscription: "sub_1",
+			})
 		).toEqual({
 			status: "active",
 			hasPaymentMethod: true,

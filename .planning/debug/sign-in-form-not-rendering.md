@@ -7,7 +7,7 @@ updated: 2026-04-18T01:00:00Z
 
 ## Current Focus
 
-hypothesis: The fix to __root.tsx (removing <head> wrapper) exists on disk but was never committed or deployed. User may be testing the deployed Workers app (wherabouts-web.mr-amanijoseph.workers.dev) which still has the old code, OR the dev server is not running.
+hypothesis: The fix to __root.tsx (removing <head> wrapper) exists on disk but was never committed or deployed. User may be testing the deployed Workers app (locnative-web.mr-amanijoseph.workers.dev) which still has the old code, OR the dev server is not running.
 test: Confirmed __root.tsx is working-tree-modified but not staged/committed. wrangler.jsonc on this branch points to .workers.dev URLs. git status shows " M" for __root.tsx (modified in working tree only).
 expecting: If user is testing deployed app, fixing requires deploying. If testing local dev, the fix should already be live via HMR.
 next_action: CHECKPOINT — ask user whether they are testing local dev or the deployed workers URL
@@ -52,7 +52,7 @@ started: Regression introduced on rollback-test branch
 
 - timestamp: 2026-04-18T01:00:00Z
   checked: apps/web/wrangler.jsonc vars section
-  found: BETTER_AUTH_URL and VITE_SERVER_URL point to wherabouts-server.mr-amanijoseph.workers.dev. Web app deployed to wherabouts-web.mr-amanijoseph.workers.dev.
+  found: BETTER_AUTH_URL and VITE_SERVER_URL point to locnative-server.mr-amanijoseph.workers.dev. Web app deployed to locnative-web.mr-amanijoseph.workers.dev.
   implication: If user is visiting the deployed Workers URL, they see stale code. The fix must be committed and deployed via wrangler to take effect there.
 
 - timestamp: 2026-04-18T01:00:00Z

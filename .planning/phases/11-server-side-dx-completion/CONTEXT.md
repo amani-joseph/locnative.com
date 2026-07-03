@@ -20,10 +20,10 @@ This is **contract-completion + distribution**, not new product surface. No new 
   `ORPC_TO_API_ERROR` map (oRPC code → `{ status, code }`) and re-serialises to
   `{ error: { code, message } }` with `cache-control: no-store`.
 - **Missing vs the SDK's expectation:** no `request_id`, no `doc_url`, no `fields[]` in the body,
-  and **no `X-Request-Id` response header** anywhere. The SDK's `WheraboutsApiError` exposes
+  and **no `X-Request-Id` response header** anywhere. The SDK's `LocnativeApiError` exposes
   `requestId`/`docUrl`/`fields` and tests already assert it reads `X-Request-Id` from headers —
   the server simply never sets them.
-- The narrow `ApiErrorCode` union (4 codes) is **narrower** than the SDK's `WheraboutsErrorCode`
+- The narrow `ApiErrorCode` union (4 codes) is **narrower** than the SDK's `LocnativeErrorCode`
   (`bad_request | conflict | forbidden | internal_error | not_found | rate_limited | timeout |
   unauthorized | unprocessable`). Zod validation errors are currently flattened into `message`
   with no structured `fields[]`.
@@ -59,7 +59,7 @@ This is **contract-completion + distribution**, not new product surface. No new 
 ### Cloudflare runtime (`apps/server/wrangler.jsonc`)
 - Bindings today: queues (`BATCH_GEOCODE_QUEUE`, `WEBHOOK_DELIVERY_QUEUE`), R2
   (`GEOCODE_RESULTS`, `MAP_TILES`). **No KV namespace, no Durable Object.** `nodejs_compat` on,
-  custom domain `api.wherabouts.com`.
+  custom domain `api.locnative.com`.
 - DB is Neon Postgres via Drizzle. **GOTCHA (memory):** the `neon-http` driver has **no
   transactions** — `db.transaction()` throws. Any dedupe store on Postgres must use idempotent
   upserts (`INSERT ... ON CONFLICT`) keyed on the idempotency key, **never** `SELECT ... FOR
@@ -72,10 +72,10 @@ in the published TS client and covered by tests.
 
 | Signal | Where the SDK reads/sends it | Server obligation |
 |---|---|---|
-| Error body | `{ error: { code, message, request_id?, doc_url?, fields? } }` (`shared-types.ts` `WheraboutsApiErrorPayload`) | Emit all five keys; `fields[]` = `{ path, message }[]` on validation errors |
-| `code` union | `WheraboutsErrorCode` (9 codes incl. `conflict`, `forbidden`, `rate_limited`, `timeout`, `unprocessable`) | Widen `ApiErrorCode` + `ORPC_TO_API_ERROR` to cover them |
+| Error body | `{ error: { code, message, request_id?, doc_url?, fields? } }` (`shared-types.ts` `LocnativeApiErrorPayload`) | Emit all five keys; `fields[]` = `{ path, message }[]` on validation errors |
+| `code` union | `LocnativeErrorCode` (9 codes incl. `conflict`, `forbidden`, `rate_limited`, `timeout`, `unprocessable`) | Widen `ApiErrorCode` + `ORPC_TO_API_ERROR` to cover them |
 | `request_id` | body `request_id` **and** `X-Request-Id` header (SDK prefers body, falls back to header) | Generate one id per request; set header on **every** response (success + error); echo in error body |
-| `doc_url` | `WheraboutsApiError.docUrl` | Per-code docs link, e.g. `https://docs.wherabouts.com/errors/{code}` |
+| `doc_url` | `LocnativeApiError.docUrl` | Per-code docs link, e.g. `https://docs.locnative.com/errors/{code}` |
 | `Retry-After` | honoured on `429` before retry (`http.ts`) | Set on `429` (and optionally `503`) as integer seconds |
 | `RateLimit-*` | not parsed by SDK yet, but part of the success criteria & expected by raw HTTP users | Emit IETF draft headers on responses |
 | `Idempotency-Key` | auto-sent on writes, **stable across retries** | Dedupe: same key + same route → replay the original outcome, do not re-execute |
@@ -89,10 +89,10 @@ in the published TS client and covered by tests.
 - `regions.classify(params)`
 - `devices.pushLocation(deviceId, body)`, `devices.zones(deviceId)`
 - `webhooks.create/list/delete/reactivate`
-- Client config: `apiKey`, `baseUrl` (default `https://api.wherabouts.com`), `timeoutMs`
+- Client config: `apiKey`, `baseUrl` (default `https://api.locnative.com`), `timeoutMs`
   (30s), `maxRetries` (2). Backoff: base 200ms, cap 5s, full-jitter. Per-call `CallOptions`:
-  `headers`, `idempotencyKey`, `maxRetries`, `timeoutMs`, `signal`. Header `x-wherabouts-sdk:
-  py/<ver> api/v1`. Typed error `WheraboutsApiError(code, message, status, request_id, doc_url,
+  `headers`, `idempotencyKey`, `maxRetries`, `timeoutMs`, `signal`. Header `x-locnative-sdk:
+  py/<ver> api/v1`. Typed error `LocnativeApiError(code, message, status, request_id, doc_url,
   fields)`.
 
 ## Decisions (locked 2026-06-11)
@@ -122,9 +122,9 @@ in the published TS client and covered by tests.
    to replay byte-for-byte, or just block re-execution and return `409 conflict`? Decision in
    11-03: **store status+body, replay it** (true idempotency, matches Stripe). Confirm storage
    size cap.
-4. **PyPI project name & org** — `wherabouts` on PyPI must be reserved; needs a human checkpoint
+4. **PyPI project name & org** — `locnative` on PyPI must be reserved; needs a human checkpoint
    (mirrors the Phase 9 npm-org prerequisite). Publishing is irreversible per version.
-5. **`docs.wherabouts.com/errors/*` pages** — the `doc_url` links should resolve. Page authoring
+5. **`docs.locnative.com/errors/*` pages** — the `doc_url` links should resolve. Page authoring
    is out of scope; plan emits the URLs and tracks doc stubs as a follow-up.
 
 ## Phase 9 dependency

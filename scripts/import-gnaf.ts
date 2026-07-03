@@ -140,6 +140,7 @@ function escapeCsv(val: string | null): string {
 	return val;
 }
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: linear ETL row builder with many source columns
 async function generateCsv(
 	state: string
 ): Promise<{ path: string; count: number }> {
@@ -273,7 +274,7 @@ async function generateCsv(
 			pid,
 		];
 
-		out.write(cols.join("\t") + "\n");
+		out.write(`${cols.join("\t")}\n`);
 		count++;
 
 		if (count % 500_000 === 0) {

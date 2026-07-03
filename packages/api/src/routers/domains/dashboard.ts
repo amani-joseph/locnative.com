@@ -1,4 +1,4 @@
-import { apiKeys, apiUsageDaily } from "@wherabouts.com/database";
+import { apiKeys, apiUsageDaily } from "@locnative/database";
 import { and, eq, gte, isNull, sql, sum } from "drizzle-orm";
 import { z } from "zod";
 import { protectedProcedure } from "../../procedures.ts";

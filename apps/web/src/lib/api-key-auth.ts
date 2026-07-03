@@ -18,4 +18,4 @@ export {
 	type ValidatedApiKey,
 	validateApiKey,
 	validateApiKeyById,
-} from "@wherabouts.com/api/api-key-auth";
+} from "@locnative/api/api-key-auth";

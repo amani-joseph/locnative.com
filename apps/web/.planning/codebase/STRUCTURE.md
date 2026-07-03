@@ -5,7 +5,7 @@
 ## Directory Layout
 
 ```
-wherabouts.com/                    # Monorepo root
+locnative.com/                    # Monorepo root
 ├── apps/
 │   └── web/                       # TanStack Start web application
 │       ├── public/                # Static assets
@@ -147,7 +147,7 @@ wherabouts.com/                    # Monorepo root
 **`packages/ui/src/components/`:**
 - Purpose: Shared shadcn/ui component library used across apps
 - Contains: ~24 components (button, card, dialog, sidebar, table, tabs, etc.)
-- Import pattern: `@wherabouts.com/ui/components/button`
+- Import pattern: `@locnative/ui/components/button`
 
 ## Key File Locations
 
@@ -213,7 +213,7 @@ wherabouts.com/                    # Monorepo root
 **New Database Table:**
 - Schema: `packages/database/src/schema/{table-name}.ts`
 - Re-export from: `packages/database/src/schema/index.ts`
-- Migration: Run `pnpm --filter @wherabouts.com/database db:generate` then `db:migrate`
+- Migration: Run `pnpm --filter @locnative/database db:generate` then `db:migrate`
 
 **New Query Function:**
 - Location: `packages/database/src/queries/{query-name}.ts`
@@ -222,7 +222,7 @@ wherabouts.com/                    # Monorepo root
 
 **New Shared UI Component:**
 - Location: `packages/ui/src/components/{component-name}.tsx`
-- Import as: `@wherabouts.com/ui/components/{component-name}`
+- Import as: `@locnative/ui/components/{component-name}`
 
 **New App-Local Component:**
 - Location: `apps/web/src/components/{component-name}.tsx`
@@ -272,14 +272,14 @@ wherabouts.com/                    # Monorepo root
 
 Defined in `apps/web/tsconfig.json`:
 - `@/*` -> `./src/*` (app source imports)
-- `@wherabouts.com/ui/*` -> `../../packages/ui/src/*` (shared UI, also resolved by `vite-tsconfig-paths`)
+- `@locnative/ui/*` -> `../../packages/ui/src/*` (shared UI, also resolved by `vite-tsconfig-paths`)
 
 Workspace packages (resolved by pnpm):
-- `@wherabouts.com/backend` -> `packages/backend`
-- `@wherabouts.com/database` -> `packages/database`
-- `@wherabouts.com/env` -> `packages/env`
-- `@wherabouts.com/ui` -> `packages/ui`
-- `@wherabouts.com/config` -> `packages/config`
+- `@locnative/backend` -> `packages/backend`
+- `@locnative/database` -> `packages/database`
+- `@locnative/env` -> `packages/env`
+- `@locnative/ui` -> `packages/ui`
+- `@locnative/config` -> `packages/config`
 
 ---
 

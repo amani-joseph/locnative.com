@@ -1,4 +1,4 @@
-import type { AddressSuggestion } from "@wherabouts/sdk";
+import type { AddressSuggestion } from "@locnative/sdk";
 
 export interface AddressWithParsed {
 	country: string;

@@ -1,5 +1,5 @@
-import type { Database } from "@wherabouts.com/database";
-import { webhookSubscriptions } from "@wherabouts.com/database/schema";
+import type { Database } from "@locnative/database";
+import { webhookSubscriptions } from "@locnative/database/schema";
 import { and, eq } from "drizzle-orm";
 
 /** Clear the `failing` flag on a subscription. Returns false if not owned. */

@@ -44,7 +44,7 @@ Stale branches amplify the shared-checkout / concurrent-agent loss risk.
 - **P0-1** SSR `window`-import crash fixes — in master (`__root.tsx` lazy devtools +
   try/catch; `packages/ui/.../globe.tsx` deleted). Working tree clean.
 - **P0-2** Merge train — complete; all target branches 0 ahead of master.
-- **P1 SDK npm publish** — `@wherabouts/sdk` live on npm (now `0.4.3`).
+- **P1 SDK npm publish** — `@locnative/sdk` live on npm (now `0.4.3`).
 - **P1 SDK Playground** — merged (`apps/web/src/components/sdk-playground.tsx` in master).
 - **P2 Untracked clutter** — `docs/superpowers/` now committed; no `qa-screenshots/`
   or `.claire/` tracked. (Minor residual: those paths are not in `.gitignore`.)

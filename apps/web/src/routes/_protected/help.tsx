@@ -1,13 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
-import { Input } from "@wherabouts.com/ui/components/input";
+} from "@locnative/ui/components/card";
+import { Input } from "@locnative/ui/components/input";
+import { createFileRoute } from "@tanstack/react-router";
 import {
 	BookOpenIcon,
 	ExternalLinkIcon,
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_protected/help")({
 const categories = [
 	{
 		title: "Getting Started",
-		description: "Learn the basics of the Wherabouts API",
+		description: "Learn the basics of the Locnative API",
 		icon: <BookOpenIcon className="size-5" />,
 		articles: 8,
 	},
@@ -51,9 +51,9 @@ const categories = [
 
 const faqs = [
 	{
-		question: "What address formats does Wherabouts support?",
+		question: "What address formats does Locnative support?",
 		answer:
-			"Wherabouts supports free-form text addresses, structured addresses, and coordinate pairs (lat/lng). The autocomplete endpoint handles partial input for real-time search.",
+			"Locnative supports free-form text addresses, structured addresses, and coordinate pairs (lat/lng). The autocomplete endpoint handles partial input for real-time search.",
 	},
 	{
 		question: "How is usage calculated?",
@@ -78,7 +78,7 @@ function RouteComponent() {
 			<div className="text-center">
 				<h1 className="font-semibold text-2xl tracking-tight">Help Center</h1>
 				<p className="text-muted-foreground text-sm">
-					Find answers, guides, and resources to get the most out of Wherabouts
+					Find answers, guides, and resources to get the most out of Locnative
 				</p>
 			</div>
 

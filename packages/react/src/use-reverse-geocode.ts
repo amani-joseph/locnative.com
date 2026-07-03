@@ -1,4 +1,4 @@
-import type { ReverseGeocodeAddress, WheraboutsClient } from "@wherabouts/sdk";
+import type { LocnativeClient, ReverseGeocodeAddress } from "@locnative/sdk";
 import { useEffect, useRef, useState } from "react";
 import { logDevError } from "./dev-log.ts";
 
@@ -15,7 +15,7 @@ export interface UseReverseGeocodeResult {
 }
 
 export function useReverseGeocode(
-	client: WheraboutsClient,
+	client: LocnativeClient,
 	coords: LatLng | null
 ): UseReverseGeocodeResult {
 	const [address, setAddress] = useState<ReverseGeocodeAddress | null>(null);

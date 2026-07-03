@@ -16,7 +16,7 @@ date: 2026-06-12
 | 3 — Multi-profile `directions` | `96c76d8` / `ec19759` | `profile` input widened from `z.literal("driving")` to `z.enum([...])`, forwarded to `fetchOsrmRoute` |
 | 4 — `/api/v1/routing/matrix` | `ec19759` | GET endpoint; `sources`/`destinations` as `|`-delimited `lat,lng`-or-addressId lists; profile enum; capped 25/side; registered as `routing.matrix` in `public-http.ts` |
 
-**Verification:** `pnpm -F @wherabouts.com/api test` → 90/90 green; `check-types` clean; ultracite clean.
+**Verification:** `pnpm -F @locnative/api test` → 90/90 green; `check-types` clean; ultracite clean.
 
 ## Success criteria status
 - **SC #1 (`/matrix`)** — ✅ met (unit-tested vs mocked OSRM `/table`; OSRM `/table` backend live).
@@ -36,7 +36,7 @@ date: 2026-06-12
 - `fly.toml` bumped to `performance-4x` / `16gb` (three graphs mmap ~10–12 GB).
 - `osrm-check.sh` / `smoke-test.sh` extended to all three profiles; `SELF-HOSTING.md` / `DEPLOY.md` sizing + paths updated.
 
-**✅ DEPLOYED 2026-06-14 — all three profiles live on `wherabouts-osrm.fly.dev`.**
+**✅ DEPLOYED 2026-06-14 — all three profiles live on `locnative-osrm.fly.dev`.**
 - Volume extended 10→45 GB; machine scaled to `performance-4x`/16 GB.
 - Graphs built **on the Fly machine** (not locally): AU `osrm-extract` peaks >8 GB and the local 16 GB Mac caps Docker at 7.65 GB → bike/foot OOM-killed locally. Built car (reused existing flat files) + bike + foot into `/data/{car,bike,foot}` on the 16 GB Fly box instead. See [[osrm-build-needs-16gb-build-on-fly]].
 - Deployed the 3-profile image; **verified publicly**: car/bike/foot all route (HTTP 200 `code:Ok`) with auth; no-auth → 403.
@@ -45,7 +45,7 @@ date: 2026-06-12
   2. **Caddy auth bypass** — the `handle @car/@bike/@foot` blocks let path routing pre-empt the bearer-token `respond` (no-auth returned 200). Fixed by wrapping the gate + profile proxies in a single `route {}` so the auth check evaluates first in file order (commit `46233e4`). See [[caddy-handle-blocks-bypass-auth]].
 - Old flat `/data/australia-latest.osrm*` kept as rollback (volume has space); helper scripts cleaned.
 
-**Remaining:** end-to-end smoke through the public API (`api.wherabouts.com/api/v1/routing/directions?profile=walking`) needs a `wh_` key — the OSRM service + contract are verified, so this just confirms the Worker→OSRM hop.
+**Remaining:** end-to-end smoke through the public API (`api.locnative.com/api/v1/routing/directions?profile=walking`) needs a `wh_` key — the OSRM service + contract are verified, so this just confirms the Worker→OSRM hop.
 
 ## Follow-ups
 - SDK `routing.matrix` method + types → plan **10-05**.

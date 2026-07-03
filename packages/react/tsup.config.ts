@@ -6,7 +6,7 @@ export default defineConfig({
 	dts: true,
 	sourcemap: true,
 	clean: true,
-	external: ["react", "@wherabouts/sdk"],
+	external: ["react", "@locnative/sdk"],
 	treeshake: true,
 	target: "es2020",
 	outExtension: ({ format }) => ({ js: format === "cjs" ? ".cjs" : ".js" }),
