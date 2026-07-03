@@ -14,7 +14,6 @@ import {
 import { protectedProcedure } from "../../procedures.ts";
 
 const PRODUCTION = "production";
-const RETURN_BASE = serverEnv.WEB_BASE_URL;
 
 const contextInput = z.object({ teamId: z.string().uuid().nullable() });
 
@@ -131,7 +130,9 @@ export const billingRouter = {
 					? `Team ${owner.teamId}`
 					: context.session.user.email,
 			});
-			return { url: await createCheckoutUrl(customerId, RETURN_BASE) };
+			return {
+				url: await createCheckoutUrl(customerId, serverEnv.WEB_BASE_URL),
+			};
 		}),
 
 	createPortalSession: protectedProcedure
@@ -146,6 +147,6 @@ export const billingRouter = {
 					? `Team ${owner.teamId}`
 					: context.session.user.email,
 			});
-			return { url: await createPortalUrl(customerId, RETURN_BASE) };
+			return { url: await createPortalUrl(customerId, serverEnv.WEB_BASE_URL) };
 		}),
 };

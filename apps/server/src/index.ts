@@ -38,14 +38,21 @@ const TRAILING_SLASH_REGEX = /\/$/;
 const DEPLOYED_WEB_ORIGIN =
 	process.env.DEPLOYED_WEB_ORIGIN ?? "https://locnative.com";
 
-const allowedOrigins = new Set([
-	serverEnv.WEB_BASE_URL.replace(TRAILING_SLASH_REGEX, ""),
-	DEPLOYED_WEB_ORIGIN,
-	"http://localhost:3001",
-]);
+// Built lazily on first request, NOT at module scope: reading `serverEnv` at
+// global scope would run during Cloudflare's deploy-time startup validation
+// (secrets absent) and fail the deploy.
+let allowedOrigins: Set<string> | undefined;
 
-const isAllowedOrigin = (origin: string | undefined): boolean =>
-	typeof origin === "string" && allowedOrigins.has(origin);
+const isAllowedOrigin = (origin: string | undefined): boolean => {
+	if (!allowedOrigins) {
+		allowedOrigins = new Set([
+			serverEnv.WEB_BASE_URL.replace(TRAILING_SLASH_REGEX, ""),
+			DEPLOYED_WEB_ORIGIN,
+			"http://localhost:3001",
+		]);
+	}
+	return typeof origin === "string" && allowedOrigins.has(origin);
+};
 
 app.use(logger());
 
