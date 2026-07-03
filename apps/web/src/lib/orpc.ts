@@ -1,8 +1,8 @@
+import type { AppRouter } from "@locnative/api";
 import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
 import type { RouterClient } from "@orpc/server";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
-import type { AppRouter } from "@wherabouts.com/api";
 
 const getServerBaseUrl = (): string => {
 	// Local dev: point at the local server Worker.

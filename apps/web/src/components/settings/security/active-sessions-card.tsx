@@ -1,6 +1,6 @@
-import { Badge } from "@wherabouts.com/ui/components/badge";
-import { Button } from "@wherabouts.com/ui/components/button";
-import { Skeleton } from "@wherabouts.com/ui/components/skeleton";
+import { Badge } from "@locnative/ui/components/badge";
+import { Button } from "@locnative/ui/components/button";
+import { Skeleton } from "@locnative/ui/components/skeleton";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import {

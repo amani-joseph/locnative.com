@@ -1,4 +1,4 @@
-import type { WheraboutsClient } from "@wherabouts/sdk";
+import type { LocnativeClient } from "@locnative/sdk";
 import { useEffect, useState } from "react";
 import { logDevError } from "../utils/dev-log";
 
@@ -28,7 +28,7 @@ const toGeocodeAddress = (
 		: null;
 
 export function useForwardGeocode(
-	client: WheraboutsClient,
+	client: LocnativeClient,
 	query: string | null
 ): UseForwardGeocodeResult {
 	const [data, setData] = useState<GeocodeAddress | null>(null);

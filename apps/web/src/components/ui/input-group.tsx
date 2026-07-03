@@ -7,4 +7,4 @@ export {
 	InputGroupInput,
 	InputGroupText,
 	InputGroupTextarea,
-} from "@wherabouts.com/ui/components/input-group";
+} from "@locnative/ui/components/input-group";

@@ -152,7 +152,7 @@ PASS Ocean/no-match r=5000: knn=true noSort=true exec=<~1>ms
 
 - [ ] **Step 6: Run the existing test suite + typecheck.**
 
-Run: `pnpm --filter @wherabouts.com/api test && pnpm --filter @wherabouts.com/api check-types`
+Run: `pnpm --filter @locnative/api test && pnpm --filter @locnative/api check-types`
 Expected: all existing tests pass; `tsc --noEmit` clean.
 
 - [ ] **Step 7: Commit.**
@@ -173,7 +173,7 @@ The Tier-3 path (reached by forward geocode and autocomplete for 8+ char queries
 - Create: `packages/database/vitest.config.ts`; Modify: `packages/database/package.json` (add vitest + `test` script)
 - Modify: `packages/database/src/queries/autocomplete.ts` (the `tieredSearch` Tier-3 block, lines ~385–442)
 
-> **Pre-req (test infra):** The `@wherabouts.com/database` package has **no vitest** (only `db:*` scripts) and an orphaned `parse-unit-address.test.ts` that nothing runs. Before Step 1, stand up vitest in this package — this also covers Task 3's `pooled-client.test.ts`.
+> **Pre-req (test infra):** The `@locnative/database` package has **no vitest** (only `db:*` scripts) and an orphaned `parse-unit-address.test.ts` that nothing runs. Before Step 1, stand up vitest in this package — this also covers Task 3's `pooled-client.test.ts`.
 
 - [ ] **Step 0: Add vitest to the database package.**
 
@@ -203,7 +203,7 @@ export default defineConfig({
 });
 ```
 
-Run: `pnpm install` then `pnpm --filter @wherabouts.com/database test`
+Run: `pnpm install` then `pnpm --filter @locnative/database test`
 Expected: vitest runs and the pre-existing `parse-unit-address.test.ts` passes (confirms the harness works).
 
 - [ ] **Step 1: Write the failing test for the pure anchor-token helper.**
@@ -233,7 +233,7 @@ describe("anchorToken", () => {
 
 - [ ] **Step 2: Run the test to verify it fails.**
 
-Run: `pnpm --filter @wherabouts.com/database test query-tokens`
+Run: `pnpm --filter @locnative/database test query-tokens`
 Expected: FAIL — `Cannot find module './query-tokens.ts'`.
 
 - [ ] **Step 3: Implement the pure helper.**
@@ -266,7 +266,7 @@ export function anchorToken(query: string): string | null {
 
 - [ ] **Step 4: Run the test to verify it passes.**
 
-Run: `pnpm --filter @wherabouts.com/database test query-tokens`
+Run: `pnpm --filter @locnative/database test query-tokens`
 Expected: PASS (4 tests).
 
 - [ ] **Step 5: Apply the anchor in the Tier-3 block of `autocomplete.ts`.**
@@ -363,7 +363,7 @@ Expected: an index-backed plan (Bitmap/Index Scan using a trigram or btree index
 
 - [ ] **Step 7: Run the existing autocomplete + geocode test suites.**
 
-Run: `pnpm --filter @wherabouts.com/database test && pnpm --filter @wherabouts.com/api test geocode`
+Run: `pnpm --filter @locnative/database test && pnpm --filter @locnative/api test geocode`
 Expected: all pass (known-good queries like `10 Bourke St`, `George Street` still resolve).
 
 - [ ] **Step 8: Commit.**
@@ -439,7 +439,7 @@ describe("statementTimeoutSql", () => {
 
 - [ ] **Step 3: Run the test to verify it fails.**
 
-Run: `pnpm --filter @wherabouts.com/database test pooled-client`
+Run: `pnpm --filter @locnative/database test pooled-client`
 Expected: FAIL — `Cannot find module './pooled-client.ts'`.
 
 - [ ] **Step 4: Implement the pooled client + wrapper.**
@@ -496,7 +496,7 @@ neonConfig.webSocketConstructor = (globalThis as { WebSocket?: unknown })
 
 - [ ] **Step 5: Run the test to verify it passes.**
 
-Run: `pnpm --filter @wherabouts.com/database test pooled-client`
+Run: `pnpm --filter @locnative/database test pooled-client`
 Expected: PASS (2 tests).
 
 - [ ] **Step 6: Export from the database package.**
@@ -513,7 +513,7 @@ export type { PooledDatabase } from "./pooled-client.ts";
 In `packages/api/src/db.ts`, alongside the existing `neon-http` `db`, add a lazily-created pooled instance from the same `DATABASE_URL`:
 
 ```ts
-import { createPooledDb } from "@wherabouts.com/database";
+import { createPooledDb } from "@locnative/database";
 // ...existing neon-http `db` export stays unchanged...
 export const pooledDb = createPooledDb(serverEnv.DATABASE_URL);
 ```
@@ -535,7 +535,7 @@ In `packages/database/src/queries/autocomplete.ts`, change the `autocompleteAddr
 
 - [ ] **Step 9: Wrap the geocode + autocomplete handler reads (budget 3000 ms).**
 
-In `packages/api/src/routers/public/geocode.ts`, add imports `import { withStatementTimeout } from "@wherabouts.com/database";` and `import { pooledDb } from "../../db.ts";`, then replace:
+In `packages/api/src/routers/public/geocode.ts`, add imports `import { withStatementTimeout } from "@locnative/database";` and `import { pooledDb } from "../../db.ts";`, then replace:
 
 ```ts
 		const { results } = await autocompleteAddresses(context.db, query, {
@@ -615,7 +615,7 @@ Apply the identical transform to the `reverse` handler: wrap its `context.db.sel
 
 - [ ] **Step 11: Typecheck + full test + smoke the timeout end-to-end.**
 
-Run: `pnpm --filter @wherabouts.com/api check-types && pnpm --filter @wherabouts.com/api test`
+Run: `pnpm --filter @locnative/api check-types && pnpm --filter @locnative/api test`
 Expected: clean + green.
 
 Then smoke against a local `wrangler dev` (or staging): a forward-geocode for `Sydney Opera House` returns a fast 404 (not a hang); a normal geocode/nearby returns 200 as before.
@@ -668,7 +668,7 @@ In the `listApiKeyOptions` handler, replace the sequential `projectRows` await f
 
 - [ ] **Step 3: Typecheck + run the suite.**
 
-Run: `pnpm --filter @wherabouts.com/api check-types && pnpm --filter @wherabouts.com/api test`
+Run: `pnpm --filter @locnative/api check-types && pnpm --filter @locnative/api test`
 Expected: clean + all existing tests green (behaviour is identical; only concurrency changed).
 
 - [ ] **Step 4: Commit.**
@@ -686,7 +686,7 @@ git commit -m "perf(dashboard): parallelize projects.list reads"
 
 There is no root `test` script. Run the packages that have tests, plus the turbo typecheck pipeline:
 
-Run: `pnpm --filter @wherabouts.com/api test && pnpm --filter @wherabouts.com/database test && pnpm --filter @wherabouts.com/server test && pnpm check-types`
+Run: `pnpm --filter @locnative/api test && pnpm --filter @locnative/database test && pnpm --filter @locnative/server test && pnpm check-types`
 Expected: all green; `turbo check-types` clean across the workspace.
 
 - [ ] **Step 2: Re-run the endpoint audit latency sweep against the changed endpoints (production or staging) and capture before/after.**

@@ -1,8 +1,8 @@
 import {
 	SidebarInset,
 	SidebarProvider,
-} from "@wherabouts.com/ui/components/sidebar";
-import { cn } from "@wherabouts.com/ui/lib/utils";
+} from "@locnative/ui/components/sidebar";
+import { cn } from "@locnative/ui/lib/utils";
 import { AppHeader } from "@/components/app-header";
 import { AppSidebar } from "@/components/app-sidebar";
 

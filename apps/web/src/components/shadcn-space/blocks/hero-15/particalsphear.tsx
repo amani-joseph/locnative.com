@@ -21,12 +21,19 @@ const COLORS = [
 	"#f97316",
 ];
 
+interface SpherePoint {
+	color: string;
+	x: number;
+	y: number;
+	z: number;
+}
+
 /**
  * Generates a set of 3D points distributed on the surface of a sphere.
  * Uses Archimedes' theorem for uniform distribution across the sphere's surface.
  */
-function generateSpherePoints(count: number) {
-	const points = [];
+function generateSpherePoints(count: number): SpherePoint[] {
+	const points: SpherePoint[] = [];
 
 	for (let i = 0; i < count; i++) {
 		// Archimedes' Theorem / Lambert's Cylindrical Projection:
@@ -44,7 +51,7 @@ function generateSpherePoints(count: number) {
 		const point_z = r * z;
 
 		// Assign a color group based on the Y-position (Vertical distribution)
-		let colorIndex;
+		let colorIndex: number;
 		const yFactor = (y + RADIUS) / (2 * RADIUS); // Normalize Y position to 0.0 - 1.0 range
 
 		if (Math.random() > 0.9) {
@@ -146,13 +153,13 @@ export default function ParticleSphereAnimation({
 			rotatedPoints.sort((a, b) => a.z - b.z);
 
 			// Draw particles
-			rotatedPoints.forEach((p) => {
+			for (const p of rotatedPoints) {
 				ctx.beginPath();
 				ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
 				ctx.fillStyle = p.color;
 				ctx.globalAlpha = p.opacity;
 				ctx.fill();
-			});
+			}
 
 			// Reset globalAlpha to prevent state leakage
 			ctx.globalAlpha = 1.0;
@@ -169,7 +176,7 @@ export default function ParticleSphereAnimation({
 				cancelAnimationFrame(animationFrameRef.current);
 			}
 		};
-	}, []);
+	}, [points]);
 
 	return (
 		<div className={cn("mx-auto w-full", className)}>

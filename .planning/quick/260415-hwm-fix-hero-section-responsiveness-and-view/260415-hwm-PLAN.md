@@ -70,7 +70,7 @@ Apply the following responsive fixes to the hero section component:
    - Reduce suggestion row padding on mobile: change `px-3 py-2.5 md:px-3.5` to `px-2.5 py-2 md:px-3.5`.
   </action>
   <verify>
-    <automated>cd /Users/mac/Developer/projects/wherabouts.com && pnpm dlx ultracite check apps/web/src/components/shadcn-space/blocks/hero-15/hero.tsx</automated>
+    <automated>cd /Users/mac/Developer/projects/locnative.com && pnpm dlx ultracite check apps/web/src/components/shadcn-space/blocks/hero-15/hero.tsx</automated>
   </verify>
   <done>Hero section renders without horizontal overflow on 375px mobile viewport. Card height adapts to content. Text sizes progress cleanly from mobile to desktop. Globe does not cause scroll issues.</done>
 </task>

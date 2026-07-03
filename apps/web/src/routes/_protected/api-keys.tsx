@@ -1,13 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Badge } from "@wherabouts.com/ui/components/badge";
-import { Button, buttonVariants } from "@wherabouts.com/ui/components/button";
+import { Badge } from "@locnative/ui/components/badge";
+import { Button, buttonVariants } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
+} from "@locnative/ui/components/card";
 import {
 	Dialog,
 	DialogContent,
@@ -16,10 +15,11 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-} from "@wherabouts.com/ui/components/dialog";
-import { Input } from "@wherabouts.com/ui/components/input";
-import { Label } from "@wherabouts.com/ui/components/label";
-import { Skeleton } from "@wherabouts.com/ui/components/skeleton";
+} from "@locnative/ui/components/dialog";
+import { Input } from "@locnative/ui/components/input";
+import { Label } from "@locnative/ui/components/label";
+import { Skeleton } from "@locnative/ui/components/skeleton";
+import { createFileRoute } from "@tanstack/react-router";
 import {
 	CheckIcon,
 	CopyIcon,
@@ -469,7 +469,7 @@ function RouteComponent() {
 				</CardHeader>
 				<CardContent>
 					<pre className="overflow-x-auto rounded-lg bg-muted p-4 font-mono text-sm">
-						<code>{`curl -X GET "https://api.wherabouts.com/api/v1/addresses/autocomplete?q=123+Main&country=AU" \\
+						<code>{`curl -X GET "https://api.locnative.com/api/v1/addresses/autocomplete?q=123+Main&country=AU" \\
   -H "Authorization: Bearer YOUR_API_KEY"`}</code>
 					</pre>
 				</CardContent>

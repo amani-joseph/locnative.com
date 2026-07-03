@@ -3,14 +3,14 @@ import {
 	BreadcrumbItem,
 	BreadcrumbList,
 	BreadcrumbPage,
-} from "@wherabouts.com/ui/components/breadcrumb";
+} from "@locnative/ui/components/breadcrumb";
 import type { ReactNode } from "react";
 
 /** Current page segment shown in the header — pass a nav item or `{ title, icon? }`. */
-export type AppBreadcrumbPage = {
-	title: string;
+export interface AppBreadcrumbPage {
 	icon?: ReactNode;
-};
+	title: string;
+}
 
 export function AppBreadcrumbs({ page }: { page?: AppBreadcrumbPage | null }) {
 	if (!page?.title) {

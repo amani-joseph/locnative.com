@@ -1,71 +1,71 @@
 {
-	"name": "@wherabouts/sdk",
-	"version": "0.6.2",
-	"description": "Official TypeScript SDK for the Wherabouts location API — international geocoding, geofencing zones, device tracking, and webhooks over authoritative open address data (G-NAF, Overture, OpenAddresses, and more).",
-	"type": "module",
-	"license": "MIT",
-	"homepage": "https://wherabouts.com",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/amani-joseph/wherabouts.com.git",
-		"directory": "packages/sdk"
-	},
-	"keywords": [
-		"geocoding",
-		"reverse-geocoding",
-		"geofencing",
-		"international",
-		"address-autocomplete",
-		"g-naf",
-		"overture",
-		"openaddresses",
-		"location",
-		"webhooks",
-		"wherabouts"
-	],
-	"publishConfig": {
-		"access": "public"
-	},
-	"sideEffects": false,
-	"engines": {
-		"node": ">=18"
-	},
-	"main": "./dist/index.cjs",
-	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"exports": {
-		".": {
-			"import": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/index.js"
-			},
-			"require": {
-				"types": "./dist/index.d.cts",
-				"default": "./dist/index.cjs"
-			}
-		}
-	},
-	"files": [
-		"dist",
-		"README.md",
-		"CHANGELOG.md",
-		"LICENSE"
-	],
-	"scripts": {
-		"build": "tsup",
-		"check-types": "tsc --noEmit",
-		"test": "vitest run",
-		"lint:pkg": "publint && attw --pack",
-		"smoke": "node scripts/smoke-dist.mjs",
-		"prepublishOnly": "pnpm build && pnpm lint:pkg"
-	},
-	"devDependencies": {
-		"@arethetypeswrong/cli": "^0.18.3",
-		"@types/node": "^20",
-		"@wherabouts.com/config": "workspace:*",
-		"publint": "^0.3.21",
-		"tsup": "^8.5.1",
-		"typescript": "^5",
-		"vitest": "^4.1.4"
-	}
+  "name": "@locnative/sdk",
+  "version": "0.1.0",
+  "description": "Official TypeScript SDK for the Locnative location API — international geocoding, geofencing zones, device tracking, and webhooks over authoritative open address data (G-NAF, Overture, OpenAddresses, and more).",
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://locnative.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amani-joseph/locnative.com.git",
+    "directory": "packages/sdk"
+  },
+  "keywords": [
+    "geocoding",
+    "reverse-geocoding",
+    "geofencing",
+    "international",
+    "address-autocomplete",
+    "g-naf",
+    "overture",
+    "openaddresses",
+    "location",
+    "webhooks",
+    "locnative"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "check-types": "tsc --noEmit",
+    "test": "vitest run",
+    "lint:pkg": "publint && attw --pack",
+    "smoke": "node scripts/smoke-dist.mjs",
+    "prepublishOnly": "pnpm build && pnpm lint:pkg"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.3",
+    "@types/node": "^20",
+    "@locnative/config": "workspace:*",
+    "publint": "^0.3.21",
+    "tsup": "^8.5.1",
+    "typescript": "^5",
+    "vitest": "^4.1.4"
+  }
 }

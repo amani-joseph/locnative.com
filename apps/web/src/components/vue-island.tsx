@@ -3,7 +3,7 @@ import type { Component } from "vue";
 
 /**
  * Mounts a Vue 3 component inside the React tree. Used to showcase the live
- * @wherabouts/vue-ui components on the dashboard's component library page.
+ * @locnative/vue-ui components on the dashboard's component library page.
  *
  * Why a bridge: the dashboard is a React/TanStack Start app with no Vue
  * renderer. We mount each Vue component into a plain DOM ref via `createApp`.

@@ -18,21 +18,21 @@ export const Route = createFileRoute("/.well-known/api-catalog")({
 							{
 								href: `${origin}/api/openapi/json`,
 								type: "application/json",
-								title: "Wherabouts geocoding API — OpenAPI description",
+								title: "Locnative geocoding API — OpenAPI description",
 							},
 						],
 						"service-doc": [
 							{
 								href: `${origin}/docs`,
 								type: "text/html",
-								title: "Wherabouts API documentation",
+								title: "Locnative API documentation",
 							},
 						],
 						status: [
 							{
 								href: `${origin}/api/health`,
 								type: "application/json",
-								title: "Wherabouts API health status",
+								title: "Locnative API health status",
 							},
 						],
 					},

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { env } from "@locnative/env/web";
 import {
 	AddressAutocomplete,
 	AddressFieldGroup,
@@ -7,27 +7,27 @@ import {
 	type AddressWithParsed,
 	ForwardGeocodeInput,
 	ReverseGeocodeInput,
-} from "@wherabouts/react-ui";
-import type { WheraboutsClient } from "@wherabouts/sdk";
-import { createWheraboutsClient } from "@wherabouts/sdk";
-import { env } from "@wherabouts.com/env/web";
-import { Badge } from "@wherabouts.com/ui/components/badge";
+} from "@locnative/react-ui";
+import type { LocnativeClient } from "@locnative/sdk";
+import { createLocnativeClient } from "@locnative/sdk";
+import { Badge } from "@locnative/ui/components/badge";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
-import { Input } from "@wherabouts.com/ui/components/input";
-import { Label } from "@wherabouts.com/ui/components/label";
-import { Skeleton } from "@wherabouts.com/ui/components/skeleton";
+} from "@locnative/ui/components/card";
+import { Input } from "@locnative/ui/components/input";
+import { Label } from "@locnative/ui/components/label";
+import { Skeleton } from "@locnative/ui/components/skeleton";
 import {
 	Tabs,
 	TabsContent,
 	TabsList,
 	TabsTrigger,
-} from "@wherabouts.com/ui/components/tabs";
+} from "@locnative/ui/components/tabs";
+import { createFileRoute } from "@tanstack/react-router";
 import { AlertCircle, CheckCircle2, Loader2, MapPin } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { Component } from "vue";
@@ -42,15 +42,15 @@ export const Route = createFileRoute("/_protected/components")({
 // VueIsland mounts once (the loader identity never changes), and written as
 // dynamic imports so the Vue runtime + vue-ui bundle stay out of the SSR graph.
 const loadVueAutocomplete = (): Promise<Component> =>
-	import("@wherabouts/vue-ui").then((m) => m.AddressAutocomplete);
+	import("@locnative/vue-ui").then((m) => m.AddressAutocomplete);
 const loadVueFormField = (): Promise<Component> =>
-	import("@wherabouts/vue-ui").then((m) => m.AddressFormField);
+	import("@locnative/vue-ui").then((m) => m.AddressFormField);
 const loadVueFieldGroup = (): Promise<Component> =>
-	import("@wherabouts/vue-ui").then((m) => m.AddressFieldGroup);
+	import("@locnative/vue-ui").then((m) => m.AddressFieldGroup);
 const loadVueForwardGeocode = (): Promise<Component> =>
-	import("@wherabouts/vue-ui").then((m) => m.ForwardGeocodeInput);
+	import("@locnative/vue-ui").then((m) => m.ForwardGeocodeInput);
 const loadVueReverseGeocode = (): Promise<Component> =>
-	import("@wherabouts/vue-ui").then((m) => m.ReverseGeocodeInput);
+	import("@locnative/vue-ui").then((m) => m.ReverseGeocodeInput);
 
 // Sentinel used when no demo key is configured. The live demos can't reach the
 // API without a publishable key, so we detect this and show an explicit notice
@@ -63,17 +63,17 @@ const DEMO_KEY_FALLBACK = "demo-key-not-configured";
 const demoKeyConfigured = Boolean(env.VITE_DEMO_API_KEY);
 
 // Demo client factory.
-// Call the backend API directly via VITE_SERVER_URL (api.wherabouts.com in
+// Call the backend API directly via VITE_SERVER_URL (api.locnative.com in
 // production, the local backend in dev). The public /api/v1/* endpoints send
 // permissive CORS, so a cross-origin browser call works without a preflight
 // failure. We deliberately do NOT route through the same-origin /api/v1/*
 // proxy: in production that proxy issues a Worker→Worker subrequest to
-// api.wherabouts.com on the same Cloudflare zone, which Cloudflare blocks with
+// api.locnative.com on the same Cloudflare zone, which Cloudflare blocks with
 // a 403 (the request never reaches the backend). SDK resource paths are
 // absolute (/api/v1/...), so VITE_SERVER_URL (origin only) is the correct base.
-const createDemoClient = (): WheraboutsClient => {
+const createDemoClient = (): LocnativeClient => {
 	const apiKey = env.VITE_DEMO_API_KEY || DEMO_KEY_FALLBACK;
-	return createWheraboutsClient({
+	return createLocnativeClient({
 		apiKey,
 		baseUrl: env.VITE_SERVER_URL,
 	});
@@ -175,7 +175,7 @@ function ComponentDocumentation({
 	features,
 	props,
 	usage,
-	packageName = "@wherabouts/react-ui",
+	packageName = "@locnative/react-ui",
 }: {
 	name: string;
 	description: string;
@@ -626,7 +626,7 @@ function VueLiveDemoCard({ children }: { children: React.ReactNode }) {
 			<CardHeader className="bg-emerald-50 dark:bg-emerald-950/30">
 				<CardTitle className="text-base">Live Demo (Vue)</CardTitle>
 				<CardDescription>
-					Real @wherabouts/vue-ui component — queries live database
+					Real @locnative/vue-ui component — queries live database
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-2 pt-6">{children}</CardContent>
@@ -950,7 +950,7 @@ function RouteComponent() {
 				</CardHeader>
 				<CardContent className="space-y-2 text-sm">
 					<p>
-						These demos make <strong>real API calls</strong> to the Wherabouts
+						These demos make <strong>real API calls</strong> to the Locnative
 						API using a test publishable key. Each form submission is validated
 						with Zod schemas and displays results in styled cards with loading
 						and error states.
@@ -958,7 +958,7 @@ function RouteComponent() {
 					<div className="mt-2 rounded border border-blue-100 bg-white p-3 dark:border-blue-900 dark:bg-black/30">
 						<p className="mb-2 font-semibold text-xs">Demo Features:</p>
 						<ul className="ml-4 list-disc space-y-1 text-xs">
-							<li>✓ Real API calls to Wherabouts service</li>
+							<li>✓ Real API calls to Locnative service</li>
 							<li>✓ Zod schema validation on client side</li>
 							<li>✓ Loading states with spinners</li>
 							<li>✓ Error handling with detailed messages</li>
@@ -992,17 +992,17 @@ function RouteComponent() {
 								]}
 								name="AddressAutocomplete"
 								props={`{
-  client: WheraboutsClient
+  client: LocnativeClient
   onSelect?: (address: AddressWithParsed) => void
   enableGeolocation?: boolean
   placeholder?: string
   debounceMs?: number
   sessionToken?: string
 }`}
-								usage={`import { AddressAutocomplete } from '@wherabouts/react-ui';
-import { createWheraboutsClient } from '@wherabouts/sdk';
+								usage={`import { AddressAutocomplete } from '@locnative/react-ui';
+import { createLocnativeClient } from '@locnative/sdk';
 
-const client = createWheraboutsClient({
+const client = createLocnativeClient({
   apiKey: 'pk_...'
 });
 
@@ -1025,7 +1025,7 @@ const client = createWheraboutsClient({
 								]}
 								name="AddressFormField"
 								props={`{
-  client: WheraboutsClient
+  client: LocnativeClient
   onSelect?: (address: AddressWithParsed) => void
   placeholder?: string
   disabled?: boolean
@@ -1050,7 +1050,7 @@ const client = createWheraboutsClient({
 								]}
 								name="AddressFieldGroup"
 								props={`{
-  client: WheraboutsClient
+  client: LocnativeClient
   value: { street, suburb, state, postcode }
   onChange: (value) => void
   disabled?: boolean
@@ -1082,7 +1082,7 @@ const client = createWheraboutsClient({
 								]}
 								name="ForwardGeocodeInput"
 								props={`{
-  client: WheraboutsClient
+  client: LocnativeClient
   onSelect?: (coords: { lat, lng }) => void
   placeholder?: string
 }`}
@@ -1105,7 +1105,7 @@ const client = createWheraboutsClient({
 								]}
 								name="ReverseGeocodeInput"
 								props={`{
-  client: WheraboutsClient
+  client: LocnativeClient
   onSelect?: (address: AddressWithParsed) => void
   placeholder?: string
 }`}
@@ -1125,19 +1125,19 @@ const client = createWheraboutsClient({
 							<div>
 								<strong>1. Install</strong>
 								<pre className="mt-1 overflow-x-auto rounded bg-black/20 p-2 text-xs">
-									<code>pnpm add @wherabouts/react-ui @wherabouts/sdk</code>
+									<code>pnpm add @locnative/react-ui @locnative/sdk</code>
 								</pre>
 							</div>
 							<div>
 								<strong>2. Import</strong>
 								<pre className="mt-1 overflow-x-auto rounded bg-black/20 p-2 text-xs">
-									<code>{`import { AddressAutocomplete } from '@wherabouts/react-ui';\nimport '@wherabouts/react-ui/styles.css';`}</code>
+									<code>{`import { AddressAutocomplete } from '@locnative/react-ui';\nimport '@locnative/react-ui/styles.css';`}</code>
 								</pre>
 							</div>
 							<div>
 								<strong>3. Use with your API key</strong>
 								<pre className="mt-1 overflow-x-auto rounded bg-black/20 p-2 text-xs">
-									<code>{`const client = createWheraboutsClient({
+									<code>{`const client = createLocnativeClient({
   apiKey: 'pk_live_...'  // Get from dashboard
 });
 
@@ -1157,7 +1157,7 @@ const client = createWheraboutsClient({
 									Live Vue 3 components
 								</CardTitle>
 								<CardDescription>
-									These are real <strong>@wherabouts/vue-ui</strong> Vue 3 SFCs,
+									These are real <strong>@locnative/vue-ui</strong> Vue 3 SFCs,
 									mounted into this React dashboard via a small{" "}
 									<code className="rounded bg-black/10 px-1">VueIsland</code>{" "}
 									bridge (each Vue app is mounted into a DOM ref). Same SDK,
@@ -1179,9 +1179,9 @@ const client = createWheraboutsClient({
 									"Keyboard nav",
 								]}
 								name="AddressAutocomplete"
-								packageName="@wherabouts/vue-ui"
+								packageName="@locnative/vue-ui"
 								props={`{
-  client: WheraboutsClient
+  client: LocnativeClient
   minCharsToSearch?: number
   enableGeolocation?: boolean
   placeholder?: string
@@ -1189,10 +1189,10 @@ const client = createWheraboutsClient({
 }
 emits: select, queryChange`}
 								usage={`<script setup>
-import { AddressAutocomplete } from '@wherabouts/vue-ui';
-import { createWheraboutsClient } from '@wherabouts/sdk';
+import { AddressAutocomplete } from '@locnative/vue-ui';
+import { createLocnativeClient } from '@locnative/sdk';
 
-const client = createWheraboutsClient({ apiKey: 'pk_...' });
+const client = createLocnativeClient({ apiKey: 'pk_...' });
 </script>
 
 <template>
@@ -1215,9 +1215,9 @@ const client = createWheraboutsClient({ apiKey: 'pk_...' });
 									"Disabled state",
 								]}
 								name="AddressFormField"
-								packageName="@wherabouts/vue-ui"
+								packageName="@locnative/vue-ui"
 								props={`{
-  client: WheraboutsClient
+  client: LocnativeClient
   label: string
   error?: string
   required?: boolean
@@ -1242,9 +1242,9 @@ emits: select`}
 									"Controlled",
 								]}
 								name="AddressFieldGroup"
-								packageName="@wherabouts/vue-ui"
+								packageName="@locnative/vue-ui"
 								props={`{
-  client: WheraboutsClient
+  client: LocnativeClient
   value: { street, suburb, state, postcode }
 }
 emits: change`}
@@ -1267,9 +1267,9 @@ emits: change`}
 									"Read-only",
 								]}
 								name="ForwardGeocodeInput"
-								packageName="@wherabouts/vue-ui"
+								packageName="@locnative/vue-ui"
 								props={`{
-  client: WheraboutsClient
+  client: LocnativeClient
   query: string | null
 }
 emits: result`}
@@ -1292,9 +1292,9 @@ emits: result`}
 									"Read-only",
 								]}
 								name="ReverseGeocodeInput"
-								packageName="@wherabouts/vue-ui"
+								packageName="@locnative/vue-ui"
 								props={`{
-  client: WheraboutsClient
+  client: LocnativeClient
   latitude: number | null
   longitude: number | null
 }

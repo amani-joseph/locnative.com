@@ -1,10 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
 import {
 	Card,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
+} from "@locnative/ui/components/card";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_protected/devices")({
 	component: RouteComponent,

@@ -93,7 +93,7 @@ export { regions } from "./regions.ts";
 
 - [ ] **Step 3: Generate the migration**
 
-Run: `pnpm --filter @wherabouts.com/database db:generate`
+Run: `pnpm --filter @locnative/database db:generate`
 Expected: a new SQL file appears under `packages/database/drizzle/` containing `CREATE TABLE "regions"` with a `geometry(MultiPolygon,4326)` column and three indexes (one `USING gist`).
 
 - [ ] **Step 4: Inspect the generated SQL**
@@ -107,7 +107,7 @@ If the gist index is missing, drizzle-kit did not recognize the geometry type �
 
 - [ ] **Step 5: Apply the migration**
 
-Run: `pnpm --filter @wherabouts.com/database db:migrate`
+Run: `pnpm --filter @locnative/database db:migrate`
 Expected: migration applies cleanly (PostGIS is already enabled — `addresses`/`zones` use it).
 
 - [ ] **Step 6: Commit**
@@ -200,7 +200,7 @@ describe("groupRegionsByLayer", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `pnpm --filter @wherabouts.com/api test -- regions.test.ts`
+Run: `pnpm --filter @locnative/api test -- regions.test.ts`
 Expected: FAIL — `region-queries.ts` does not exist / exports undefined.
 
 - [ ] **Step 3: Write the helper module**
@@ -208,8 +208,8 @@ Expected: FAIL — `region-queries.ts` does not exist / exports undefined.
 Create `packages/api/src/shared/region-queries.ts`:
 
 ```ts
-import type { Database } from "@wherabouts.com/database";
-import { regions } from "@wherabouts.com/database/schema";
+import type { Database } from "@locnative/database";
+import { regions } from "@locnative/database/schema";
 import { inArray, sql } from "drizzle-orm";
 
 export const REGION_LAYERS = [
@@ -297,7 +297,7 @@ export async function regionsContainingPoint(
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `pnpm --filter @wherabouts.com/api test -- regions.test.ts`
+Run: `pnpm --filter @locnative/api test -- regions.test.ts`
 Expected: PASS (all `parseLayers` and `groupRegionsByLayer` cases green).
 
 - [ ] **Step 5: Commit**
@@ -377,12 +377,12 @@ Add a `regions` group to the `publicHttpRouter` object (place it after the `zone
 
 - [ ] **Step 3: Type-check the API package**
 
-Run: `pnpm --filter @wherabouts.com/api typecheck`
+Run: `pnpm --filter @locnative/api typecheck`
 Expected: PASS (no type errors; `publicHttpRouter` includes the new `regions.classify`).
 
 - [ ] **Step 4: Run the API test suite**
 
-Run: `pnpm --filter @wherabouts.com/api test`
+Run: `pnpm --filter @locnative/api test`
 Expected: PASS (existing tests + the Task 2 tests).
 
 - [ ] **Step 5: Commit**
@@ -427,7 +427,7 @@ In the same file, add a new entry to the `endpointMap` Map (place it after the `
 
 - [ ] **Step 3: Type-check**
 
-Run: `pnpm --filter @wherabouts.com/api typecheck`
+Run: `pnpm --filter @locnative/api typecheck`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -645,10 +645,10 @@ and place the `.gpkg` files under `packages/database/scripts/data/asgs/`:
 
 ## Run
 Light subset (fast, good for local dev):
-    DATABASE_URL=... pnpm --filter @wherabouts.com/database exec tsx scripts/ingest-asgs.ts state sa4 lga poa
+    DATABASE_URL=... pnpm --filter @locnative/database exec tsx scripts/ingest-asgs.ts state sa4 lga poa
 
 Full ingest (mb + sa1 are large, ~430k polygons total):
-    DATABASE_URL=... pnpm --filter @wherabouts.com/database exec tsx scripts/ingest-asgs.ts
+    DATABASE_URL=... pnpm --filter @locnative/database exec tsx scripts/ingest-asgs.ts
 
 Re-running a layer is safe — each layer is deleted before reload.
 ```
@@ -658,7 +658,7 @@ Re-running a layer is safe — each layer is deleted before reload.
 With GDAL installed and the `state`/`sa4`/`lga`/`poa` GeoPackages downloaded, run:
 
 ```bash
-DATABASE_URL=$DATABASE_URL pnpm --filter @wherabouts.com/database exec tsx scripts/ingest-asgs.ts state sa4 lga poa
+DATABASE_URL=$DATABASE_URL pnpm --filter @locnative/database exec tsx scripts/ingest-asgs.ts state sa4 lga poa
 ```
 
 Then verify counts and a sample classification with `psql`:
@@ -736,7 +736,7 @@ Append a new object to the `apiExplorerEndpoints` array (after the last zones/we
 
 - [ ] **Step 3: Type-check the web app**
 
-Run: `pnpm --filter @wherabouts.com/web typecheck`
+Run: `pnpm --filter @locnative/web typecheck`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -780,7 +780,7 @@ Locate the endpoint-section array (the objects that render each endpoint's `path
 				"Return the administrative regions that contain a coordinate.",
 			description:
 				"Classifies a latitude/longitude into the official ABS/ASGS regions that contain it — state, SA1–SA4, LGA, postcode, electoral divisions, and mesh block — keyed by layer. Outside Australia the `regions` object is empty.",
-			curl: `curl "https://api.wherabouts.com/api/v1/regions?lat=-37.8136&lng=144.9631" \\
+			curl: `curl "https://api.locnative.com/api/v1/regions?lat=-37.8136&lng=144.9631" \\
   -H "Authorization: Bearer YOUR_API_KEY"`,
 		},
 ```
@@ -789,7 +789,7 @@ Locate the endpoint-section array (the objects that render each endpoint's `path
 
 - [ ] **Step 3: Type-check + verify the docs route renders**
 
-Run: `pnpm --filter @wherabouts.com/web typecheck`
+Run: `pnpm --filter @locnative/web typecheck`
 Expected: PASS.
 
 Then run the web dev server and open `/docs`; confirm the "Regions → Classify Coordinate" entry appears in the sidebar and scrolls to the new section.
@@ -814,12 +814,12 @@ Expected: no errors in the new/modified files (fix with `pnpm dlx ultracite fix`
 
 - [ ] **Step 2: Type-check all packages**
 
-Run: `pnpm --filter @wherabouts.com/api typecheck && pnpm --filter @wherabouts.com/web typecheck`
+Run: `pnpm --filter @locnative/api typecheck && pnpm --filter @locnative/web typecheck`
 Expected: PASS.
 
 - [ ] **Step 3: Run the full API test suite**
 
-Run: `pnpm --filter @wherabouts.com/api test`
+Run: `pnpm --filter @locnative/api test`
 Expected: PASS.
 
 - [ ] **Step 4: Smoke-test the endpoint locally (after ingestion)**

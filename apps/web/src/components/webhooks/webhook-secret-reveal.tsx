@@ -1,4 +1,4 @@
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Dialog,
 	DialogContent,
@@ -6,7 +6,7 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@wherabouts.com/ui/components/dialog";
+} from "@locnative/ui/components/dialog";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -35,7 +35,7 @@ export function WebhookSecretReveal({
 					<DialogTitle>Webhook signing secret</DialogTitle>
 					<DialogDescription>
 						Copy this now — it is shown once and cannot be retrieved later. Use
-						it to verify the X-Wherabouts-Signature HMAC.
+						it to verify the X-Locnative-Signature HMAC.
 					</DialogDescription>
 				</DialogHeader>
 				<div className="flex items-center gap-2 rounded-md border bg-muted p-2 font-mono text-sm">

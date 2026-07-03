@@ -5,7 +5,7 @@
 set -euo pipefail
 
 TOKEN="${1:?Pass the OSRM_AUTH_TOKEN as the first argument}"
-HOST="wherabouts-osrm.fly.dev"
+HOST="locnative-osrm.fly.dev"
 PIN="${2:-66.241.124.71}"   # pin shared v4 to bypass stale local DNS cache
 BASE="https://${HOST}"
 COORDS="144.9631,-37.8136;151.2093,-33.8688?overview=false"

@@ -1,8 +1,8 @@
-# @wherabouts/react
+# @locnative/react
 
-React hooks for the [Wherabouts](https://wherabouts.com) location API — address autocomplete, reverse geocoding, and geofence detection with built-in debouncing, cancellation, and loading/error state.
+React hooks for the [Locnative](https://locnative.com) location API — address autocomplete, reverse geocoding, and geofence detection with built-in debouncing, cancellation, and loading/error state.
 
-[![npm](https://img.shields.io/npm/v/@wherabouts/react)](https://www.npmjs.com/package/@wherabouts/react)
+[![npm](https://img.shields.io/npm/v/@locnative/react)](https://www.npmjs.com/package/@locnative/react)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ---
@@ -12,7 +12,7 @@ React hooks for the [Wherabouts](https://wherabouts.com) location API — addres
 | Peer dependency    | Version  |
 |--------------------|----------|
 | `react`            | `>= 18`  |
-| `@wherabouts/sdk`  | `>= 0.4.1` |
+| `@locnative/sdk`  | `>= 0.4.1` |
 
 ---
 
@@ -20,25 +20,25 @@ React hooks for the [Wherabouts](https://wherabouts.com) location API — addres
 
 ```bash
 # npm
-npm install @wherabouts/react @wherabouts/sdk
+npm install @locnative/react @locnative/sdk
 
 # pnpm
-pnpm add @wherabouts/react @wherabouts/sdk
+pnpm add @locnative/react @locnative/sdk
 
 # yarn
-yarn add @wherabouts/react @wherabouts/sdk
+yarn add @locnative/react @locnative/sdk
 ```
 
 ---
 
 ## Quick start
 
-All hooks accept a `WheraboutsClient` instance as their first argument. Create one with your publishable API key from the [Wherabouts dashboard](https://wherabouts.com/dashboard).
+All hooks accept a `LocnativeClient` instance as their first argument. Create one with your publishable API key from the [Locnative dashboard](https://locnative.com/dashboard).
 
 ```ts
-import { createWheraboutsClient } from "@wherabouts/sdk";
+import { createLocnativeClient } from "@locnative/sdk";
 
-const client = createWheraboutsClient({
+const client = createLocnativeClient({
   apiKey: "pk_live_...", // publishable key — safe in browser
 });
 ```
@@ -51,7 +51,7 @@ const client = createWheraboutsClient({
 > request (and debounce) each render.
 >
 > ```tsx
-> const client = useMemo(() => createWheraboutsClient({ apiKey }), [apiKey]);
+> const client = useMemo(() => createLocnativeClient({ apiKey }), [apiKey]);
 > ```
 
 ---
@@ -63,7 +63,7 @@ const client = createWheraboutsClient({
 Type-ahead address search with automatic debouncing and in-flight request cancellation.
 
 ```tsx
-import { useAutocomplete } from "@wherabouts/react";
+import { useAutocomplete } from "@locnative/react";
 
 function AddressSearch({ client }) {
   const { query, setQuery, results, loading, error } = useAutocomplete(client, {
@@ -96,7 +96,7 @@ function AddressSearch({ client }) {
 
 ```ts
 function useAutocomplete(
-  client: WheraboutsClient,
+  client: LocnativeClient,
   options?: UseAutocompleteOptions
 ): UseAutocompleteResult
 ```
@@ -144,7 +144,7 @@ helpers for an accessible autocomplete dropdown — keyboard navigation
 pair it with `useAutocomplete`.
 
 ```tsx
-import { useAutocomplete, useCombobox } from "@wherabouts/react";
+import { useAutocomplete, useCombobox } from "@locnative/react";
 
 function AddressCombobox({ client }) {
   const { query, setQuery, results } = useAutocomplete(client);
@@ -186,7 +186,7 @@ are also exported for advanced use.
 Resolves a latitude/longitude coordinate to the nearest address. Pass `null` to reset.
 
 ```tsx
-import { useReverseGeocode } from "@wherabouts/react";
+import { useReverseGeocode } from "@locnative/react";
 
 function NearestAddress({ client, userLocation }) {
   // userLocation: { lat: number; lng: number } | null
@@ -209,7 +209,7 @@ function NearestAddress({ client, userLocation }) {
 
 ```ts
 function useReverseGeocode(
-  client: WheraboutsClient,
+  client: LocnativeClient,
   coords: LatLng | null
 ): UseReverseGeocodeResult
 ```
@@ -244,7 +244,7 @@ interface LatLng {
 Returns all geofence zones that contain a given coordinate. Useful for entry/exit detection, location-gating, and proximity-based UI.
 
 ```tsx
-import { useZoneContains } from "@wherabouts/react";
+import { useZoneContains } from "@locnative/react";
 
 function ZoneStatus({ client, userLocation }) {
   const { zones, loading, error } = useZoneContains(client, userLocation);
@@ -272,7 +272,7 @@ function ZoneStatus({ client, userLocation }) {
 
 ```ts
 function useZoneContains(
-  client: WheraboutsClient,
+  client: LocnativeClient,
   coords: LatLng | null
 ): UseZoneContainsResult
 ```
@@ -298,7 +298,7 @@ Fetch routing results that re-run when their params change and abort the previou
 request. Pass `null` params to stay idle. Each returns `{ data, loading, error }`.
 
 ```tsx
-import { useDirections } from "@wherabouts/react";
+import { useDirections } from "@locnative/react";
 
 function Route({ client }) {
   const { data, loading, error } = useDirections(client, {
@@ -324,7 +324,7 @@ A common pattern — combine the browser's `navigator.geolocation` with these ho
 
 ```tsx
 import { useState, useEffect } from "react";
-import { useReverseGeocode, useZoneContains, type LatLng } from "@wherabouts/react";
+import { useReverseGeocode, useZoneContains, type LatLng } from "@locnative/react";
 
 function LocationAwareComponent({ client }) {
   const [coords, setCoords] = useState<LatLng | null>(null);
@@ -364,7 +364,7 @@ import type {
   UseAutocompleteResult,
   UseReverseGeocodeResult,
   UseZoneContainsResult,
-} from "@wherabouts/react";
+} from "@locnative/react";
 ```
 
 The package ships with bundled type declarations (`.d.ts` and `.d.cts`) for both ESM and CJS consumers.

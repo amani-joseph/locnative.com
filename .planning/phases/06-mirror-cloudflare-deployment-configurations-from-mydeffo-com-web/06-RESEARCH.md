@@ -6,7 +6,7 @@
 
 ## Summary
 
-This phase requires aligning wherabouts.com's build, server, and deployment configuration with the proven patterns in mydeffo.com-web to ensure successful Cloudflare Workers deployment. The two projects share the same core stack (TanStack Start + Vite + Cloudflare Vite Plugin + Hono server), but wherabouts.com has several Node.js-only patterns that will fail on Cloudflare Workers.
+This phase requires aligning locnative.com's build, server, and deployment configuration with the proven patterns in mydeffo.com-web to ensure successful Cloudflare Workers deployment. The two projects share the same core stack (TanStack Start + Vite + Cloudflare Vite Plugin + Hono server), but locnative.com has several Node.js-only patterns that will fail on Cloudflare Workers.
 
 The three critical issues are: (1) `packages/env/src/server.ts` uses `node:fs` (`existsSync`) and `node:path` for a directory-walking `.env` loader that is unnecessary on Workers (env vars come from wrangler config/secrets), (2) `packages/api/src/api-key-auth.ts` uses synchronous `scryptSync` from `node:crypto` which works with `nodejs_compat` but is suboptimal (should verify it works or switch to async `crypto.subtle`), and (3) the `next` package (16.1.1) is listed as a dependency in `apps/web/package.json` but never imported -- dead weight that may interfere with bundling.
 
@@ -22,38 +22,38 @@ The three critical issues are: (1) `packages/env/src/server.ts` uses `node:fs` (
 
 ## Architecture Patterns
 
-### Configuration Comparison: wherabouts.com vs mydeffo.com-web
+### Configuration Comparison: locnative.com vs mydeffo.com-web
 
 #### Wrangler Config (apps/web)
 
-| Setting | wherabouts.com | mydeffo.com-web | Action |
+| Setting | locnative.com | mydeffo.com-web | Action |
 |---------|---------------|-----------------|--------|
 | Format | `wrangler.jsonc` | `wrangler.toml` | No change needed (both valid) |
-| `compatibility_flags` | `["nodejs_compat", "nodejs_compat_populate_process_env"]` | `["nodejs_compat"]` | wherabouts has EXTRA flag -- keep it, needed for `process.env` |
-| `main` entry | `@tanstack/react-start/server-entry` | `./node_modules/@tanstack/react-start/dist/default-entry/esm/server.js` | Both work; wherabouts uses the newer alias. Keep as-is |
+| `compatibility_flags` | `["nodejs_compat", "nodejs_compat_populate_process_env"]` | `["nodejs_compat"]` | locnative has EXTRA flag -- keep it, needed for `process.env` |
+| `main` entry | `@tanstack/react-start/server-entry` | `./node_modules/@tanstack/react-start/dist/default-entry/esm/server.js` | Both work; locnative uses the newer alias. Keep as-is |
 | Observability | Not configured | `enabled: true`, `logs.enabled: true`, `logs.invocation_logs: true` | Add observability config |
 | Routes/custom domain | Not configured | `routes = [{ pattern = "mydeffo.com", custom_domain = true }]` | Add when domain is ready |
 | Build/deploy script | `vite build && wrangler deploy` | `pnpm build:cf && wrangler deploy --config dist/server/wrangler.json` | Align deploy script |
 
 #### Wrangler Config (apps/server)
 
-| Setting | wherabouts.com | mydeffo.com-web | Notes |
+| Setting | locnative.com | mydeffo.com-web | Notes |
 |---------|---------------|-----------------|-------|
 | Format | `wrangler.jsonc` | `wrangler.jsonc` | Same |
-| `nodejs_compat_populate_process_env` | Yes (extra) | No | wherabouts has extra flag |
+| `nodejs_compat_populate_process_env` | Yes (extra) | No | locnative has extra flag |
 | Observability | `enabled: true, head_sampling_rate: 1` | `enabled: true, logs.enabled: true, logs.invocation_logs: true` | Align log config |
 | Production env | Not configured | Has `env.production` block with custom domain, CORS, cookie domain vars | Add production env block |
 
 #### Vite Config (apps/web)
 
-| Setting | wherabouts.com | mydeffo.com-web | Action |
+| Setting | locnative.com | mydeffo.com-web | Action |
 |---------|---------------|-----------------|--------|
 | Cloudflare plugin | Yes, `{ viteEnvironment: { name: "ssr" } }` | Same | Aligned |
 | `resolve.dedupe` | `["react", "react-dom"]` | Not present | Keep -- prevents duplicate React in SSR |
 | Sentry plugin | Not present | `sentryTanstackStart` | Out of scope for this phase |
 | Preview config | Not present | Has `preview.host`, `preview.port`, `preview.allowedHosts` | Not needed for CF deployment |
 
-### Critical Node.js-Only Code in wherabouts.com
+### Critical Node.js-Only Code in locnative.com
 
 #### 1. `packages/env/src/server.ts` -- Filesystem-based .env Loading (BLOCKER)
 
@@ -110,7 +110,7 @@ On Workers, `nodejs_compat_populate_process_env` ensures `wrangler.jsonc` vars a
 
 ### Package Differences
 
-#### Unused/Suspicious Dependencies in wherabouts.com apps/web
+#### Unused/Suspicious Dependencies in locnative.com apps/web
 
 | Package | Version | Issue | Action |
 |---------|---------|-------|--------|
@@ -126,16 +126,16 @@ On Workers, `nodejs_compat_populate_process_env` ensures `wrangler.jsonc` vars a
 | Package | Purpose | Needed? |
 |---------|---------|---------|
 | `@cloudflare/workers-types` | Type definitions for CF Workers env bindings | Yes -- add to apps/server devDependencies |
-| `wrangler` (root devDep) | mydeffo has at root level | wherabouts has it per-app, which is fine |
+| `wrangler` (root devDep) | mydeffo has at root level | locnative has it per-app, which is fine |
 
 #### Version Differences
 
-| Package | wherabouts | mydeffo | Notes |
+| Package | locnative | mydeffo | Notes |
 |---------|-----------|---------|-------|
-| `@cloudflare/vite-plugin` | ^1.31.2 | ^1.28.0 | wherabouts is newer, fine |
-| `wrangler` | ^4.81.1 | ^4.73.0 | wherabouts is newer, fine |
+| `@cloudflare/vite-plugin` | ^1.31.2 | ^1.28.0 | locnative is newer, fine |
+| `wrangler` | ^4.81.1 | ^4.73.0 | locnative is newer, fine |
 | `drizzle-orm` | ^0.44.7 | ^0.45.1 | mydeffo is newer. Consider updating |
-| `@neondatabase/serverless` | ^1.0.0 | ^0.10.4 | wherabouts is major version ahead. Both work on CF |
+| `@neondatabase/serverless` | ^1.0.0 | ^0.10.4 | locnative is major version ahead. Both work on CF |
 | `better-auth` | ^1.5.6 | catalog: | Should use catalog for consistency |
 
 ### Deploy Script Pattern
@@ -149,7 +149,7 @@ On Workers, `nodejs_compat_populate_process_env` ensures `wrangler.jsonc` vars a
 }
 ```
 
-**wherabouts.com (apps/web):**
+**locnative.com (apps/web):**
 ```json
 {
   "build": "vite build",
@@ -159,12 +159,12 @@ On Workers, `nodejs_compat_populate_process_env` ensures `wrangler.jsonc` vars a
 
 **Key differences:**
 - mydeffo uses `NITRO_PRESET=cloudflare-pages` env var during CF build -- this may not be needed with the newer `@cloudflare/vite-plugin` approach
-- mydeffo deploys using the generated `dist/server/wrangler.json` (which includes assets directory config), wherabouts relies on the source `wrangler.jsonc`
-- Both approaches work. The generated `dist/server/wrangler.json` in wherabouts already contains the correct config (verified from reading the file)
+- mydeffo deploys using the generated `dist/server/wrangler.json` (which includes assets directory config), locnative relies on the source `wrangler.jsonc`
+- Both approaches work. The generated `dist/server/wrangler.json` in locnative already contains the correct config (verified from reading the file)
 
 ### Server Export Pattern
 
-**wherabouts.com (apps/server):**
+**locnative.com (apps/server):**
 ```typescript
 export default {
   fetch: app.fetch,
@@ -183,7 +183,7 @@ Both use the standard Workers `fetch` handler export. The Sentry wrapper is out 
 
 ### Auth Configuration Comparison
 
-| Feature | wherabouts.com | mydeffo.com-web |
+| Feature | locnative.com | mydeffo.com-web |
 |---------|---------------|-----------------|
 | Location | `packages/api/src/auth.ts` | `packages/auth/src/index.ts` |
 | Cookie attributes | `sameSite: "none", secure: true, httpOnly: true` | Same + optional `domain` from env |
@@ -219,7 +219,7 @@ Both use the standard Workers `fetch` handler export. The Sentry wrapper is out 
 ### Pitfall 3: Environment Variables Not Available
 **What goes wrong:** `process.env.VAR` returns `undefined` on Workers.
 **Why it happens:** Without `nodejs_compat_populate_process_env` flag, Workers don't populate `process.env` from wrangler vars/secrets.
-**How to avoid:** wherabouts.com already has this flag. Keep it. Also ensure all secrets are set via `wrangler secret put`.
+**How to avoid:** locnative.com already has this flag. Keep it. Also ensure all secrets are set via `wrangler secret put`.
 **Warning signs:** Auth fails with "BETTER_AUTH_SECRET is required" or similar at startup.
 
 ### Pitfall 4: Unused `next` Package Interfering with Bundling
@@ -266,13 +266,13 @@ export const serverEnv = createEnv({
   "env": {
     "production": {
       "vars": {
-        "AUTH_COOKIE_DOMAIN": ".wherabouts.com",
-        "BETTER_AUTH_URL": "https://wherabouts-server.mr-amanijoseph.workers.dev",
-        "WEB_BASE_URL": "https://wherabouts.com"
+        "AUTH_COOKIE_DOMAIN": ".locnative.com",
+        "BETTER_AUTH_URL": "https://locnative-server.mr-amanijoseph.workers.dev",
+        "WEB_BASE_URL": "https://locnative.com"
       },
       "routes": [
         {
-          "pattern": "api.wherabouts.com",
+          "pattern": "api.locnative.com",
           "custom_domain": true
         }
       ]
@@ -298,15 +298,15 @@ export const serverEnv = createEnv({
 
 | Old Approach | Current Approach | When Changed | Impact |
 |--------------|------------------|--------------|--------|
-| `NITRO_PRESET=cloudflare-pages` | `@cloudflare/vite-plugin` handles preset automatically | CF Vite Plugin v1.x (2025) | wherabouts already uses the new approach |
-| Manual worker entry file | `main: "@tanstack/react-start/server-entry"` alias | TanStack Start 1.x | wherabouts uses the newer alias pattern |
+| `NITRO_PRESET=cloudflare-pages` | `@cloudflare/vite-plugin` handles preset automatically | CF Vite Plugin v1.x (2025) | locnative already uses the new approach |
+| Manual worker entry file | `main: "@tanstack/react-start/server-entry"` alias | TanStack Start 1.x | locnative uses the newer alias pattern |
 | `wrangler.toml` only | `wrangler.jsonc` supported | Wrangler 3.x+ | Both formats work; jsonc allows comments |
 
 ## Open Questions
 
 1. **Cookie domain for cross-subdomain auth**
    - What we know: mydeffo uses `AUTH_COOKIE_DOMAIN=".mydeffo.com"` for cross-subdomain cookie sharing (web on `mydeffo.com`, API on `api.mydeffo.com`)
-   - What's unclear: Will wherabouts use subdomains (e.g., `api.wherabouts.com`) or the workers.dev domain?
+   - What's unclear: Will locnative use subdomains (e.g., `api.locnative.com`) or the workers.dev domain?
    - Recommendation: Add `AUTH_COOKIE_DOMAIN` as optional env var now, configure when domain setup is finalized
 
 2. **`scryptSync` performance on Workers**
@@ -315,14 +315,14 @@ export const serverEnv = createEnv({
    - Recommendation: Ship as-is, monitor via observability, migrate to async if needed
 
 3. **Convex dependency**
-   - What we know: wherabouts.com has Convex as part of its stack but the schema is currently empty
+   - What we know: locnative.com has Convex as part of its stack but the schema is currently empty
    - What's unclear: Whether Convex client-side SDK has any Node.js-only dependencies that affect Workers SSR
    - Recommendation: Verify Convex SDK works in Workers SSR environment during testing
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- Direct file comparison between `/Users/mac/Developer/projects/wherabouts.com` and `/Users/mac/Developer/projects/mydeffo.com-web`
+- Direct file comparison between `/Users/mac/Developer/projects/locnative.com` and `/Users/mac/Developer/projects/mydeffo.com-web`
 - mydeffo.com-web is deployed and working on Cloudflare Workers (verified via wrangler config with production env and custom domains)
 
 ### Secondary (MEDIUM confidence)

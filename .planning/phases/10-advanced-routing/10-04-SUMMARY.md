@@ -15,7 +15,7 @@ date: 2026-06-12
 | 2 — `fetchOsrmTrip` | Calls OSRM `/trip/v1/{profile}/{coords}` (geojson, overview=full, roundtrip/source/destination) → `{ trips, waypoints }` with per-waypoint `waypoint_index` (the optimised tour order). Guards the unsupported open-trip-without-fixed-end combo client-side; maps `NoTrip`/`NotImplemented` → `RoutingError("no_trip")` (→422) vs service → `unavailable` (→500). New `RoutingErrorKind "no_trip"`. |
 | 3 — `/api/v1/routing/optimize` | **POST** (D5): `profile` + `waypoints[{lat,lng}|{addressId}]` (min 2, max 50) + `roundtrip`/`source`/`destination`. `resolveOptimizeWaypoint` (exported, unit-tested) resolves each stop; response echoes each input waypoint as `{ input_index, coords, order }`. Registered as `routing.optimize`. |
 
-**Verification:** `pnpm -F @wherabouts.com/api test` → **102/102** green; `check-types` clean; ultracite clean.
+**Verification:** `pnpm -F @locnative/api test` → **102/102** green; `check-types` clean; ultracite clean.
 
 ## SC #5 status
 ✅ **Code-complete** — `/optimize` returns a near-optimal visiting order (each waypoint's `waypoint_index`) + trip geometry/distance/duration via OSRM `/trip`, handles unsupported combos + `NoTrip` (→422) distinct from service errors (→500), uses the profile-aware bound-fetch client. VROOM explicitly deferred (D2). Live OSRM smoke deferred to deploy.

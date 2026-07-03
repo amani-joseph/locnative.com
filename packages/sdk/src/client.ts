@@ -35,3 +35,6 @@ export const createWheraboutsClient = (
 		routing: createRouting(request),
 	};
 };
+
+export type LocnativeClient = WheraboutsClient;
+export const createLocnativeClient = createWheraboutsClient;

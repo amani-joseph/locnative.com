@@ -8,7 +8,7 @@
 
 The marketing landing page (`/`) and developer docs (`/docs`) on master have minimal SEO:
 
-- `__root.tsx` sets only charset, viewport, and one generic global title ("Wherabouts — Locations API for developers"). No meta description, Open Graph, Twitter cards, canonical, or structured data.
+- `__root.tsx` sets only charset, viewport, and one generic global title ("Locnative — Locations API for developers"). No meta description, Open Graph, Twitter cards, canonical, or structured data.
 - `index.tsx` and `docs.tsx` set no per-page title or description — both inherit the generic root title.
 - `sitemap.xml.ts` lists only `/`, `/sign-in`, `/sign-up` — missing the real content pages `/docs` and `/pricing`.
 - `robots.txt` is fine (allows all, references the sitemap).
@@ -30,8 +30,8 @@ Small, focused, independently testable units.
 Pure helper. No React, no I/O.
 
 ```
-const SITE_URL = "https://wherabouts.com";
-const SITE_NAME = "Wherabouts";
+const SITE_URL = "https://locnative.com";
+const SITE_NAME = "Locnative";
 const DEFAULT_OG_IMAGE = "/brand/png/og-image-1200x630.png";
 
 interface SeoInput {
@@ -91,7 +91,7 @@ Per-route `head()` meta with the same keys overrides the root defaults (TanStack
 
 Add `head:` returning `buildSeo({...})` spread into the route head, plus **SoftwareApplication** JSON-LD via `scripts`.
 
-- Title: "Geocoding, Geofencing & Routing APIs for Developers | Wherabouts"
+- Title: "Geocoding, Geofencing & Routing APIs for Developers | Locnative"
 - Description: "Production-ready location APIs — address autocomplete, geocoding, geofencing, routing, and device tracking. Ship location features fast with US & Australia coverage."
 - path: "/", ogType: "website"
 
@@ -99,8 +99,8 @@ Add `head:` returning `buildSeo({...})` spread into the route head, plus **Softw
 
 Add `head:` returning `buildSeo({...})` plus **TechArticle** + **BreadcrumbList** JSON-LD.
 
-- Title: "API Documentation — Geocoding & Address Autocomplete | Wherabouts"
-- Description: "Developer docs for the Wherabouts location API: address autocomplete, reverse geocoding, nearby lookup, and canonical address retrieval with API-key auth."
+- Title: "API Documentation — Geocoding & Address Autocomplete | Locnative"
+- Description: "Developer docs for the Locnative location API: address autocomplete, reverse geocoding, nearby lookup, and canonical address retrieval with API-key auth."
 - path: "/docs", ogType: "article"
 - Breadcrumb: Home → Documentation.
 
@@ -114,7 +114,7 @@ Vitest unit tests (no DOM needed for the pure helpers):
 
 - `apps/web/src/lib/seo.test.ts`:
   - `buildSeo` returns a title meta, a description meta, and a canonical link.
-  - canonical href and `og:url` are absolute (`https://wherabouts.com/...`).
+  - canonical href and `og:url` are absolute (`https://locnative.com/...`).
   - `og:image`/`twitter:image` resolve to an absolute URL even when given a root-relative path.
   - Twitter card is `summary_large_image`.
   - `absoluteUrl` passes through an already-absolute URL unchanged and joins a root-relative path.

@@ -1,5 +1,5 @@
-import type { Database } from "@wherabouts.com/database";
-import { regions } from "@wherabouts.com/database/schema";
+import type { Database } from "@locnative/database";
+import { regions } from "@locnative/database/schema";
 import { and, inArray, sql } from "drizzle-orm";
 import {
 	groupRegionsByLayer,

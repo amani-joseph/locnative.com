@@ -1,10 +1,10 @@
 import {
-	Map,
+	Map as LocnativeMap,
 	MapClusterLayer,
 	MapControls,
 	MapPopup,
 	useMap,
-} from "@wherabouts.com/ui/components/ui/map";
+} from "@locnative/ui/components/ui/map";
 import { useEffect, useMemo, useState } from "react";
 import {
 	OPENFREEMAP_DARK,
@@ -24,28 +24,32 @@ const CLUSTER_COLORS: [string, string, string] = [
 const AU_CENTER: [number, number] = [134.0, -25.6];
 const AU_ZOOM = 3.4;
 
-type PointProps = { input: string; formattedAddress: string };
+interface PointProps {
+	formattedAddress: string;
+	input: string;
+}
 type Bounds = [[number, number], [number, number]];
 
 function toGeoJSON(results: BatchResultRow[]) {
-	const features = results
-		.filter((r) => r.matched && r.address)
-		.map((r) => ({
+	const features = results.flatMap((r) => {
+		if (!(r.matched && r.address)) {
+			return [];
+		}
+		return {
 			type: "Feature" as const,
 			geometry: {
 				type: "Point" as const,
-				// biome-ignore lint/style/noNonNullAssertion: filtered to matched rows above
-				coordinates: [r.address!.longitude, r.address!.latitude] as [
+				coordinates: [r.address.longitude, r.address.latitude] as [
 					number,
 					number,
 				],
 			},
-			// biome-ignore lint/style/noNonNullAssertion: filtered to matched rows above
 			properties: {
 				input: r.input,
-				formattedAddress: r.address!.formattedAddress,
+				formattedAddress: r.address.formattedAddress,
 			},
-		}));
+		};
+	});
 	return { type: "FeatureCollection" as const, features };
 }
 
@@ -114,7 +118,7 @@ export function ResultsMap({ results }: ResultsMapProps) {
 				className="overflow-hidden rounded-md border"
 				style={{ height: MAP_HEIGHT_PX }}
 			>
-				<Map
+				<LocnativeMap
 					center={AU_CENTER}
 					fadeDuration={0}
 					styles={BASEMAP}
@@ -156,7 +160,7 @@ export function ResultsMap({ results }: ResultsMapProps) {
 					)}
 					<FitBounds bounds={bounds} />
 					<MapControls />
-				</Map>
+				</LocnativeMap>
 			</div>
 		</div>
 	);

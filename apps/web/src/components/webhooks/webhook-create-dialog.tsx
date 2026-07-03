@@ -1,5 +1,5 @@
-import { Button } from "@wherabouts.com/ui/components/button";
-import { Checkbox } from "@wherabouts.com/ui/components/checkbox";
+import { Button } from "@locnative/ui/components/button";
+import { Checkbox } from "@locnative/ui/components/checkbox";
 import {
 	Dialog,
 	DialogContent,
@@ -7,16 +7,16 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@wherabouts.com/ui/components/dialog";
-import { Input } from "@wherabouts.com/ui/components/input";
-import { Label } from "@wherabouts.com/ui/components/label";
+} from "@locnative/ui/components/dialog";
+import { Input } from "@locnative/ui/components/input";
+import { Label } from "@locnative/ui/components/label";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@wherabouts.com/ui/components/select";
+} from "@locnative/ui/components/select";
 import { useEffect, useState } from "react";
 
 export interface WebhookZoneOption {
@@ -80,25 +80,33 @@ export function WebhookCreateDialog({
 						<Input
 							id="wh-url"
 							onChange={(e) => setUrl(e.target.value)}
-							placeholder="https://example.com/webhooks/wherabouts"
+							placeholder="https://example.com/webhooks/locnative"
 							value={url}
 						/>
 					</div>
 					<div className="space-y-2">
 						<Label>Events</Label>
 						<div className="flex gap-4">
-							<label className="flex items-center gap-2 text-sm">
+							<label
+								className="flex items-center gap-2 text-sm"
+								htmlFor="wh-event-entry"
+							>
 								<Checkbox
 									checked={entry}
+									id="wh-event-entry"
 									onCheckedChange={(v) => setEntry(v === true)}
-								/>{" "}
+								/>
 								Entry
 							</label>
-							<label className="flex items-center gap-2 text-sm">
+							<label
+								className="flex items-center gap-2 text-sm"
+								htmlFor="wh-event-exit"
+							>
 								<Checkbox
 									checked={exit}
+									id="wh-event-exit"
 									onCheckedChange={(v) => setExit(v === true)}
-								/>{" "}
+								/>
 								Exit
 							</label>
 						</div>

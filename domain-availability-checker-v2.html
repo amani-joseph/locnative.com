@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Domain Checker v2 — 100 Fresh Candidates</title>
+		<style>
+		:root {
+			--bg: #0c0c0d;
+			--surface: #131315;
+			--border: #2a2a2d;
+			--fg: #f4f4f5;
+			--muted: #a1a1aa;
+			--faint: #52525b;
+			--green: #22c55e;
+			--red: #ef4444;
+			--amber: #f59e0b;
+			--blue: #38bdf8;
+			--accent: #00d4ff;
+			--accent2: #a78bfa;
+		}
+		* {
+			box-sizing: border-box;
+			padding: 0;
+			margin: 0;
+		}
+		body {
+			padding: 28px 20px;
+			font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+			color: var(--fg);
+			background: var(--bg);
+		}
+		h1 {
+			margin-bottom: 4px;
+			font-size: 24px;
+			font-weight: 800;
+			color: var(--accent);
+			letter-spacing: -0.03em;
+		}
+		.subtitle {
+			margin-bottom: 20px;
+			font-size: 13px;
+			color: var(--muted);
+		}
+		.retained {
+			display: inline-flex;
+			flex-wrap: wrap;
+			gap: 8px;
+			margin-bottom: 20px;
+		}
+		.chip {
+			padding: 4px 12px;
+			font-family: monospace;
+			font-size: 12px;
+			font-weight: 600;
+			color: var(--green);
+			background: rgba(34, 197, 94, 0.1);
+			border: 1px solid rgba(34, 197, 94, 0.3);
+			border-radius: 999px;
+		}
+		.stats {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			margin-bottom: 20px;
+		}
+		.stat {
+			min-width: 110px;
+			padding: 10px 18px;
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 10px;
+		}
+		.stat .num {
+			font-size: 26px;
+			font-weight: 800;
+			line-height: 1;
+		}
+		.stat .lbl {
+			margin-top: 3px;
+			font-size: 11px;
+			color: var(--muted);
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+		}
+		.stat.av .num {
+			color: var(--green);
+		}
+		.stat.tk .num {
+			color: var(--red);
+		}
+		.stat.ch .num {
+			color: var(--amber);
+		}
+		.stat.to .num {
+			color: var(--blue);
+		}
+		.controls {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+			align-items: center;
+			margin-bottom: 16px;
+		}
+		button {
+			padding: 9px 20px;
+			font-size: 13px;
+			font-weight: 600;
+			cursor: pointer;
+			border: none;
+			border-radius: 8px;
+		}
+		button:disabled {
+			cursor: not-allowed;
+			opacity: 0.4;
+		}
+		#startBtn {
+			color: #000;
+			background: var(--accent);
+		}
+		.filter-btn {
+			display: none;
+			color: var(--fg);
+			background: var(--surface);
+			border: 1px solid var(--border);
+		}
+		.filter-btn.active {
+			color: var(--accent);
+			border-color: var(--accent);
+		}
+		.progress-bar {
+			height: 3px;
+			margin-bottom: 16px;
+			overflow: hidden;
+			background: var(--border);
+			border-radius: 2px;
+		}
+		.progress-fill {
+			width: 0%;
+			height: 100%;
+			background: linear-gradient(90deg, var(--accent), var(--accent2));
+			transition: width 0.25s ease;
+		}
+		/* Category tabs */
+		.tabs {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 6px;
+			margin-bottom: 16px;
+		}
+		.tab {
+			padding: 5px 14px;
+			font-size: 12px;
+			color: var(--muted);
+			cursor: pointer;
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 999px;
+			transition: all 0.15s;
+		}
+		.tab:hover,
+		.tab.active {
+			color: var(--accent);
+			background: rgba(0, 212, 255, 0.06);
+			border-color: var(--accent);
+		}
+		/* Table */
+		table {
+			width: 100%;
+			font-size: 13px;
+			border-collapse: collapse;
+		}
+		thead th {
+			position: sticky;
+			top: 0;
+			z-index: 10;
+			padding: 9px 12px;
+			font-size: 10px;
+			font-weight: 700;
+			color: var(--muted);
+			text-align: left;
+			text-transform: uppercase;
+			letter-spacing: 0.1em;
+			background: var(--surface);
+			border-bottom: 1px solid var(--border);
+		}
+		tbody tr {
+			border-bottom: 1px solid var(--border);
+			transition: background 0.1s;
+		}
+		tbody tr:hover {
+			background: rgba(255, 255, 255, 0.025);
+		}
+		tbody tr.hidden {
+			display: none;
+		}
+		td {
+			padding: 9px 12px;
+			vertical-align: middle;
+		}
+		.dn {
+			font-family: ui-monospace, monospace;
+			font-size: 14px;
+			font-weight: 700;
+			color: var(--fg);
+		}
+		.cat-badge {
+			display: inline-block;
+			padding: 2px 8px;
+			font-size: 10px;
+			color: var(--muted);
+			white-space: nowrap;
+			background: rgba(255, 255, 255, 0.05);
+			border: 1px solid var(--border);
+			border-radius: 999px;
+		}
+		.lang {
+			font-size: 11px;
+			color: var(--faint);
+		}
+		.meaning {
+			font-size: 12px;
+			color: var(--muted);
+		}
+		.sb {
+			display: inline-flex;
+			gap: 5px;
+			align-items: center;
+			padding: 3px 10px;
+			font-size: 11px;
+			font-weight: 700;
+			white-space: nowrap;
+			border-radius: 999px;
+		}
+		.sb.av {
+			color: var(--green);
+			background: rgba(34, 197, 94, 0.12);
+			border: 1px solid rgba(34, 197, 94, 0.3);
+		}
+		.sb.tk {
+			color: var(--red);
+			background: rgba(239, 68, 68, 0.1);
+			border: 1px solid rgba(239, 68, 68, 0.2);
+		}
+		.sb.pe {
+			color: var(--amber);
+			background: rgba(245, 158, 11, 0.1);
+			border: 1px solid rgba(245, 158, 11, 0.2);
+		}
+		.sb.er {
+			color: var(--muted);
+			background: rgba(161, 161, 170, 0.08);
+			border: 1px solid var(--border);
+		}
+		.dot {
+			flex-shrink: 0;
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+		}
+		.dot.av {
+			background: var(--green);
+			box-shadow: 0 0 5px var(--green);
+		}
+		.dot.tk {
+			background: var(--red);
+		}
+		.dot.pe {
+			background: var(--amber);
+			animation: pulse 1s ease-in-out infinite;
+		}
+		.dot.er {
+			background: var(--muted);
+		}
+		@keyframes pulse {
+			0%,
+			100% {
+				opacity: 1;
+			}
+			50% {
+				opacity: 0.3;
+			}
+		}
+		.cf-link {
+			display: inline-flex;
+			gap: 4px;
+			align-items: center;
+			padding: 4px 10px;
+			font-size: 11px;
+			font-weight: 600;
+			color: var(--accent);
+			white-space: nowrap;
+			text-decoration: none;
+			background: rgba(0, 212, 255, 0.07);
+			border: 1px solid rgba(0, 212, 255, 0.22);
+			border-radius: 6px;
+			transition: background 0.15s;
+		}
+		.cf-link:hover {
+			background: rgba(0, 212, 255, 0.14);
+		}
+		.note {
+			padding: 12px 16px;
+			margin-top: 20px;
+			font-size: 12px;
+			line-height: 1.6;
+			color: var(--muted);
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 10px;
+		}
+		.note strong {
+			color: var(--fg);
+		}
+		</style>
+	</head>
+	<body>
+		<h1>Domain Availability Checker v2</h1>
+		<p class="subtitle">
+			100 fresh .com candidates — multi-language · navigation instruments · tech
+			compounds · SEO-oriented for the geolocation API space
+		</p>
+
+		<div>
+			<p style="font-size:12px;color:var(--muted);margin-bottom:6px;">
+				Retained from round 1 (confirmed available):
+			</p>
+			<div class="retained">
+				<span class="chip">✓ locplex.com</span>
+				<span class="chip">✓ locovex.com</span>
+				<span class="chip">✓ punctix.com</span>
+			</div>
+		</div>
+
+		<div class="stats">
+			<div class="stat to">
+				<div class="num" id="totalCount">100</div>
+				<div class="lbl">Total</div>
+			</div>
+			<div class="stat av">
+				<div class="num" id="availCount">—</div>
+				<div class="lbl">Available</div>
+			</div>
+			<div class="stat tk">
+				<div class="num" id="takenCount">—</div>
+				<div class="lbl">Taken</div>
+			</div>
+			<div class="stat ch">
+				<div class="num" id="pendingCount">—</div>
+				<div class="lbl">Checking</div>
+			</div>
+		</div>
+
+		<div class="controls">
+			<button id="startBtn" onclick="startCheck()">▶ Check All Domains</button>
+			<button class="filter-btn" id="btnAll" onclick="setFilter('all')">
+				All
+			</button>
+			<button class="filter-btn" id="btnAvail" onclick="setFilter('available')">
+				✓ Available Only
+			</button>
+			<button class="filter-btn" id="btnTaken" onclick="setFilter('taken')">
+				✗ Taken Only
+			</button>
+		</div>
+
+		<div class="tabs" id="catTabs">
+			<span class="tab active" onclick="setCat('all')" data-cat="all">All</span>
+			<span class="tab" onclick="setCat('A')" data-cat="A"
+				>A · Multi-language</span
+			>
+			<span class="tab" onclick="setCat('B')" data-cat="B">B · Navigation</span>
+			<span class="tab" onclick="setCat('C')" data-cat="C"
+				>C · Verb-forward</span
+			>
+			<span class="tab" onclick="setCat('D')" data-cat="D"
+				>D · Tech compounds</span
+			>
+			<span class="tab" onclick="setCat('E')" data-cat="E">E · Blends</span>
+		</div>
+
+		<div class="progress-bar">
+			<div class="progress-fill" id="progressFill"></div>
+		</div>
+
+		<table>
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Domain</th>
+					<th>Category</th>
+					<th>Language / Root</th>
+					<th>Meaning</th>
+					<th>Status</th>
+					<th>Register</th>
+				</tr>
+			</thead>
+			<tbody id="tableBody"></tbody>
+		</table>
+
+		<div class="note">
+			<strong>Method:</strong>
+			RDAP (Registration Data Access Protocol) — the public IANA registry REST
+			API. 404 = not registered (available). 200 = registered (taken). Same data
+			Cloudflare queries. Checks run 8 at a time; ~20–35 seconds total. Results
+			auto-sort available → unknown → taken when done.<br><br>
+			<strong>Conflict notes to verify separately:</strong>
+			GeoWave / GeoSpark (Apache projects). Dropmix (Hasbro game). Locify /
+			Plotix (possible prior art). Always run a USPTO trademark search before
+			registering.
+		</div>
+
+		<script>
+		"use strict";
+		const DOMAINS = [
+			// A. Multi-language
+			{
+				d: "lieuvex.com",
+				cat: "A",
+				lang: "French: lieu",
+				m: "Place + vex (drive)",
+			},
+			{
+				d: "lieuplex.com",
+				cat: "A",
+				lang: "French: lieu",
+				m: "Place + plex (platform)",
+			},
+			{
+				d: "lieucore.com",
+				cat: "A",
+				lang: "French: lieu",
+				m: "Place + core (engine)",
+			},
+			{
+				d: "cartovex.com",
+				cat: "A",
+				lang: "French: carte",
+				m: "Map + vex (drive)",
+			},
+			{
+				d: "cartoplex.com",
+				cat: "A",
+				lang: "French: carte",
+				m: "Map + plex (platform)",
+			},
+			{ d: "cartonex.com", cat: "A", lang: "French: carte", m: "Map + nexus" },
+			{
+				d: "lugarix.com",
+				cat: "A",
+				lang: "Spanish: lugar",
+				m: "Place + ix (index)",
+			},
+			{
+				d: "lugarvex.com",
+				cat: "A",
+				lang: "Spanish: lugar",
+				m: "Place + vex (drive)",
+			},
+			{
+				d: "lugarplex.com",
+				cat: "A",
+				lang: "Spanish: lugar",
+				m: "Place + plex (platform)",
+			},
+			{
+				d: "puntovex.com",
+				cat: "A",
+				lang: "Spanish: punto",
+				m: "Point + vex (drive)",
+			},
+			{
+				d: "puntoplex.com",
+				cat: "A",
+				lang: "Spanish: punto",
+				m: "Point + plex",
+			},
+			{
+				d: "ubivex.com",
+				cat: "A",
+				lang: "Spanish: ubicar",
+				m: "To locate + vex",
+			},
+			{
+				d: "ubiplex.com",
+				cat: "A",
+				lang: "Spanish: ubicar",
+				m: "To locate + plex",
+			},
+			{
+				d: "nortix.com",
+				cat: "A",
+				lang: "ES: norte / FR: nord",
+				m: "North + ix (directional index)",
+			},
+			{
+				d: "bashoplex.com",
+				cat: "A",
+				lang: "Japanese: 場所 basho",
+				m: "Place + plex",
+			},
+			{
+				d: "bashonex.com",
+				cat: "A",
+				lang: "Japanese: 場所 basho",
+				m: "Place + nexus",
+			},
+			{
+				d: "bashivex.com",
+				cat: "A",
+				lang: "Japanese: 場所 basho",
+				m: "Place (short) + vex",
+			},
+			{
+				d: "ichiplex.com",
+				cat: "A",
+				lang: "Japanese: 位置 ichi",
+				m: "Position + plex",
+			},
+			{
+				d: "ichinex.com",
+				cat: "A",
+				lang: "Japanese: 位置 ichi",
+				m: "Position + nexus",
+			},
+			{
+				d: "konumix.com",
+				cat: "A",
+				lang: "Turkish: konum",
+				m: "Position + ix",
+			},
+			{
+				d: "konumvex.com",
+				cat: "A",
+				lang: "Turkish: konum",
+				m: "Position + vex",
+			},
+			{
+				d: "konumplex.com",
+				cat: "A",
+				lang: "Turkish: konum",
+				m: "Position + plex",
+			},
+			{ d: "noktix.com", cat: "A", lang: "Turkish: nokta", m: "Point + ix" },
+			{ d: "noktavex.com", cat: "A", lang: "Turkish: nokta", m: "Point + vex" },
+			{ d: "ortplex.com", cat: "A", lang: "German: Ort", m: "Place + plex" },
+			{ d: "ortvex.com", cat: "A", lang: "German: Ort", m: "Place + vex" },
+			{ d: "punktix.com", cat: "A", lang: "German: Punkt", m: "Point + ix" },
+			{ d: "punktvex.com", cat: "A", lang: "German: Punkt", m: "Point + vex" },
+			{
+				d: "plekvex.com",
+				cat: "A",
+				lang: "Dutch: plek",
+				m: "Spot/place + vex",
+			},
+			{
+				d: "plekplex.com",
+				cat: "A",
+				lang: "Dutch: plek",
+				m: "Spot/place + plex",
+			},
+			// B. Navigation & Surveying
+			{
+				d: "azimix.com",
+				cat: "B",
+				lang: "Navigation: azimuth",
+				m: "Azimuth (compass bearing) + ix",
+			},
+			{
+				d: "azimvex.com",
+				cat: "B",
+				lang: "Navigation: azimuth",
+				m: "Azimuth + vex",
+			},
+			{
+				d: "azimoplex.com",
+				cat: "B",
+				lang: "Navigation: azimuth",
+				m: "Azimuth + plex",
+			},
+			{
+				d: "sextix.com",
+				cat: "B",
+				lang: "Instrument: sextant",
+				m: "Sextant + ix",
+			},
+			{
+				d: "sextivex.com",
+				cat: "B",
+				lang: "Instrument: sextant",
+				m: "Sextant + vex",
+			},
+			{
+				d: "datumix.com",
+				cat: "B",
+				lang: "Geodesy: datum",
+				m: "Datum (reference point) + ix",
+			},
+			{ d: "datumvex.com", cat: "B", lang: "Geodesy: datum", m: "Datum + vex" },
+			{
+				d: "trianglix.com",
+				cat: "B",
+				lang: "Math: triangulate",
+				m: "Triangulate + ix",
+			},
+			{
+				d: "trillix.com",
+				cat: "B",
+				lang: "Math: trilaterate",
+				m: "Trilateration + ix",
+			},
+			{
+				d: "parallix.com",
+				cat: "B",
+				lang: "Optics: parallax",
+				m: "Parallax (position offset) + ix",
+			},
+			{
+				d: "bearix.com",
+				cat: "B",
+				lang: "Navigation: bearing",
+				m: "Compass bearing + ix",
+			},
+			{
+				d: "bearivex.com",
+				cat: "B",
+				lang: "Navigation: bearing",
+				m: "Bearing + vex",
+			},
+			{
+				d: "fixplex.com",
+				cat: "B",
+				lang: "Navigation: fix",
+				m: "Fix (confirmed position) + plex",
+			},
+			{ d: "fixvex.com", cat: "B", lang: "Navigation: fix", m: "Fix + vex" },
+			{
+				d: "plotix.com",
+				cat: "B",
+				lang: "Navigation: plot",
+				m: "Plot coordinates + ix",
+			},
+			{ d: "plotvex.com", cat: "B", lang: "Navigation: plot", m: "Plot + vex" },
+			{
+				d: "vectorix.com",
+				cat: "B",
+				lang: "Math/GIS: vector",
+				m: "Vector (direction + magnitude) + ix",
+			},
+			{
+				d: "vectorplex.com",
+				cat: "B",
+				lang: "Math/GIS: vector",
+				m: "Vector + plex",
+			},
+			{
+				d: "theodix.com",
+				cat: "B",
+				lang: "Instrument: theodolite",
+				m: "Theodolite precision + ix",
+			},
+			{
+				d: "gradiex.com",
+				cat: "B",
+				lang: "Math: gradient",
+				m: "Gradient (slope/direction) + ex",
+			},
+			// C. Action / Verb-forward
+			{
+				d: "plotnex.com",
+				cat: "C",
+				lang: "EN: plot + nexus",
+				m: "Plot coordinates + nexus",
+			},
+			{
+				d: "spotnex.com",
+				cat: "C",
+				lang: "EN: spot + nexus",
+				m: "Spot/location + nexus",
+			},
+			{ d: "spotvex.com", cat: "C", lang: "EN: spot + vex", m: "Spot + vex" },
+			{
+				d: "dropnex.com",
+				cat: "C",
+				lang: "EN: drop a pin",
+				m: "Drop a pin + nexus",
+			},
+			{
+				d: "dropmix.com",
+				cat: "C",
+				lang: "EN: drop + mix",
+				m: "Drop a pin + mix",
+			},
+			{
+				d: "marknex.com",
+				cat: "C",
+				lang: "EN: mark a location",
+				m: "Mark + nexus",
+			},
+			{ d: "markvex.com", cat: "C", lang: "EN: mark + vex", m: "Mark + vex" },
+			{
+				d: "pingnex.com",
+				cat: "C",
+				lang: "EN: ping a location",
+				m: "Ping + nexus",
+			},
+			{ d: "pingvex.com", cat: "C", lang: "EN: ping + vex", m: "Ping + vex" },
+			{
+				d: "traceplex.com",
+				cat: "C",
+				lang: "EN: trace + plex",
+				m: "Trace a route + plex",
+			},
+			{
+				d: "tracevex.com",
+				cat: "C",
+				lang: "EN: trace + vex",
+				m: "Trace + vex",
+			},
+			{
+				d: "tagvex.com",
+				cat: "C",
+				lang: "EN: geotag",
+				m: "Tag a location + vex",
+			},
+			{ d: "tagnex.com", cat: "C", lang: "EN: geotag", m: "Tag + nexus" },
+			{
+				d: "anchornex.com",
+				cat: "C",
+				lang: "EN: anchor point",
+				m: "Anchor point + nexus",
+			},
+			{
+				d: "scanvex.com",
+				cat: "C",
+				lang: "EN: scan an area",
+				m: "Area scan + vex",
+			},
+			// D. Modern tech-word compounds
+			{
+				d: "geoforge.com",
+				cat: "D",
+				lang: "EN: geo + forge",
+				m: "Geo + forge (craft/build)",
+			},
+			{
+				d: "geocraft.com",
+				cat: "D",
+				lang: "EN: geo + craft",
+				m: "Geo + craft",
+			},
+			{
+				d: "geovault.com",
+				cat: "D",
+				lang: "EN: geo + vault",
+				m: "Geo + vault (secure store)",
+			},
+			{
+				d: "geosense.com",
+				cat: "D",
+				lang: "EN: geo + sense",
+				m: "Geo + sense (awareness)",
+			},
+			{
+				d: "geopulse.com",
+				cat: "D",
+				lang: "EN: geo + pulse",
+				m: "Geo + pulse (real-time)",
+			},
+			{
+				d: "geospark.com",
+				cat: "D",
+				lang: "EN: geo + spark",
+				m: "Geo + spark (trigger)",
+			},
+			{
+				d: "geowave.com",
+				cat: "D",
+				lang: "EN: geo + wave",
+				m: "Geo + wave (streaming)",
+			},
+			{
+				d: "geoshift.com",
+				cat: "D",
+				lang: "EN: geo + shift",
+				m: "Geo + shift (disrupt)",
+			},
+			{
+				d: "locforge.com",
+				cat: "D",
+				lang: "EN: loc + forge",
+				m: "Location + forge",
+			},
+			{
+				d: "loccraft.com",
+				cat: "D",
+				lang: "EN: loc + craft",
+				m: "Location + craft",
+			},
+			{
+				d: "locvault.com",
+				cat: "D",
+				lang: "EN: loc + vault",
+				m: "Location + vault",
+			},
+			{
+				d: "locsense.com",
+				cat: "D",
+				lang: "EN: loc + sense",
+				m: "Location + sense",
+			},
+			{
+				d: "locpulse.com",
+				cat: "D",
+				lang: "EN: loc + pulse",
+				m: "Location + pulse",
+			},
+			{
+				d: "locspark.com",
+				cat: "D",
+				lang: "EN: loc + spark",
+				m: "Location + spark",
+			},
+			{
+				d: "locwave.com",
+				cat: "D",
+				lang: "EN: loc + wave",
+				m: "Location + wave",
+			},
+			{
+				d: "locshift.com",
+				cat: "D",
+				lang: "EN: loc + shift",
+				m: "Location + shift",
+			},
+			{
+				d: "locscale.com",
+				cat: "D",
+				lang: "EN: loc + scale",
+				m: "Location + scale",
+			},
+			{
+				d: "geoscale.com",
+				cat: "D",
+				lang: "EN: geo + scale",
+				m: "Geo + scale (global)",
+			},
+			{
+				d: "locnative.com",
+				cat: "D",
+				lang: "EN: loc + native",
+				m: "Location-native (like cloud-native)",
+			},
+			{
+				d: "geonative.com",
+				cat: "D",
+				lang: "EN: geo + native",
+				m: "Geo-native infrastructure",
+			},
+			// E. Blends & portmanteaux
+			{
+				d: "geolytic.com",
+				cat: "E",
+				lang: "EN blend: geo+analytic",
+				m: "Geo + analytic (dissolves data to insight)",
+			},
+			{
+				d: "locantic.com",
+				cat: "E",
+				lang: "EN blend: loc+semantic",
+				m: "Location + semantic",
+			},
+			{
+				d: "meridianix.com",
+				cat: "E",
+				lang: "EN: meridian",
+				m: "Meridian (prime direction line) + ix",
+			},
+			{
+				d: "polarix.com",
+				cat: "E",
+				lang: "EN: polar",
+				m: "Polar coordinates + ix",
+			},
+			{
+				d: "zenithix.com",
+				cat: "E",
+				lang: "EN: zenith",
+				m: "Zenith (highest point) + ix",
+			},
+			{
+				d: "nadirx.com",
+				cat: "E",
+				lang: "EN: nadir",
+				m: "Nadir (ground truth below) + x",
+			},
+			{
+				d: "apexloc.com",
+				cat: "E",
+				lang: "EN: apex + loc",
+				m: "Apex (peak) + location",
+			},
+			{
+				d: "nexgeo.com",
+				cat: "E",
+				lang: "EN: nex + geo",
+				m: "Next-gen geo (nex = next)",
+			},
+			{
+				d: "geolume.com",
+				cat: "E",
+				lang: "EN: geo+illuminate",
+				m: "Illuminate the location layer",
+			},
+			{
+				d: "loclume.com",
+				cat: "E",
+				lang: "EN: loc+illuminate",
+				m: "Shed light on location",
+			},
+			{
+				d: "geodriven.com",
+				cat: "E",
+				lang: "EN: geo+driven",
+				m: "Geo-driven (like data-driven)",
+			},
+			{
+				d: "locdriven.com",
+				cat: "E",
+				lang: "EN: loc+driven",
+				m: "Location-driven apps",
+			},
+			{
+				d: "geofluent.com",
+				cat: "E",
+				lang: "EN: geo+fluent",
+				m: "Fluent in geography",
+			},
+			{
+				d: "locfluent.com",
+				cat: "E",
+				lang: "EN: loc+fluent",
+				m: "Fluent location APIs",
+			},
+			{
+				d: "geolingo.com",
+				cat: "E",
+				lang: "EN: geo+lingo",
+				m: "The language of location",
+			},
+		];
+
+		const RDAP = "https://rdap.verisign.com/com/v1/domain/";
+		let activeStatus = "all";
+		let activeCat = "all";
+		let rowData = {}; // domain -> {status, catCode}
+
+		function renderTable() {
+			const tbody = document.getElementById("tableBody");
+			tbody.innerHTML = "";
+			DOMAINS.forEach((item, i) => {
+				const tr = document.createElement("tr");
+				tr.id = "row-" + i;
+				tr.dataset.cat = item.cat;
+				tr.dataset.status = rowData[item.d]?.status || "pending";
+				const status = rowData[item.d]?.status || "pending";
+				const statusHtml =
+					status === "pending"
+						? `<span class="sb pe"><span class="dot pe"></span>Pending</span>`
+						: status === "available"
+							? `<span class="sb av"><span class="dot av"></span>AVAILABLE</span>`
+							: status === "taken"
+								? `<span class="sb tk"><span class="dot tk"></span>TAKEN</span>`
+								: `<span class="sb er"><span class="dot er"></span>Unknown</span>`;
+				const linkHtml =
+					status === "available"
+						? `<a class="cf-link" href="https://www.cloudflare.com/products/registrar/" target="_blank">Register ↗</a>`
+						: status === "taken"
+							? `<span style="color:var(--faint);font-size:11px;">Registered</span>`
+							: status === "pending"
+								? ""
+								: `<a class="cf-link" href="https://www.cloudflare.com/products/registrar/" target="_blank">Check ↗</a>`;
+				const catLabel =
+					{
+						A: "Multi-lang",
+						B: "Navigation",
+						C: "Verb",
+						D: "Tech",
+						E: "Blend",
+					}[item.cat] || item.cat;
+				tr.innerHTML = `
+      <td style="color:var(--faint);font-size:11px;">${i + 1}</td>
+      <td><span class="dn">${item.d}</span></td>
+      <td><span class="cat-badge">${catLabel}</span></td>
+      <td class="lang">${item.lang}</td>
+      <td class="meaning">${item.m}</td>
+      <td id="st-${i}">${statusHtml}</td>
+      <td id="lk-${i}">${linkHtml}</td>`;
+				applyVisibility(tr, status);
+				tbody.appendChild(tr);
+			});
+		}
+
+		function applyVisibility(tr, status) {
+			const cat = tr.dataset.cat;
+			const matchCat = activeCat === "all" || cat === activeCat;
+			const matchStatus = activeStatus === "all" || status === activeStatus;
+			tr.classList.toggle("hidden", !(matchCat && matchStatus));
+		}
+
+		function refreshVisibility() {
+			document.querySelectorAll("#tableBody tr").forEach((tr) => {
+				applyVisibility(tr, tr.dataset.status);
+			});
+		}
+
+		function setFilter(f) {
+			activeStatus = f;
+			document
+				.querySelectorAll(".filter-btn")
+				.forEach((b) => b.classList.remove("active"));
+			document
+				.getElementById("btn" + f.charAt(0).toUpperCase() + f.slice(1))
+				?.classList.add("active");
+			refreshVisibility();
+		}
+
+		function setCat(c) {
+			activeCat = c;
+			document
+				.querySelectorAll(".tab")
+				.forEach((t) => t.classList.toggle("active", t.dataset.cat === c));
+			refreshVisibility();
+		}
+
+		async function checkOne(domain) {
+			try {
+				const r = await fetch(RDAP + domain, {
+					signal: AbortSignal.timeout(10_000),
+				});
+				return r.status === 404 ? "available" : "taken";
+			} catch (e) {
+				return (e.message || "").includes("404") ? "available" : "error";
+			}
+		}
+
+		async function startCheck() {
+			const btn = document.getElementById("startBtn");
+			btn.disabled = true;
+			btn.textContent = "⏳ Checking…";
+			["btnAll", "btnAvail", "btnTaken"].forEach((id) => {
+				document.getElementById(id).style.display = "inline-block";
+			});
+			rowData = {};
+			renderTable();
+
+			let av = 0,
+				tk = 0,
+				pe = DOMAINS.length;
+			const upd = () => {
+				document.getElementById("availCount").textContent = av;
+				document.getElementById("takenCount").textContent = tk;
+				document.getElementById("pendingCount").textContent = pe;
+				document.getElementById("progressFill").style.width =
+					((av + tk) / DOMAINS.length) * 100 + "%";
+			};
+			upd();
+
+			const BATCH = 8;
+			for (let i = 0; i < DOMAINS.length; i += BATCH) {
+				const batch = DOMAINS.slice(i, Math.min(i + BATCH, DOMAINS.length));
+				await Promise.all(
+					batch.map(async (item, bi) => {
+						const idx = i + bi;
+						const result = await checkOne(item.d);
+						rowData[item.d] = { status: result };
+						pe--;
+						if (result === "available") {
+							av++;
+						} else if (result === "taken") {
+							tk++;
+						}
+						upd();
+						// Update row in place
+						const tr = document.getElementById("row-" + idx);
+						if (tr) {
+							tr.dataset.status = result;
+							const stEl = document.getElementById("st-" + idx);
+							const lkEl = document.getElementById("lk-" + idx);
+							if (stEl) {
+								stEl.innerHTML =
+									result === "available"
+										? `<span class="sb av"><span class="dot av"></span>AVAILABLE</span>`
+										: result === "taken"
+											? `<span class="sb tk"><span class="dot tk"></span>TAKEN</span>`
+											: `<span class="sb er"><span class="dot er"></span>Unknown</span>`;
+							}
+							if (lkEl) {
+								lkEl.innerHTML =
+									result === "available"
+										? `<a class="cf-link" href="https://www.cloudflare.com/products/registrar/" target="_blank">Register ↗</a>`
+										: result === "taken"
+											? `<span style="color:var(--faint);font-size:11px;">Registered</span>`
+											: `<a class="cf-link" href="https://www.cloudflare.com/products/registrar/" target="_blank">Check ↗</a>`;
+							}
+							applyVisibility(tr, result);
+						}
+					})
+				);
+				await new Promise((r) => setTimeout(r, 150));
+			}
+
+			btn.textContent = "✓ Done — click Sort to reorder";
+			btn.disabled = false;
+			btn.onclick = sortTable;
+
+			// Sort available to top
+			sortTable();
+		}
+
+		function sortTable() {
+			const tbody = document.getElementById("tableBody");
+			const rows = Array.from(tbody.querySelectorAll("tr"));
+			const order = { available: 0, error: 1, pending: 2, taken: 3 };
+			rows.sort(
+				(a, b) =>
+					(order[a.dataset.status] ?? 4) - (order[b.dataset.status] ?? 4)
+			);
+			rows.forEach((r) => tbody.appendChild(r));
+		}
+
+		// Init
+		renderTable();
+		</script>
+	</body>
+</html>

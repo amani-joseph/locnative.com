@@ -1,4 +1,4 @@
-import { apiKeys, projects } from "@wherabouts.com/database";
+import { apiKeys, projects } from "@locnative/database";
 import { and, eq, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { protectedProcedure } from "../../procedures.ts";

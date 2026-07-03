@@ -1,9 +1,9 @@
 "use client";
 
-import { Label } from "@wherabouts.com/ui/components/label";
-import { Separator } from "@wherabouts.com/ui/components/separator";
+import { Label } from "@locnative/ui/components/label";
+import { Separator } from "@locnative/ui/components/separator";
 
-import { cn } from "@wherabouts.com/ui/lib/utils";
+import { cn } from "@locnative/ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { useMemo } from "react";
 

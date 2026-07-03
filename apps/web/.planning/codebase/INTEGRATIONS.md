@@ -11,10 +11,10 @@
 - Config: `../../packages/backend/convex/convex.config.ts`
 - Schema: `../../packages/backend/convex/schema.ts` (empty `defineSchema({})`)
 - Integration: `ConvexBetterAuthProvider` wraps app in `src/routes/__root.tsx`
-- Dev command: `convex dev` (from `@wherabouts.com/backend` package)
+- Dev command: `convex dev` (from `@locnative/backend` package)
 - Session tokens fetched from Better Auth for server-side auth
 
-**Wherabouts Locations API (Self-hosted):**
+**Locnative Locations API (Self-hosted):**
 - Purpose: Core product - address geocoding and lookup API
 - Endpoints served from `src/routes/api/v1/addresses/`:
   - `GET /api/v1/addresses/autocomplete` - Text search with country/state filters (`src/routes/api/v1/addresses/autocomplete.ts`)
@@ -108,7 +108,7 @@
 - `turbo dev` - Run all dev servers
 - `turbo build` - Build all packages
 - `turbo -F web dev` - Run web app only
-- `turbo -F @wherabouts.com/backend dev` - Run Convex backend only
+- `turbo -F @locnative/backend dev` - Run Convex backend only
 
 ## Environment Configuration
 

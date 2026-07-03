@@ -13,8 +13,8 @@ function RouteComponent() {
 					SDK Playground
 				</h1>
 				<p className="text-muted-foreground text-sm">
-					Pick a method, fill in inputs, see the equivalent @wherabouts/sdk
-					code, and run it against the live API.
+					Pick a method, fill in inputs, see the equivalent @locnative/sdk code,
+					and run it against the live API.
 				</p>
 			</div>
 			<SdkPlayground />

@@ -1,11 +1,11 @@
-import type { ZoneWithGeometryRow } from "@wherabouts.com/api/shared/zone-queries";
-import { Button } from "@wherabouts.com/ui/components/button";
+import type { ZoneWithGeometryRow } from "@locnative/api/shared/zone-queries";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
+} from "@locnative/ui/components/card";
 import { ListIcon, MapPinIcon, PencilIcon, TrashIcon } from "lucide-react";
 
 export interface ZoneListProps {

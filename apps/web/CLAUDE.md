@@ -1,9 +1,9 @@
 <!-- GSD:project-start source:PROJECT.md -->
 ## Project
 
-**Wherabouts — Projects & API Key Management**
+**Locnative — Projects & API Key Management**
 
-Wherabouts is an Australian address geocoding API service. Users sign up, create projects (workspaces representing their apps or environments), and generate API keys scoped to those projects. The API provides address autocomplete and reverse geocoding powered by GNAF data in a Neon PostgreSQL + PostGIS database.
+Locnative is an Australian address geocoding API service. Users sign up, create projects (workspaces representing their apps or environments), and generate API keys scoped to those projects. The API provides address autocomplete and reverse geocoding powered by GNAF data in a Neon PostgreSQL + PostGIS database.
 
 **Core Value:** Users can create projects and generate API keys to access the geocoding API, with clear visibility into usage per project and per key.
 
@@ -34,7 +34,7 @@ Wherabouts is an Australian address geocoding API service. Users sign up, create
 - React 19+ (catalog version) - UI rendering
 - Convex (catalog version) - Realtime backend-as-a-service (schema currently empty)
 - Tailwind CSS 4.x - Utility-first styling via `@tailwindcss/vite` plugin
-- shadcn/ui 3.6.x - Component primitives (via `@wherabouts.com/ui` package)
+- shadcn/ui 3.6.x - Component primitives (via `@locnative/ui` package)
 - Base UI React 1.x - Unstyled accessible component primitives
 - Framer Motion / Motion 12.x - Animations
 - Lucide React - Icon library
@@ -78,7 +78,7 @@ Wherabouts is an Australian address geocoding API service. Users sign up, create
 - Server-side vars (validated in `../../packages/env/src/server.ts`):
 - Convex env vars:
 - `tsconfig.json` at app root - strict mode, bundler module resolution, ES2022 target
-- Path aliases: `@/*` maps to `./src/*`, `@wherabouts.com/ui/*` maps to UI package
+- Path aliases: `@/*` maps to `./src/*`, `@locnative/ui/*` maps to UI package
 - Shared base config: `../../packages/config/tsconfig.base.json`
 - `vite.config.ts` - Plugins: tsconfigPaths, tailwindcss, tanstackStart, viteReact
 - Turborepo manages cross-package builds from workspace root
@@ -128,11 +128,11 @@ Wherabouts is an Australian address geocoding API service. Users sign up, create
 - Auto-fix available: `pnpm dlx ultracite fix`
 ## Import Organization
 - `@/*` maps to `./src/*` (configured in `tsconfig.json`)
-- `@wherabouts.com/ui/*` maps to `../../packages/ui/src/*`
+- `@locnative/ui/*` maps to `../../packages/ui/src/*`
 - Use `@/` for all intra-app imports: `import { getDb } from "@/lib/db"`
-- Use workspace package imports for shared code: `import { Button } from "@wherabouts.com/ui/components/button"`
+- Use workspace package imports for shared code: `import { Button } from "@locnative/ui/components/button"`
 - Use named imports, not default imports (except for React component default exports from shadcn blocks)
-- Use `type` keyword for type-only imports: `import type { Database } from "@wherabouts.com/database"`
+- Use `type` keyword for type-only imports: `import type { Database } from "@locnative/database"`
 - Include `.ts` extension in relative imports within server-side lib files: `import { getDb } from "./db.ts"`
 ## Error Handling
 - Return `null` for validation failures in utility functions (e.g., `parseApiKeyFromRequest` returns `string | null`)
@@ -165,7 +165,7 @@ Wherabouts is an Australian address geocoding API service. Users sign up, create
 - Co-locate types with their related functions in the same file
 - Export constants that are part of the public API: `export { API_KEY_PREFIX }`
 - Not used in the web app `src/` directory
-- UI components from `@wherabouts.com/ui` are imported individually by path
+- UI components from `@locnative/ui` are imported individually by path
 ## Component Patterns
 - Use TanStack Router `createFileRoute()` to define the `Route` export
 - Define a private `RouteComponent` function for the route's component
@@ -205,13 +205,13 @@ Wherabouts is an Australian address geocoding API service. Users sign up, create
 ## Monorepo Packages
 - Marketing landing page, auth pages, protected dashboard, REST API
 - Entry: `src/start.ts` (server middleware), `src/router.tsx` (client router)
-- Exports: `@wherabouts.com/database`, `@wherabouts.com/database/schema`, `@wherabouts.com/database/queries`
+- Exports: `@locnative/database`, `@locnative/database/schema`, `@locnative/database/queries`
 - Contains: address schema with PostGIS geometry, API key schema, usage tracking schema
-- Exports: `@wherabouts.com/backend`
+- Exports: `@locnative/backend`
 - Contains: Convex schema, auth config, health check
-- Exports: `@wherabouts.com/env/web` (client-safe VITE_ vars), `@wherabouts.com/env/server`
-- Exports: `@wherabouts.com/ui/components/*`, `@wherabouts.com/ui/lib/utils`
-- Exports: `@wherabouts.com/config`
+- Exports: `@locnative/env/web` (client-safe VITE_ vars), `@locnative/env/server`
+- Exports: `@locnative/ui/components/*`, `@locnative/ui/lib/utils`
+- Exports: `@locnative/config`
 ## Layers
 - Purpose: File-based routing with layout nesting and route guards
 - Location: `src/routes/`
@@ -221,13 +221,13 @@ Wherabouts is an Australian address geocoding API service. Users sign up, create
 - Purpose: Server-side data fetching called from client components via RPC
 - Location: `src/lib/*-server.ts`
 - Contains: `createServerFn` wrappers that authenticate via Better Auth and query Neon DB
-- Depends on: `@/lib/auth-server`, `@wherabouts.com/database`
+- Depends on: `@/lib/auth-server`, `@locnative/database`
 - Used by: Protected route components (dashboard, api-keys)
 - Key files:
 - Purpose: Public geocoding API authenticated via API keys (not session auth)
 - Location: `src/routes/api/v1/`
 - Contains: TanStack Router server handlers using `Route.server.handlers.GET`
-- Depends on: `src/lib/with-api-key.ts`, `src/lib/api-key-auth.ts`, `@wherabouts.com/database`
+- Depends on: `src/lib/with-api-key.ts`, `src/lib/api-key-auth.ts`, `@locnative/database`
 - Used by: External API consumers
 - Purpose: User authentication (Better Auth) and API key authentication (custom)
 - Location: `src/start.ts` (middleware), `src/routes/__root.tsx` (providers), `src/lib/api-key-auth.ts`
@@ -240,7 +240,7 @@ Wherabouts is an Australian address geocoding API service. Users sign up, create
 - Purpose: React UI components for the dashboard shell and marketing pages
 - Location: `src/components/`
 - Contains: App shell (sidebar + header), navigation, marketing blocks
-- Depends on: `@wherabouts.com/ui`, TanStack Router, Better Auth client hooks
+- Depends on: `@locnative/ui`, TanStack Router, Better Auth client hooks
 - Key files:
 ## Data Flow
 - No global state store. Component-local `useState` + `useEffect` for dashboard/API key data

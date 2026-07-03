@@ -200,7 +200,7 @@ rows couldn't be appended/refreshed without wiping the Phase-1 OSM rows. Resolve
   postcode/street/place points don't outrank real OSM addresses.
 
 **To load (gated — needs DB approval + the migration applied):**
-1. `pnpm --filter @wherabouts.com/database db:migrate` (applies 0015)
+1. `pnpm --filter @locnative/database db:migrate` (applies 0015)
 2. `bun scripts/intl/gb-coverage.ts --db @<file> --dry-run`, then without `--dry-run`.
    Re-runs use `--replace` (OSM rows untouched).
 

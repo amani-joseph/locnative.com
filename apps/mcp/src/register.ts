@@ -1,5 +1,5 @@
+import type { LocnativeClient } from "@locnative/sdk";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import type { WheraboutsClient } from "@wherabouts/sdk";
 import { toToolError } from "./errors.ts";
 import { deviceTools } from "./tools/devices.ts";
 import { geocodingTools } from "./tools/geocoding.ts";
@@ -16,7 +16,7 @@ export const allTools: ToolDef[] = [
 
 export const registerTools = (
 	server: McpServer,
-	getClient: () => WheraboutsClient
+	getClient: () => LocnativeClient
 ): void => {
 	for (const tool of allTools) {
 		server.registerTool(

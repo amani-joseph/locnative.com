@@ -1,14 +1,14 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { Badge } from "@wherabouts.com/ui/components/badge";
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Badge } from "@locnative/ui/components/badge";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
-import { Switch } from "@wherabouts.com/ui/components/switch";
+} from "@locnative/ui/components/card";
+import { Switch } from "@locnative/ui/components/switch";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { ArrowRightIcon, CheckCircleIcon, WebhookIcon } from "lucide-react";
 
 export const Route = createFileRoute("/_protected/integrations")({
@@ -51,7 +51,7 @@ const integrations = [
 	},
 	{
 		name: "Zapier",
-		description: "Connect Wherabouts to 5,000+ apps with no-code workflows",
+		description: "Connect Locnative to 5,000+ apps with no-code workflows",
 		icon: <span className="font-bold text-sm">ZP</span>,
 		connected: false,
 		category: "Automation",
@@ -74,7 +74,7 @@ function RouteComponent() {
 			<div>
 				<h1 className="font-semibold text-2xl tracking-tight">Integrations</h1>
 				<p className="text-muted-foreground text-sm">
-					Connect Wherabouts with your favorite tools and services
+					Connect Locnative with your favorite tools and services
 				</p>
 			</div>
 

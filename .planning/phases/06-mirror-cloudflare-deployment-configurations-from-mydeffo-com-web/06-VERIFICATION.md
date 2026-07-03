@@ -23,7 +23,7 @@ re_verification: false
 | 2 | apps/web has no next, eslint-config-next, @tailwindcss/postcss, autoprefixer, or postcss dependencies | VERIFIED | `apps/web/package.json` grep for all 6 dead deps returns 0 matches |
 | 3 | Server env validation still works with dotenv/config import pattern | VERIFIED | `import "dotenv/config"` is first line; createEnv with runtimeEnv spread of process.env intact |
 | 4 | Both wrangler configs have observability with logs enabled | VERIFIED | Both `apps/web/wrangler.jsonc` and `apps/server/wrangler.jsonc` contain `observability.logs.enabled: true` and `invocation_logs: true` |
-| 5 | apps/server has a production environment block with domain and env vars | VERIFIED | `apps/server/wrangler.jsonc` has `env.production` with AUTH_COOKIE_DOMAIN=".wherabouts.com", BETTER_AUTH_URL, WEB_BASE_URL, and routes with api.wherabouts.com custom domain |
+| 5 | apps/server has a production environment block with domain and env vars | VERIFIED | `apps/server/wrangler.jsonc` has `env.production` with AUTH_COOKIE_DOMAIN=".locnative.com", BETTER_AUTH_URL, WEB_BASE_URL, and routes with api.locnative.com custom domain |
 | 6 | apps/web has observability config | VERIFIED | `apps/web/wrangler.jsonc` contains full observability block with logs and head_sampling_rate |
 | 7 | @cloudflare/workers-types is in apps/server devDependencies | VERIFIED | `apps/server/package.json` has `"@cloudflare/workers-types": "^4.20260416.2"` in devDependencies |
 | 8 | Auth cookie domain is configurable via AUTH_COOKIE_DOMAIN env var | VERIFIED | `packages/api/src/auth.ts` has conditional spread `...(serverEnv.AUTH_COOKIE_DOMAIN ? { domain: serverEnv.AUTH_COOKIE_DOMAIN } : {})` in defaultCookieAttributes |
@@ -46,14 +46,14 @@ re_verification: false
 | From | To | Via | Status | Details |
 |------|----|-----|--------|---------|
 | `packages/env/src/server.ts` | `process.env` | `dotenv/config` populates process.env locally; nodejs_compat on Workers | WIRED | `import "dotenv/config"` on line 1; `runtimeEnv: { ...process.env }` on line 17 |
-| `packages/api/src/auth.ts` | `packages/env/src/server.ts` | `serverEnv.AUTH_COOKIE_DOMAIN` | WIRED | Line 2: `import { serverEnv } from "@wherabouts.com/env/server"`; line 44: `serverEnv.AUTH_COOKIE_DOMAIN` |
-| `apps/server/wrangler.jsonc` | `packages/api/src/auth.ts` | AUTH_COOKIE_DOMAIN env var flows through process.env to serverEnv to auth config | WIRED | wrangler.jsonc sets `AUTH_COOKIE_DOMAIN: ".wherabouts.com"` in env.production.vars; serverEnv validates it; auth.ts reads it |
+| `packages/api/src/auth.ts` | `packages/env/src/server.ts` | `serverEnv.AUTH_COOKIE_DOMAIN` | WIRED | Line 2: `import { serverEnv } from "@locnative/env/server"`; line 44: `serverEnv.AUTH_COOKIE_DOMAIN` |
+| `apps/server/wrangler.jsonc` | `packages/api/src/auth.ts` | AUTH_COOKIE_DOMAIN env var flows through process.env to serverEnv to auth config | WIRED | wrangler.jsonc sets `AUTH_COOKIE_DOMAIN: ".locnative.com"` in env.production.vars; serverEnv validates it; auth.ts reads it |
 
 ### Data-Flow Trace (Level 4)
 
 | Artifact | Data Variable | Source | Produces Real Data | Status |
 |----------|--------------|--------|--------------------|--------|
-| `packages/api/src/auth.ts` | `serverEnv.AUTH_COOKIE_DOMAIN` | `packages/env/src/server.ts` via `process.env` from wrangler vars | Yes -- wrangler.jsonc production vars set `.wherabouts.com` | FLOWING |
+| `packages/api/src/auth.ts` | `serverEnv.AUTH_COOKIE_DOMAIN` | `packages/env/src/server.ts` via `process.env` from wrangler vars | Yes -- wrangler.jsonc production vars set `.locnative.com` | FLOWING |
 
 ### Behavioral Spot-Checks
 
@@ -91,8 +91,8 @@ All 5 commits referenced in summaries exist in git history:
 
 ### 1. Production Deployment Smoke Test
 
-**Test:** Deploy to Cloudflare Workers with `wrangler deploy --env production` for apps/server and verify auth cookies have `domain=.wherabouts.com`
-**Expected:** Auth response sets cookies with `Domain=.wherabouts.com` attribute; cookies are accessible from both wherabouts.com and api.wherabouts.com
+**Test:** Deploy to Cloudflare Workers with `wrangler deploy --env production` for apps/server and verify auth cookies have `domain=.locnative.com`
+**Expected:** Auth response sets cookies with `Domain=.locnative.com` attribute; cookies are accessible from both locnative.com and api.locnative.com
 **Why human:** Requires actual Cloudflare deployment and browser inspection of Set-Cookie headers
 
 ### 2. Local Dev Compatibility

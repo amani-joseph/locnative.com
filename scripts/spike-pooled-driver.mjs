@@ -14,7 +14,9 @@ try {
 } catch (e) {
 	console.log(`OK cancelled after ${Date.now() - t0}ms: ${e.message}`);
 } finally {
-	await client.query("ROLLBACK").catch(() => {});
+	await client.query("ROLLBACK").catch(() => {
+		// Ignore rollback errors after timeout/cancellation; connection cleanup follows.
+	});
 	client.release();
 	await pool.end();
 }

@@ -1,6 +1,6 @@
-# @wherabouts/sdk
+# @locnative/sdk
 
-Official TypeScript SDK for the [Wherabouts](https://wherabouts.com) location API —
+Official TypeScript SDK for the [Locnative](https://locnative.com) location API —
 geocoding, geofencing zones, device tracking, routing, and webhooks over
 authoritative open address data.
 
@@ -13,14 +13,14 @@ authoritative open address data.
 - **Resilient by default**: automatic retries with backoff, per-request timeouts,
   `AbortSignal` support, and idempotent writes.
 
-**[Interactive API Explorer →](https://api.wherabouts.com/api/v1/openapi.json)**
+**[Interactive API Explorer →](https://api.locnative.com/api/v1/openapi.json)**
 _(Paste the URL into [Swagger UI](https://editor.swagger.io) or [Hoppscotch](https://hoppscotch.io) to explore all endpoints interactively.)_
 
 ## Install
 
 ```sh
-npm install @wherabouts/sdk
-# or: pnpm add @wherabouts/sdk · yarn add @wherabouts/sdk
+npm install @locnative/sdk
+# or: pnpm add @locnative/sdk · yarn add @locnative/sdk
 ```
 
 Requires Node.js 18+ (or any runtime with a global `fetch`).
@@ -28,10 +28,10 @@ Requires Node.js 18+ (or any runtime with a global `fetch`).
 ## Quickstart (60 seconds)
 
 ```ts
-import { createWheraboutsClient } from "@wherabouts/sdk";
+import { createLocnativeClient } from "@locnative/sdk";
 
-const client = createWheraboutsClient({
-  apiKey: process.env.WHERABOUTS_API_KEY!,
+const client = createLocnativeClient({
+  apiKey: process.env.LOCNATIVE_API_KEY!,
 });
 
 // Classify a coordinate into official ABS/ASGS regions
@@ -76,9 +76,9 @@ const zone = await client.zones.create({
 ## Configuration
 
 ```ts
-const client = createWheraboutsClient({
+const client = createLocnativeClient({
   apiKey: "wh_...",          // required
-  baseUrl: "https://api.wherabouts.com", // optional override
+  baseUrl: "https://api.locnative.com", // optional override
   maxRetries: 2,              // optional, default 2
   timeoutMs: 30_000,          // optional, default 30s
   fetch: customFetch,         // optional fetch implementation
@@ -88,8 +88,8 @@ const client = createWheraboutsClient({
 
 | Option | Default | Description |
 |---|---|---|
-| `apiKey` | — | Your Wherabouts API key (`wh_...`). Required. |
-| `baseUrl` | `https://api.wherabouts.com` | API origin override. |
+| `apiKey` | — | Your Locnative API key (`wh_...`). Required. |
+| `baseUrl` | `https://api.locnative.com` | API origin override. |
 | `maxRetries` | `2` | Automatic retries for transient failures (429/5xx/network/timeout). |
 | `timeoutMs` | `30000` | Per-request timeout. |
 | `fetch` | `globalThis.fetch` | Custom `fetch` implementation. |
@@ -122,15 +122,15 @@ await client.zones.create(zoneBody, { idempotencyKey: "order-42" });
 
 ## Error handling
 
-Failed requests reject with a `WheraboutsApiError`:
+Failed requests reject with a `LocnativeApiError`:
 
 ```ts
-import { WheraboutsApiError } from "@wherabouts/sdk";
+import { LocnativeApiError } from "@locnative/sdk";
 
 try {
   await client.zones.get(999);
 } catch (err) {
-  if (err instanceof WheraboutsApiError) {
+  if (err instanceof LocnativeApiError) {
     err.status;     // HTTP status (e.g. 404)
     err.code;       // machine code (e.g. "not_found")
     err.message;    // human-readable message
@@ -153,12 +153,12 @@ try {
 When you exceed the rate limit, the API returns `429 Too Many Requests` with error code `rate_limited`. The `Retry-After` response header contains the number of seconds to wait.
 
 ```ts
-import { WheraboutsApiError } from "@wherabouts/sdk";
+import { LocnativeApiError } from "@locnative/sdk";
 
 try {
   const result = await client.geocode.forward({ q: "Sydney Opera House" });
 } catch (e) {
-  if (e instanceof WheraboutsApiError && e.code === "rate_limited") {
+  if (e instanceof LocnativeApiError && e.code === "rate_limited") {
     const retryAfter = e.response?.headers.get("retry-after");
     console.log(`Rate limited. Retry after ${retryAfter}s`);
   }
@@ -167,7 +167,7 @@ try {
 
 ## Migrating from Google Places API
 
-| Google Places                                    | Wherabouts equivalent                               |
+| Google Places                                    | Locnative equivalent                               |
 |--------------------------------------------------|-----------------------------------------------------|
 | `PlacesService.findPlaceFromQuery()`             | `client.geocode.forward({ q })`                     |
 | `AutocompleteService.getPlacePredictions()`      | `client.addresses.autocomplete({ q })`              |
@@ -176,11 +176,11 @@ try {
 
 **Key differences:**
 
-- **Authoritative data:** Wherabouts builds on official open address sources per country — e.g. G-NAF (Australia's address register maintained by PSMA Australia, matching Australia Post/ABS records), Overture, and OpenAddresses elsewhere — rather than crowdsourced points.
+- **Authoritative data:** Locnative builds on official open address sources per country — e.g. G-NAF (Australia's address register maintained by PSMA Australia, matching Australia Post/ABS records), Overture, and OpenAddresses elsewhere — rather than crowdsourced points.
 - **Structured components:** Every address includes `streetNumber`, `streetName`, `streetType`, `locality`, `state`, `postcode` as first-class fields — no parsing needed. (Some fields, e.g. `state`, are empty for countries that don't use them.)
 - **No session tokens:** Autocomplete billing is per-call. No session token complexity.
 - **Unique identifiers:** Each address has a stable `id`; Australian addresses also carry a `gnafPid` (G-NAF Persistent Identifier) for cross-system referencing.
 
 ## License
 
-MIT — © Wherabouts.
+MIT — © Locnative.

@@ -4,7 +4,7 @@ import {
 	Avatar,
 	AvatarFallback,
 	AvatarImage,
-} from "@wherabouts.com/ui/components/avatar";
+} from "@locnative/ui/components/avatar";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -13,7 +13,7 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "@wherabouts.com/ui/components/dropdown-menu";
+} from "@locnative/ui/components/dropdown-menu";
 import {
 	CreditCardIcon,
 	LogOutIcon,

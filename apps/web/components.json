@@ -15,8 +15,8 @@
   "menuAccent": "subtle",
   "aliases": {
     "components": "@/components",
-    "utils": "@wherabouts.com/ui/lib/utils",
-    "ui": "@wherabouts.com/ui/components",
+    "utils": "@locnative/ui/lib/utils",
+    "ui": "@locnative/ui/components",
     "lib": "@/lib",
     "hooks": "@/hooks"
   },

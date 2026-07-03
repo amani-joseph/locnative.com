@@ -1,23 +1,23 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "wherabouts-server",
+	"name": "locnative-server",
 	"main": "src/index.ts",
 	"compatibility_date": "2026-04-14",
 	"compatibility_flags": [
 		"nodejs_compat",
 		"nodejs_compat_populate_process_env"
 	],
-	"dev": { "port": 3003 },
+	"dev": { "ip": "0.0.0.0", "port": 3003 },
 	"routes": [
 		{
-			"pattern": "api.wherabouts.com",
+			"pattern": "api.locnative.com",
 			"custom_domain": true
 		}
 	],
 	"vars": {
-		"AUTH_COOKIE_DOMAIN": ".wherabouts.com",
-		"BETTER_AUTH_URL": "https://api.wherabouts.com",
-		"WEB_BASE_URL": "https://wherabouts.com"
+		"AUTH_COOKIE_DOMAIN": ".locnative.com",
+		"BETTER_AUTH_URL": "https://api.locnative.com",
+		"WEB_BASE_URL": "https://locnative.com"
 	},
 	"observability": {
 		"enabled": true,
@@ -32,17 +32,17 @@
 	},
 	"queues": {
 		"producers": [
-			{ "queue": "wherabouts-batch-geocode", "binding": "BATCH_GEOCODE_QUEUE" },
-			{ "queue": "wherabouts-webhook-delivery", "binding": "WEBHOOK_DELIVERY_QUEUE" }
+			{ "queue": "locnative-batch-geocode", "binding": "BATCH_GEOCODE_QUEUE" },
+			{ "queue": "locnative-webhook-delivery", "binding": "WEBHOOK_DELIVERY_QUEUE" }
 		],
 		"consumers": [
-			{ "queue": "wherabouts-batch-geocode", "max_batch_size": 10 },
-			{ "queue": "wherabouts-webhook-delivery", "max_batch_size": 5 }
+			{ "queue": "locnative-batch-geocode", "max_batch_size": 10 },
+			{ "queue": "locnative-webhook-delivery", "max_batch_size": 5 }
 		]
 	},
 	"r2_buckets": [
-		{ "binding": "GEOCODE_RESULTS", "bucket_name": "wherabouts-geocode-results" },
-		{ "binding": "MAP_TILES", "bucket_name": "wherabouts-tiles", "remote": true }
+		{ "binding": "GEOCODE_RESULTS", "bucket_name": "locnative-geocode-results" },
+		{ "binding": "MAP_TILES", "bucket_name": "locnative-tiles" }
 	],
 	"durable_objects": {
 		"bindings": [{ "name": "USAGE_METER", "class_name": "UsageMeter" }]

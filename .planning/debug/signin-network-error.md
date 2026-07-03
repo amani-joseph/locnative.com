@@ -53,7 +53,7 @@ started: Currently happening in dev
 
 - timestamp: 2026-04-14T00:05:00Z
   checked: apps/web/wrangler.jsonc vars
-  found: BETTER_AUTH_URL set to production URL (https://wherabouts-server.mr-amanijoseph.workers.dev)
+  found: BETTER_AUTH_URL set to production URL (https://locnative-server.mr-amanijoseph.workers.dev)
   implication: In workerd, process.env sees production vars from wrangler.jsonc, not .env values
 
 - timestamp: 2026-04-14T00:06:00Z

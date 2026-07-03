@@ -1,4 +1,4 @@
-import { serverEnv } from "@wherabouts.com/env/server";
+import { serverEnv } from "@locnative/env/server";
 import { Resend } from "resend";
 
 const TRAILING_SLASH_REGEX = /\/$/;
@@ -21,7 +21,7 @@ export function buildInviteHtml({
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Invitation to ${teamName} on Wherabouts</title>
+    <title>Invitation to ${teamName} on Locnative</title>
   </head>
   <body style="margin:0;padding:0;background:#ffffff;color:#1a1a1a;font-family:${fontStack};">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;">
@@ -30,12 +30,12 @@ export function buildInviteHtml({
           <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
             <tr>
               <td style="padding:0 0 24px 0;font-family:${fontStack};font-size:14px;font-weight:600;color:#1a1a1a;letter-spacing:0.02em;">
-                Wherabouts
+                Locnative
               </td>
             </tr>
             <tr>
               <td style="padding:0 0 16px 0;font-family:${fontStack};font-size:24px;font-weight:600;line-height:1.3;color:#1a1a1a;">
-                ${inviterName} has invited you to join ${teamName} on Wherabouts
+                ${inviterName} has invited you to join ${teamName} on Locnative
               </td>
             </tr>
             <tr>
@@ -67,7 +67,7 @@ export function buildInviteText({
 	inviteUrl,
 }: Omit<InviteTemplateParams, "inviterEmail">): string {
 	return [
-		`${inviterName} has invited you to join ${teamName} on Wherabouts.`,
+		`${inviterName} has invited you to join ${teamName} on Locnative.`,
 		"",
 		"Accept this invitation by opening the link below. It expires in 72 hours.",
 		"",
@@ -100,7 +100,7 @@ export async function sendInvitationEmail({
 	await resend.emails.send({
 		from: serverEnv.EMAIL_FROM,
 		to,
-		subject: `${inviterName} invited you to ${teamName} on Wherabouts`,
+		subject: `${inviterName} invited you to ${teamName} on Locnative`,
 		html: buildInviteHtml({ teamName, inviterName, inviterEmail, inviteUrl }),
 		text: buildInviteText({ teamName, inviterName, inviteUrl }),
 	});

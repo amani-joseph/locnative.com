@@ -1,10 +1,10 @@
-# Wherabouts API Platform Plan
+# Locnative API Platform Plan
 
 ## Source
 
-- Primary source: `wherabouts-prd.pdf`
+- Primary source: `locnative-prd.pdf`
 - Supplemental source: <https://claude.ai/public/artifacts/31d0b372-ca03-44a9-8710-67399af965bb>
-- Source title: `Wherabouts API Platform: 18-Month Product Roadmap`
+- Source title: `Locnative API Platform: 18-Month Product Roadmap`
 
 ## Status
 
@@ -12,7 +12,7 @@ This file is now based on the extracted PDF content, which contains the roadmap 
 
 ## Planning Goal
 
-Create a durable, repo-local plan for the Wherabouts API platform across the next 18 months, aligned to product sequencing, platform maturity, developer experience, monetization, and enterprise readiness.
+Create a durable, repo-local plan for the Locnative API platform across the next 18 months, aligned to product sequencing, platform maturity, developer experience, monetization, and enterprise readiness.
 
 ## Time Horizon
 
@@ -21,7 +21,7 @@ Create a durable, repo-local plan for the Wherabouts API platform across the nex
 
 ## Product Positioning
 
-Wherabouts is positioned between raw geocoding providers and high-level, product-specific address tooling. The platform is meant to give developers production-grade location workflows with better developer experience, clearer abstractions, and a stronger application-layer platform than commodity API vendors.
+Locnative is positioned between raw geocoding providers and high-level, product-specific address tooling. The platform is meant to give developers production-grade location workflows with better developer experience, clearer abstractions, and a stronger application-layer platform than commodity API vendors.
 
 ## Core Design Principles
 
@@ -37,7 +37,7 @@ Wherabouts is positioned between raw geocoding providers and high-level, product
 ### Phase 1: Core API and Developer Foundation
 
 - Timeline: Months 1-3
-- Goal: establish the bedrock of Wherabouts as a reliable, well-documented developer API.
+- Goal: establish the bedrock of Locnative as a reliable, well-documented developer API.
 
 Key workstreams:
 - Core REST endpoints
@@ -88,12 +88,12 @@ Key workstreams:
   - abort controller support
   - first-class response typing
 - React component library
-  - `WheraboutsProvider`
+  - `LocnativeProvider`
   - `AddressInput`
   - `AddressForm`
   - `PlaceSearch`
   - `Map` wrapper
-  - `useWherabouts` hook
+  - `useLocnative` hook
 - Component design philosophy
   - headless-first components
   - optional themed package
@@ -116,7 +116,7 @@ Exit criteria:
 ### Phase 3: Platform, Billing and Ecosystem
 
 - Timeline: Months 8-12
-- Goal: evolve Wherabouts from a useful product into a real platform with operational tooling, billing, and ecosystem leverage.
+- Goal: evolve Locnative from a useful product into a real platform with operational tooling, billing, and ecosystem leverage.
 
 Key workstreams:
 - Developer dashboard
@@ -152,7 +152,7 @@ Key workstreams:
 
 Exit criteria:
 - Customers can manage spend, teams, and operational usage from the dashboard.
-- Wherabouts supports both synchronous product integrations and higher-volume async workflows.
+- Locnative supports both synchronous product integrations and higher-volume async workflows.
 - Billing, usage controls, and ecosystem integrations make the platform commercially viable.
 
 ### Phase 4: Intelligence, Scale and Enterprise
@@ -183,7 +183,7 @@ Key workstreams:
   - conference and content strategy
 
 Exit criteria:
-- Wherabouts is not just an API vendor, but a differentiated location platform with enterprise credibility.
+- Locnative is not just an API vendor, but a differentiated location platform with enterprise credibility.
 - The platform can support larger customers, stricter compliance expectations, and global performance requirements.
 
 ## Cross-Phase Themes

@@ -1,23 +1,23 @@
-# Wherabouts.com vs Mapbox — Comparative Analysis & Roadmap
+# Locnative.com vs Mapbox — Comparative Analysis & Roadmap
 
 **Date:** 2026-06-10
-**Scope:** Feature-by-feature comparison of wherabouts.com against the Mapbox platform, gap inventory, mutual strengths, and a prioritised roadmap.
+**Scope:** Feature-by-feature comparison of locnative.com against the Mapbox platform, gap inventory, mutual strengths, and a prioritised roadmap.
 **Companion docs:** `competitive-analysis-2026-06.md` (Radar/Mappify/Google/HERE/Geoapify), `competitive-analysis-update-2026-06-08.md` (SDK depth). This doc adds the missing Mapbox dimension.
 
 ---
 
 ## 0. Framing — read this first
 
-Mapbox and Wherabouts are **not the same kind of company**, and the comparison only makes sense if that is explicit up front:
+Mapbox and Locnative are **not the same kind of company**, and the comparison only makes sense if that is explicit up front:
 
 - **Mapbox** is a *global map-rendering and developer-tooling platform*. Its centre of gravity is **client-side rendering SDKs** (GL JS, iOS/Android, Navigation SDK), a **map-styling pipeline** (Studio, Styles API, tileset hosting), and a global, generic geospatial dataset. It monetises map loads and SDK usage.
-- **Wherabouts** is an *authoritative-data location API for Australia* with a **Radar-style geofencing/device/webhook engine**. It monetises API calls over G-NAF/ABS data. It serves a basemap (self-hosted Protomaps) but does **not** render maps for customers.
+- **Locnative** is an *authoritative-data location API for Australia* with a **Radar-style geofencing/device/webhook engine**. It monetises API calls over G-NAF/ABS data. It serves a basemap (self-hosted Protomaps) but does **not** render maps for customers.
 
-**Therefore: most of Mapbox's catalog is deliberately out of strategic scope.** The goal of this analysis is *not* "catch up to Mapbox" wholesale — that would dilute the only defensible moat Wherabouts has. The goal is to identify the **subset of Mapbox capabilities that a location-data API buyer actually expects**, and close those, while consciously declining the map-rendering arms race.
+**Therefore: most of Mapbox's catalog is deliberately out of strategic scope.** The goal of this analysis is *not* "catch up to Mapbox" wholesale — that would dilute the only defensible moat Locnative has. The goal is to identify the **subset of Mapbox capabilities that a location-data API buyer actually expects**, and close those, while consciously declining the map-rendering arms race.
 
 ---
 
-## 1. Verified current Wherabouts surface (from code)
+## 1. Verified current Locnative surface (from code)
 
 Public API (`/api/v1/*`, API-key auth):
 
@@ -32,7 +32,7 @@ Public API (`/api/v1/*`, API-key auth):
 | **Webhooks** | CRUD, `reactivate`, deliveries — geofence **enter/exit** events, HMAC-signed |
 | **Basemap** | Self-hosted Protomaps vector tiles via R2 (`/tiles`) |
 | **Platform** | Projects, API keys (PBKDF2-hashed), usage, dashboard, API explorer |
-| **SDK** | `@wherabouts/sdk` (TypeScript): resource-namespaced, auto-retry, idempotent writes, typed errors |
+| **SDK** | `@locnative/sdk` (TypeScript): resource-namespaced, auto-retry, idempotent writes, typed errors |
 
 **Data scope:** Australia only. **Data authority:** G-NAF (addresses) + ABS ASGS (boundaries) — government-authoritative.
 
@@ -50,7 +50,7 @@ Public API (`/api/v1/*`, API-key auth):
 
 ---
 
-## 3. Gap inventory — everything Mapbox has that Wherabouts does not
+## 3. Gap inventory — everything Mapbox has that Locnative does not
 
 Grouped by strategic disposition, not just by presence.
 
@@ -85,7 +85,7 @@ Grouped by strategic disposition, not just by presence.
 
 ---
 
-## 4. Where Wherabouts is BETTER than Mapbox
+## 4. Where Locnative is BETTER than Mapbox
 
 1. **Authoritative AU address data (G-NAF).** Mapbox's AU address coverage is derived/aggregated; ours is the government source of truth — higher precision, official identifiers, legal defensibility.
 2. **Native hosted geofencing + device tracking + webhooks.** Mapbox has **no** hosted zone-state engine with enter/exit webhook events. This is a Radar-class capability Mapbox simply doesn't sell. Our single biggest structural advantage.
@@ -96,7 +96,7 @@ Grouped by strategic disposition, not just by presence.
 
 ---
 
-## 5. Where Mapbox is BETTER than Wherabouts
+## 5. Where Mapbox is BETTER than Locnative
 
 1. **Map rendering** — GL JS + mobile SDKs are best-in-class; we render nothing client-side. *(By design — see §3B.)*
 2. **Routing breadth** — multi-profile, traffic-aware, matrix, isochrone, optimisation, map-matching vs our single driving-directions endpoint.
@@ -141,6 +141,6 @@ GL JS & map-rendering SDKs, Studio/Styles/MTS cartography pipeline, global geoco
 
 ## 7. Bottom line
 
-Against Mapbox, Wherabouts is **behind on the breadth of the geospatial-developer toolkit** (rendering, routing depth, POI, cartography) but **ahead on the two things that define its category**: authoritative Australian government data and a hosted geofencing/device/webhook engine Mapbox doesn't sell at all.
+Against Mapbox, Locnative is **behind on the breadth of the geospatial-developer toolkit** (rendering, routing depth, POI, cartography) but **ahead on the two things that define its category**: authoritative Australian government data and a hosted geofencing/device/webhook engine Mapbox doesn't sell at all.
 
 The correct competitive posture is **not parity** — it's to close the *routing-depth* and *places/validation* gaps that data-API buyers genuinely expect (Milestones A–C), borrow the *static-image* convenience (B1), and **consciously decline the map-rendering arms race** that is Mapbox's home turf. Lead, as always, with G-NAF/ABS authority + all-in-one AU geofencing — the quadrant no competitor, Mapbox included, occupies.

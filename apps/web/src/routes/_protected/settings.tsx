@@ -1,22 +1,22 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
-import { Input } from "@wherabouts.com/ui/components/input";
-import { Label } from "@wherabouts.com/ui/components/label";
-import { Separator } from "@wherabouts.com/ui/components/separator";
-import { Switch } from "@wherabouts.com/ui/components/switch";
+} from "@locnative/ui/components/card";
+import { Input } from "@locnative/ui/components/input";
+import { Label } from "@locnative/ui/components/label";
+import { Separator } from "@locnative/ui/components/separator";
+import { Switch } from "@locnative/ui/components/switch";
 import {
 	Tabs,
 	TabsContent,
 	TabsList,
 	TabsTrigger,
-} from "@wherabouts.com/ui/components/tabs";
+} from "@locnative/ui/components/tabs";
+import { createFileRoute } from "@tanstack/react-router";
 import {
 	BellIcon,
 	GlobeIcon,
@@ -241,7 +241,7 @@ function RouteComponent() {
 						<CardHeader>
 							<CardTitle>Appearance</CardTitle>
 							<CardDescription>
-								Customize how Wherabouts looks for you
+								Customize how Locnative looks for you
 							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-6">

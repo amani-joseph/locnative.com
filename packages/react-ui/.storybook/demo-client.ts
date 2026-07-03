@@ -1,7 +1,7 @@
-import type { WheraboutsClient } from "@wherabouts/sdk";
-import { createWheraboutsClient } from "@wherabouts/sdk";
+import type { LocnativeClient } from "@locnative/sdk";
+import { createLocnativeClient } from "@locnative/sdk";
 
-const DEFAULT_BASE_URL = "https://api.wherabouts.com";
+const DEFAULT_BASE_URL = "https://api.locnative.com";
 
 interface DemoEnv {
 	VITE_DEMO_API_BASE_URL?: string;
@@ -22,8 +22,8 @@ const config = resolveDemoConfig(import.meta.env as DemoEnv);
 
 export const isDemoConfigured = config.configured;
 
-export function createDemoClient(): WheraboutsClient {
-	return createWheraboutsClient({
+export function createDemoClient(): LocnativeClient {
+	return createLocnativeClient({
 		apiKey: config.apiKey || "demo-key-not-configured",
 		baseUrl: config.baseUrl,
 	});

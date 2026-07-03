@@ -5,6 +5,8 @@ import {
 	generateWebhookSecret,
 } from "./secret-crypto.ts";
 
+const HEX_SECRET_REGEX = /^[0-9a-f]{64}$/;
+
 // KEY_ENC_KEY must be set before any function is called (lazy getKey()).
 // 64 hex chars = 32 bytes for AES-256.
 beforeAll(() => {
@@ -52,7 +54,7 @@ describe("secret-crypto", () => {
 		it("returns a 64-char hex string (32 bytes)", () => {
 			const secret = generateWebhookSecret();
 			expect(secret).toHaveLength(64);
-			expect(secret).toMatch(/^[0-9a-f]{64}$/);
+			expect(secret).toMatch(HEX_SECRET_REGEX);
 		});
 
 		it("returns a different value each call", () => {

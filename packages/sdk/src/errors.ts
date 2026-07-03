@@ -25,7 +25,7 @@ export class WheraboutsApiError extends Error {
 		status: number;
 	}) {
 		super(options.message);
-		this.name = "WheraboutsApiError";
+		this.name = "LocnativeApiError";
 		this.status = options.status;
 		this.code = options.code ?? "unknown_error";
 		this.payload = options.payload ?? null;
@@ -34,3 +34,5 @@ export class WheraboutsApiError extends Error {
 		this.fields = options.fields ?? null;
 	}
 }
+
+export { WheraboutsApiError as LocnativeApiError };

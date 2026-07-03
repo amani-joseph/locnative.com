@@ -1,4 +1,4 @@
-@import "@wherabouts.com/ui/globals.css";
+@import "@locnative/ui/globals.css";
 
 /*
  * Subtle theme transition. Lives in @layer base so Tailwind's own

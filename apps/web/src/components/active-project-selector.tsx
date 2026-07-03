@@ -4,7 +4,7 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@wherabouts.com/ui/components/select";
+} from "@locnative/ui/components/select";
 
 export interface ProjectOption {
 	id: string;

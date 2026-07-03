@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `@wherabouts/sdk` are documented here. This project adheres
+All notable changes to `@locnative/sdk` are documented here. This project adheres
 to [Semantic Versioning](https://semver.org/) and the
 [Keep a Changelog](https://keepachangelog.com/) format.
 
@@ -8,7 +8,7 @@ to [Semantic Versioning](https://semver.org/) and the
 
 ### Fixed
 
-- `User-Agent` header now reports the SDK's real version. `WHERABOUTS_SDK_VERSION` had
+- `User-Agent` header now reports the SDK's real version. `LOCNATIVE_SDK_VERSION` had
   drifted (pinned at `0.4.1`) while the package version advanced; it now tracks the
   release. The dist smoke check derives the expected version from `package.json` so it
   cannot drift again.
@@ -19,7 +19,7 @@ to [Semantic Versioning](https://semver.org/) and the
 
 - `addresses.autocomplete` now accepts `lat`/`lng` for proximity boosting (sent to the API as `lat`/`lon`) and a `sessionToken` to group a run of keystrokes into one billable search
 - `newSessionToken()` helper for generating per-search session tokens
-- Type guards `isWheraboutsApiError`, `isRateLimitError`, and `isClientError`
+- Type guards `isLocnativeApiError`, `isRateLimitError`, and `isClientError`
 - Geo helpers `getLatLng`, `toLngLat`, and `distanceMeters` (haversine)
 
 ## [0.4.1] - 2026-06-15
@@ -33,7 +33,7 @@ to [Semantic Versioning](https://semver.org/) and the
 ### Added
 
 - `GeocodeAddress` now includes `streetName`, `streetNumber`, `streetType` structured fields matching `AddressSuggestion`
-- Added `logger` option to `WheraboutsClientConfig` — called after every request with method, path, status, durationMs, and requestId
+- Added `logger` option to `LocnativeClientConfig` — called after every request with method, path, status, durationMs, and requestId
 - Added `zones.paginate()` async generator for cursor-free iteration over all zones (yields `ZoneRecord[]` per page)
 - Exported `WebhookEntryPayload`, `WebhookExitPayload`, and `WebhookEventPayload` discriminated union for typing inbound webhook POST bodies
 
@@ -43,7 +43,7 @@ to [Semantic Versioning](https://semver.org/) and the
 
 ## [0.2.0] - 2026-06-08
 
-First publishable release. Renamed from the internal `@wherabouts.com/sdk`.
+First publishable release. Renamed from the internal `@locnative/sdk`.
 
 ### Added
 
@@ -57,17 +57,17 @@ First publishable release. Renamed from the internal `@wherabouts.com/sdk`.
   override via per-call `options.idempotencyKey`.
 - **Per-request `options`** on every method (`timeoutMs`, `maxRetries`, `signal`,
   `idempotencyKey`, `headers`).
-- **Richer errors** — `WheraboutsApiError` now exposes `requestId`, `docUrl`, and
+- **Richer errors** — `LocnativeApiError` now exposes `requestId`, `docUrl`, and
   `fields` (forward-compatible with the API's expanded error envelope).
 - **Published build** — dual ESM + CJS with bundled `.d.ts`, verified by
   `publint` and `are-the-types-wrong`.
 
 ### Changed
 
-- Package renamed `@wherabouts.com/sdk` → **`@wherabouts/sdk`** (npm scopes cannot
+- Package renamed `@locnative/sdk` → **`@locnative/sdk`** (npm scopes cannot
   contain a dot). No backward-compat alias — the prior version was unpublished.
 - Client surface is now resource-namespaced (`client.zones.create(...)`), replacing
   the earlier flat methods.
 
-[0.4.0]: https://github.com/amani-joseph/wherabouts.com/releases/tag/sdk-v0.4.0
-[0.2.0]: https://github.com/amani-joseph/wherabouts.com/releases/tag/sdk-v0.2.0
+[0.4.0]: https://github.com/amani-joseph/locnative.com/releases/tag/sdk-v0.4.0
+[0.2.0]: https://github.com/amani-joseph/locnative.com/releases/tag/sdk-v0.2.0

@@ -1,4 +1,4 @@
-# @wherabouts/react-ui — Per-Component Docs + Storybook
+# @locnative/react-ui — Per-Component Docs + Storybook
 
 **Date:** 2026-06-19
 **Status:** Approved design (pending spec review)
@@ -23,7 +23,7 @@ out of scope.
 
 ## Decisions (locked with user)
 
-1. **Story data source: live demo key.** Stories build a `WheraboutsClient` that calls the
+1. **Story data source: live demo key.** Stories build a `LocnativeClient` that calls the
    real API, mirroring the `/components` route's `createDemoClient`.
 2. **Prose: full narrative in both** `docs/*.md` and Storybook docs pages. Accepted
    maintenance cost: two copies kept deliberately in sync.
@@ -39,21 +39,21 @@ Therefore Storybook's demo client reads two env vars (Vite-style, exposed via St
 
 - `VITE_DEMO_API_KEY` — the publishable demo key (origin-scoped publishable key, never a
   secret server key).
-- `VITE_DEMO_API_BASE_URL` — absolute API origin, e.g. `https://api.wherabouts.com`.
-  Falls back to `https://api.wherabouts.com` if unset.
+- `VITE_DEMO_API_BASE_URL` — absolute API origin, e.g. `https://api.locnative.com`.
+  Falls back to `https://api.locnative.com` if unset.
 
 ```ts
 // .storybook/demo-client.ts
-import { createWheraboutsClient } from "@wherabouts/sdk";
+import { createLocnativeClient } from "@locnative/sdk";
 
 export const DEMO_API_KEY = import.meta.env.VITE_DEMO_API_KEY ?? "";
 const BASE_URL =
-  import.meta.env.VITE_DEMO_API_BASE_URL ?? "https://api.wherabouts.com";
+  import.meta.env.VITE_DEMO_API_BASE_URL ?? "https://api.locnative.com";
 
 export const isDemoConfigured = DEMO_API_KEY.length > 0;
 
 export const createDemoClient = () =>
-  createWheraboutsClient({ apiKey: DEMO_API_KEY, baseUrl: BASE_URL });
+  createLocnativeClient({ apiKey: DEMO_API_KEY, baseUrl: BASE_URL });
 ```
 
 **Cross-origin CORS risk:** because calls are now cross-origin, the API server's CORS
@@ -142,8 +142,8 @@ changes — comments only.
 
 ## Testing & verification
 
-- `pnpm --filter @wherabouts/react-ui build` still succeeds (tsup unaffected by stories/docs).
-- `pnpm --filter @wherabouts/react-ui storybook` boots; every component renders; autodocs
+- `pnpm --filter @locnative/react-ui build` still succeeds (tsup unaffected by stories/docs).
+- `pnpm --filter @locnative/react-ui storybook` boots; every component renders; autodocs
   pages populate; a11y addon reports no critical violations on default stories.
 - `build-storybook` produces a static build without errors.
 - With `VITE_DEMO_API_KEY` set, interactive stories return live results; without it, the

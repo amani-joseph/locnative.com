@@ -118,7 +118,7 @@ coverage to evaluating developers.
 - **4.2 Centralize country/region knowledge.** Region codes, postcode patterns,
   country-name display, and address format order are scattered
   (`country-codes.ts`, `parse-freeform-address.ts`, the two `parse-address.ts`,
-  ingest adapters). A single `@wherabouts.com/geo-locale` module would make
+  ingest adapters). A single `@locnative/geo-locale` module would make
   "add a country" a one-file change.
 - **4.3 i18n regression tests.** Add fixtures asserting `formattedAddress` for a
   stateless country (IS/GB) and a stateful one (US/AU) so 1.1 can't regress.

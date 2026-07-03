@@ -1,15 +1,6 @@
-<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="wherabouts icon">
-  <title>wherabouts</title>
-  <!-- Rounded square background -->
-  <rect width="100" height="100" rx="22" fill="#0C0C0C"/>
-  <!-- Origin ring -->
-  <circle cx="14" cy="22" r="8" fill="none" stroke="#FFFFFF" stroke-width="3.5"/>
-  <!-- Simplified W route (5-point, compressed into square) -->
-  <path d="M14,22 L34,76 L50,42 L66,76 L86,22"
-        fill="none" stroke="#FFFFFF" stroke-width="9"
-        stroke-linecap="round" stroke-linejoin="round"
-        stroke-dasharray="12 9"/>
-  <!-- Destination: filled circle + pin tail -->
-  <circle cx="86" cy="22" r="6" fill="#C8C8C8"/>
-  <path d="M80,22 L92,22 L86,36 Z" fill="#C8C8C8"/>
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="locnative icon">
+  <title>locnative icon</title>
+  <rect width="100" height="100" rx="22" fill="#0A0F0D"/>
+  <path d="M22,18 L22,78 L82,78" fill="none" stroke="#EEF5F0" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M52,52 L52,20 L80,50 L80,20" fill="none" stroke="#4EE0A0" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

@@ -4,7 +4,7 @@ const TRIM_DASHES = /^-+|-+$/g;
 /** Format backup codes as downloadable plain text. */
 export function formatBackupCodes(codes: string[]): string {
 	return [
-		"Wherabouts backup codes",
+		"Locnative backup codes",
 		"Keep these somewhere safe. Each code can be used once.",
 		"",
 		...codes,
@@ -14,12 +14,12 @@ export function formatBackupCodes(codes: string[]): string {
 /** Build a filesystem-safe filename for the backup-codes download. */
 export function backupCodesFilename(email: string | null | undefined): string {
 	if (!email) {
-		return "wherabouts-backup-codes.txt";
+		return "locnative-backup-codes.txt";
 	}
 	const slug = email
 		.toLowerCase()
 		.replace("@", "-at-")
 		.replace(NON_FILENAME_CHARS, "-")
 		.replace(TRIM_DASHES, "");
-	return `wherabouts-backup-codes-${slug}.txt`;
+	return `locnative-backup-codes-${slug}.txt`;
 }

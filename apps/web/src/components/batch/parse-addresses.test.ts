@@ -2,6 +2,10 @@
 import { describe, expect, it } from "vitest";
 import { MAX_BATCH, parseAddresses } from "./parse-addresses.ts";
 
+const MAX_BATCH_ERROR_REGEX = /1,?000/;
+const NO_ADDRESSES_ERROR_REGEX = /no addresses/i;
+const MIN_LENGTH_ERROR_REGEX = /at least 5 characters/;
+
 describe("parseAddresses", () => {
 	it("splits newline-separated input and trims", () => {
 		const out = parseAddresses("1 Macquarie St Sydney\n2 George St Sydney\n");
@@ -40,15 +44,15 @@ describe("parseAddresses", () => {
 			{ length: MAX_BATCH + 1 },
 			(_, i) => `address number ${i}`
 		).join("\n");
-		expect(parseAddresses(many).error).toMatch(/1,?000/);
+		expect(parseAddresses(many).error).toMatch(MAX_BATCH_ERROR_REGEX);
 	});
 
 	it("returns an error for empty input", () => {
-		expect(parseAddresses("   ").error).toMatch(/no addresses/i);
+		expect(parseAddresses("   ").error).toMatch(NO_ADDRESSES_ERROR_REGEX);
 	});
 
 	it("returns an error for a line shorter than 5 chars", () => {
 		const out = parseAddresses("1 Macquarie St Sydney\nABC");
-		expect(out.error).toMatch(/at least 5 characters/);
+		expect(out.error).toMatch(MIN_LENGTH_ERROR_REGEX);
 	});
 });

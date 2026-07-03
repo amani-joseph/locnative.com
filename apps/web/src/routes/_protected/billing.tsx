@@ -1,21 +1,21 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Badge } from "@wherabouts.com/ui/components/badge";
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Badge } from "@locnative/ui/components/badge";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
-import { Progress } from "@wherabouts.com/ui/components/progress";
+} from "@locnative/ui/components/card";
+import { Progress } from "@locnative/ui/components/progress";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@wherabouts.com/ui/components/select";
+} from "@locnative/ui/components/select";
+import { createFileRoute } from "@tanstack/react-router";
 import { CreditCardIcon, SparklesIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";

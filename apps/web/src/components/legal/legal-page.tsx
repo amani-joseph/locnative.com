@@ -44,7 +44,7 @@ export function LegalPage({ content }: { content: LegalContent }) {
 						not yet a final or binding agreement. Questions?{" "}
 						<a
 							className="underline underline-offset-4"
-							href="mailto:hello@wherabouts.com"
+							href="mailto:hello@locnative.com"
 						>
 							Contact us
 						</a>

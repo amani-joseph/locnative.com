@@ -1,21 +1,21 @@
-# MCP Server (mcp.wherabouts.com) Implementation Plan
+# MCP Server (mcp.locnative.com) Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ship a public MCP server at `mcp.wherabouts.com` exposing the Wherabouts location API to AI agents as curated tools.
+**Goal:** Ship a public MCP server at `mcp.locnative.com` exposing the Locnative location API to AI agents as curated tools.
 
-**Architecture:** A standalone Cloudflare Worker (`apps/mcp`) using the Agents SDK `McpAgent` (Streamable HTTP, Durable Object session state). Each tool is a thin adapter calling the deployed `api.wherabouts.com` over HTTPS via `@wherabouts/sdk`. Auth is a Wherabouts API key passed as `Authorization: Bearer <key>`; the API's auth, rate-limits, and usage billing stay unchanged.
+**Architecture:** A standalone Cloudflare Worker (`apps/mcp`) using the Agents SDK `McpAgent` (Streamable HTTP, Durable Object session state). Each tool is a thin adapter calling the deployed `api.locnative.com` over HTTPS via `@locnative/sdk`. Auth is a Locnative API key passed as `Authorization: Bearer <key>`; the API's auth, rate-limits, and usage billing stay unchanged.
 
-**Tech Stack:** TypeScript, Cloudflare Workers + `wrangler`, `agents` (McpAgent), `@modelcontextprotocol/sdk`, `@wherabouts/sdk`, `zod` (v4), `vitest` (node environment).
+**Tech Stack:** TypeScript, Cloudflare Workers + `wrangler`, `agents` (McpAgent), `@modelcontextprotocol/sdk`, `@locnative/sdk`, `zod` (v4), `vitest` (node environment).
 
 ## Global Constraints
 
 - **Auth:** API-key only in v1. No OAuth/authorization server. Missing/blank key → `401` before any tool runs.
-- **API access:** Tools call the deployed `api.wherabouts.com` exclusively through `@wherabouts/sdk`. Never re-encode endpoint paths or schemas in this worker.
+- **API access:** Tools call the deployed `api.locnative.com` exclusively through `@locnative/sdk`. Never re-encode endpoint paths or schemas in this worker.
 - **Tool annotations:** read tools set `readOnlyHint: true`; `create_zone`/`update_zone`/`delete_zone` set `destructiveHint: true`, `readOnlyHint: false`. `delete_zone` additionally requires an explicit `confirm: true` argument or it refuses.
 - **Excluded from v1:** batch geocode (submit/poll/results), webhook CRUD, device location push.
-- **Package name:** `@wherabouts.com/mcp`. Depends on `@wherabouts/sdk` via `workspace:*`.
-- **Testing convention (repo):** vitest `environment: "node"`, mock the SDK boundary (a mock `WheraboutsClient`); test pure input→call→output mapping. No worker-pool / DOM renderer.
+- **Package name:** `@locnative/mcp`. Depends on `@locnative/sdk` via `workspace:*`.
+- **Testing convention (repo):** vitest `environment: "node"`, mock the SDK boundary (a mock `LocnativeClient`); test pure input→call→output mapping. No worker-pool / DOM renderer.
 - **zod:** use the workspace catalog (`"zod": "catalog:"`, resolves to ^4.1.13).
 - **Versions:** `compatibility_date: "2026-04-14"`, `compatibility_flags: ["nodejs_compat"]`, package manager `pnpm@10.12.4`.
 
@@ -23,14 +23,14 @@
 
 ```
 apps/mcp/
-  package.json          # @wherabouts.com/mcp, deps, scripts
+  package.json          # @locnative/mcp, deps, scripts
   tsconfig.json         # extends packages/config/tsconfig.base.json
   wrangler.jsonc        # worker + DO binding + migration + custom domain + vars
   vitest.config.ts      # node environment
   README.md             # run/deploy + DNS-AID follow-up
   src/
-    index.ts            # WheraboutsMcp extends McpAgent; auth-injecting fetch; default export
-    client.ts           # buildClient(apiKey, baseUrl) -> WheraboutsClient
+    index.ts            # LocnativeMcp extends McpAgent; auth-injecting fetch; default export
+    client.ts           # buildClient(apiKey, baseUrl) -> LocnativeClient
     errors.ts           # toToolError(err) -> CallToolResult (isError)
     types.ts            # ToolDef type; Props type
     register.ts         # registerTools(server, getClient)
@@ -51,7 +51,7 @@ apps/mcp/
 
 ```ts
 import type { ZodRawShape } from "zod";
-import type { WheraboutsClient } from "@wherabouts/sdk";
+import type { LocnativeClient } from "@locnative/sdk";
 
 export type ToolResult = {
   content: { type: "text"; text: string }[];
@@ -67,7 +67,7 @@ export type ToolDef = {
     destructiveHint?: boolean;
     idempotentHint?: boolean;
   };
-  handler: (client: WheraboutsClient, args: Record<string, unknown>) => Promise<ToolResult>;
+  handler: (client: LocnativeClient, args: Record<string, unknown>) => Promise<ToolResult>;
 };
 
 export type Props = { apiKey: string };
@@ -84,13 +84,13 @@ Each handler returns `ok(data)` (JSON-stringified into a text block). `registerT
 - Test: `apps/mcp/src/index.test.ts`
 
 **Interfaces:**
-- Produces: `WheraboutsMcp` (class extending `McpAgent`), default worker export.
+- Produces: `LocnativeMcp` (class extending `McpAgent`), default worker export.
 
 - [ ] **Step 1: Create `apps/mcp/package.json`**
 
 ```json
 {
-  "name": "@wherabouts.com/mcp",
+  "name": "@locnative/mcp",
   "private": true,
   "type": "module",
   "scripts": {
@@ -102,14 +102,14 @@ Each handler returns `ok(data)` (JSON-stringified into a text block). `registerT
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
-    "@wherabouts/sdk": "workspace:*",
+    "@locnative/sdk": "workspace:*",
     "agents": "^0.2.0",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260416.2",
     "@types/node": "^20",
-    "@wherabouts.com/config": "workspace:*",
+    "@locnative/config": "workspace:*",
     "typescript": "^5",
     "vitest": "^4.1.4",
     "wrangler": "^4.81.1"
@@ -134,17 +134,17 @@ Each handler returns `ok(data)` (JSON-stringified into a text block). `registerT
 ```jsonc
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "wherabouts-mcp",
+  "name": "locnative-mcp",
   "main": "src/index.ts",
   "compatibility_date": "2026-04-14",
   "compatibility_flags": ["nodejs_compat"],
   "dev": { "port": 3005 },
-  "routes": [{ "pattern": "mcp.wherabouts.com", "custom_domain": true }],
-  "vars": { "WHERABOUTS_API_BASE_URL": "https://api.wherabouts.com" },
+  "routes": [{ "pattern": "mcp.locnative.com", "custom_domain": true }],
+  "vars": { "LOCNATIVE_API_BASE_URL": "https://api.locnative.com" },
   "durable_objects": {
-    "bindings": [{ "name": "MCP_OBJECT", "class_name": "WheraboutsMcp" }]
+    "bindings": [{ "name": "MCP_OBJECT", "class_name": "LocnativeMcp" }]
   },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["WheraboutsMcp"] }],
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["LocnativeMcp"] }],
   "observability": { "enabled": true }
 }
 ```
@@ -168,11 +168,11 @@ export default defineConfig({
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { McpAgent } from "agents/mcp";
 
-type Env = { WHERABOUTS_API_BASE_URL: string };
+type Env = { LOCNATIVE_API_BASE_URL: string };
 type Props = { apiKey: string };
 
-export class WheraboutsMcp extends McpAgent<Env, unknown, Props> {
-  server = new McpServer({ name: "wherabouts", version: "0.1.0" });
+export class LocnativeMcp extends McpAgent<Env, unknown, Props> {
+  server = new McpServer({ name: "locnative", version: "0.1.0" });
 
   async init() {
     this.server.registerTool(
@@ -183,24 +183,24 @@ export class WheraboutsMcp extends McpAgent<Env, unknown, Props> {
   }
 }
 
-export default WheraboutsMcp.serve("/mcp", { binding: "MCP_OBJECT" });
+export default LocnativeMcp.serve("/mcp", { binding: "MCP_OBJECT" });
 ```
 
 - [ ] **Step 6: Install deps**
 
 Run: `cd apps/mcp && pnpm install`
-Expected: `agents`, `@modelcontextprotocol/sdk` resolve; `@wherabouts/sdk` linked from workspace.
+Expected: `agents`, `@modelcontextprotocol/sdk` resolve; `@locnative/sdk` linked from workspace.
 
 - [ ] **Step 7: Write the failing test `apps/mcp/src/index.test.ts`**
 
 ```ts
 import { describe, expect, it } from "vitest";
-import { WheraboutsMcp } from "./index.ts";
+import { LocnativeMcp } from "./index.ts";
 
-describe("WheraboutsMcp", () => {
+describe("LocnativeMcp", () => {
   it("exposes a serve() static and an init method", () => {
-    expect(typeof WheraboutsMcp.serve).toBe("function");
-    expect(typeof WheraboutsMcp.prototype.init).toBe("function");
+    expect(typeof LocnativeMcp.serve).toBe("function");
+    expect(typeof LocnativeMcp.prototype.init).toBe("function");
   });
 });
 ```
@@ -219,7 +219,7 @@ Expected: no errors.
 
 ```bash
 git add apps/mcp
-git commit -m "feat(mcp): scaffold mcp.wherabouts.com worker with McpAgent"
+git commit -m "feat(mcp): scaffold mcp.locnative.com worker with McpAgent"
 ```
 
 ---
@@ -231,7 +231,7 @@ git commit -m "feat(mcp): scaffold mcp.wherabouts.com worker with McpAgent"
 - Test: `apps/mcp/src/client.test.ts`
 
 **Interfaces:**
-- Produces: `buildClient(apiKey: string, baseUrl: string): WheraboutsClient`; `ToolDef`, `ToolResult`, `Props` types (see Shared tool contract above).
+- Produces: `buildClient(apiKey: string, baseUrl: string): LocnativeClient`; `ToolDef`, `ToolResult`, `Props` types (see Shared tool contract above).
 
 - [ ] **Step 1: Create `apps/mcp/src/types.ts`**
 
@@ -270,14 +270,14 @@ Expected: FAIL ("buildClient is not a function").
 - [ ] **Step 4: Create `apps/mcp/src/client.ts`**
 
 ```ts
-import { createWheraboutsClient, type WheraboutsClient } from "@wherabouts/sdk";
+import { createLocnativeClient, type LocnativeClient } from "@locnative/sdk";
 
 export const buildClient = (
   apiKey: string,
   baseUrl: string,
   fetchImpl: typeof fetch = fetch
-): WheraboutsClient =>
-  createWheraboutsClient({ apiKey, baseUrl, fetch: fetchImpl });
+): LocnativeClient =>
+  createLocnativeClient({ apiKey, baseUrl, fetch: fetchImpl });
 ```
 
 - [ ] **Step 5: Run test to verify it passes**
@@ -301,13 +301,13 @@ git commit -m "feat(mcp): SDK client builder and tool contract types"
 - Test: `apps/mcp/src/errors.test.ts`
 
 **Interfaces:**
-- Consumes: `WheraboutsApiError`, `isWheraboutsApiError`, `isRateLimitError` from `@wherabouts/sdk`.
+- Consumes: `LocnativeApiError`, `isLocnativeApiError`, `isRateLimitError` from `@locnative/sdk`.
 - Produces: `toToolError(err: unknown): ToolResult`; `ok(data: unknown): ToolResult`.
 
 - [ ] **Step 1: Write failing test `apps/mcp/src/errors.test.ts`**
 
 ```ts
-import { WheraboutsApiError } from "@wherabouts/sdk";
+import { LocnativeApiError } from "@locnative/sdk";
 import { describe, expect, it } from "vitest";
 import { ok, toToolError } from "./errors.ts";
 
@@ -319,7 +319,7 @@ describe("ok", () => {
 
 describe("toToolError", () => {
   const make = (status: number, message: string) =>
-    new WheraboutsApiError(message, { status });
+    new LocnativeApiError(message, { status });
 
   it("maps 429 to a rate-limit message", () => {
     const r = toToolError(make(429, "slow down"));
@@ -351,7 +351,7 @@ Expected: FAIL.
 - [ ] **Step 3: Create `apps/mcp/src/errors.ts`**
 
 ```ts
-import { isWheraboutsApiError } from "@wherabouts/sdk";
+import { isLocnativeApiError } from "@locnative/sdk";
 import type { ToolResult } from "./types.ts";
 
 export const ok = (data: unknown): ToolResult => ({
@@ -364,7 +364,7 @@ const errText = (text: string): ToolResult => ({
 });
 
 export const toToolError = (err: unknown): ToolResult => {
-  if (isWheraboutsApiError(err)) {
+  if (isLocnativeApiError(err)) {
     const msg = err.payload?.message ?? err.message;
     switch (true) {
       case err.status === 400:
@@ -390,13 +390,13 @@ export const toToolError = (err: unknown): ToolResult => {
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `cd apps/mcp && pnpm test --run errors`
-Expected: PASS. (Confirm `WheraboutsApiError`'s constructor signature in `packages/sdk/src/errors.ts`; it takes `(message, { status, code?, payload? })`.)
+Expected: PASS. (Confirm `LocnativeApiError`'s constructor signature in `packages/sdk/src/errors.ts`; it takes `(message, { status, code?, payload? })`.)
 
 - [ ] **Step 5: Commit**
 
 ```bash
 git add apps/mcp/src/errors.ts apps/mcp/src/errors.test.ts
-git commit -m "feat(mcp): map WheraboutsApiError to MCP tool errors"
+git commit -m "feat(mcp): map LocnativeApiError to MCP tool errors"
 ```
 
 ---
@@ -408,7 +408,7 @@ git commit -m "feat(mcp): map WheraboutsApiError to MCP tool errors"
 - Test: `apps/mcp/src/tools/geocoding.test.ts`
 
 **Interfaces:**
-- Consumes: `ToolDef`, `ok`, `buildClient` output (`WheraboutsClient`).
+- Consumes: `ToolDef`, `ok`, `buildClient` output (`LocnativeClient`).
 - Produces: `geocodingTools: ToolDef[]`.
 
 - [ ] **Step 1: Write failing test `apps/mcp/src/tools/geocoding.test.ts`**
@@ -1105,7 +1105,7 @@ Expected: FAIL.
 
 ```ts
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import type { WheraboutsClient } from "@wherabouts/sdk";
+import type { LocnativeClient } from "@locnative/sdk";
 import { toToolError } from "./errors.ts";
 import { deviceTools } from "./tools/devices.ts";
 import { geocodingTools } from "./tools/geocoding.ts";
@@ -1122,7 +1122,7 @@ export const allTools: ToolDef[] = [
 
 export const registerTools = (
   server: McpServer,
-  getClient: () => WheraboutsClient
+  getClient: () => LocnativeClient
 ): void => {
   for (const tool of allTools) {
     server.registerTool(
@@ -1153,14 +1153,14 @@ import { buildClient } from "./client.ts";
 import { registerTools } from "./register.ts";
 import type { Props } from "./types.ts";
 
-type Env = { WHERABOUTS_API_BASE_URL: string };
+type Env = { LOCNATIVE_API_BASE_URL: string };
 
-export class WheraboutsMcp extends McpAgent<Env, unknown, Props> {
-  server = new McpServer({ name: "wherabouts", version: "0.1.0" });
+export class LocnativeMcp extends McpAgent<Env, unknown, Props> {
+  server = new McpServer({ name: "locnative", version: "0.1.0" });
 
   async init() {
     registerTools(this.server, () =>
-      buildClient(this.props.apiKey, this.env.WHERABOUTS_API_BASE_URL)
+      buildClient(this.props.apiKey, this.env.LOCNATIVE_API_BASE_URL)
     );
   }
 }
@@ -1171,7 +1171,7 @@ const extractApiKey = (request: Request): string | null => {
   return request.headers.get("x-api-key")?.trim() || null;
 };
 
-const mcpHandler = WheraboutsMcp.serve("/mcp", { binding: "MCP_OBJECT" });
+const mcpHandler = LocnativeMcp.serve("/mcp", { binding: "MCP_OBJECT" });
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -1225,12 +1225,12 @@ git commit -m "feat(mcp): register all tools and inject API-key auth"
 - [ ] **Step 1: Create `apps/mcp/README.md`**
 
 ````markdown
-# @wherabouts.com/mcp
+# @locnative/mcp
 
-MCP server at `mcp.wherabouts.com` exposing the Wherabouts location API to AI agents.
+MCP server at `mcp.locnative.com` exposing the Locnative location API to AI agents.
 
 ## Auth
-Pass a Wherabouts project API key as `Authorization: Bearer <key>` (or `X-API-Key`).
+Pass a Locnative project API key as `Authorization: Bearer <key>` (or `X-API-Key`).
 
 ## Tools (v1)
 Geocoding/regions: geocode_address, reverse_geocode, autocomplete_address, nearby_addresses, classify_region.
@@ -1243,7 +1243,7 @@ Devices: device_zones.
 
 ## Deploy
 `pnpm deploy` (manual — this repo has no CI/CD). After first deploy, confirm the
-`mcp.wherabouts.com` custom domain is attached in the Cloudflare dashboard.
+`mcp.locnative.com` custom domain is attached in the Cloudflare dashboard.
 
 ## Follow-up (not in this plan)
 - Publish the DNS-AID discovery record pointing at this endpoint + enable DNSSEC
@@ -1263,7 +1263,7 @@ git commit -m "docs(mcp): README and deploy/DNS follow-up notes"
 ## Self-Review
 
 **Spec coverage:**
-- Architecture A (standalone worker, SDK over HTTP, mcp.wherabouts.com) → Tasks 1, 9. ✓
+- Architecture A (standalone worker, SDK over HTTP, mcp.locnative.com) → Tasks 1, 9. ✓
 - API-key auth, 401 before tools → Task 9. ✓
 - 18 tools across geocoding/routing/zones/devices → Tasks 4–8, count asserted in Task 9. ✓
 - Read vs destructive annotations + delete confirm gate → Tasks 4–8 (READ), Task 7 (DESTRUCTIVE + confirm). ✓

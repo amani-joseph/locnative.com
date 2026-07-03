@@ -1,4 +1,4 @@
-import type { WheraboutsClient } from "@wherabouts/sdk";
+import type { LocnativeClient } from "@locnative/sdk";
 import { type MaybeRefOrGetter, ref, toValue, watch } from "vue";
 import { logDevError } from "../utils/dev-log";
 
@@ -15,7 +15,7 @@ export interface GeocodeAddress {
  * stale requests as the query changes.
  */
 export function useForwardGeocode(
-	client: WheraboutsClient,
+	client: LocnativeClient,
 	query: MaybeRefOrGetter<string | null>
 ) {
 	const data = ref<GeocodeAddress | null>(null);

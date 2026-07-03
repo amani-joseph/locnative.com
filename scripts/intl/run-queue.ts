@@ -101,6 +101,7 @@ function startPrefetch(country: string): Promise<void> {
 	});
 }
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: orchestration loop keeps retry/prefetch flow together
 async function main(): Promise<void> {
 	const { db, countries } = parseArgs(process.argv.slice(2));
 	const done = loadedCountries(db);

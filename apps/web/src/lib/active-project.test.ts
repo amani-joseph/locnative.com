@@ -32,6 +32,6 @@ describe("active-project store", () => {
 	it("write then read round-trips via localStorage", () => {
 		writeStoredProjectId("xyz");
 		expect(readStoredProjectId()).toBe("xyz");
-		expect(ACTIVE_PROJECT_STORAGE_KEY).toBe("wherabouts.activeProjectId");
+		expect(ACTIVE_PROJECT_STORAGE_KEY).toBe("locnative.activeProjectId");
 	});
 });

@@ -7,9 +7,9 @@
 // the two routers only differ in how they authenticate and shape responses.
 // ---------------------------------------------------------------------------
 
+import type { Database } from "@locnative/database";
+import { batchGeocodeJobs } from "@locnative/database/schema";
 import { ORPCError } from "@orpc/server";
-import type { Database } from "@wherabouts.com/database";
-import { batchGeocodeJobs } from "@wherabouts.com/database/schema";
 import { and, desc, eq } from "drizzle-orm";
 
 export const MAX_BATCH_ADDRESSES = 1000;

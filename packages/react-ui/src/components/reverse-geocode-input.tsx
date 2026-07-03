@@ -1,13 +1,13 @@
-import { useReverseGeocode } from "@wherabouts/react";
-import type { WheraboutsClient } from "@wherabouts/sdk";
+import { useReverseGeocode } from "@locnative/react";
+import type { LocnativeClient } from "@locnative/sdk";
 import { type ReactNode, useEffect } from "react";
 import { cn } from "../utils/cn";
 
 export interface ReverseGeocodeInputProps {
 	/** Class applied to the input element. */
 	className?: string;
-	/** Required. SDK client created with `createWheraboutsClient`. */
-	client: WheraboutsClient;
+	/** Required. SDK client created with `createLocnativeClient`. */
+	client: LocnativeClient;
 	/** Disable the input. */
 	disabled?: boolean;
 	/** id forwarded to the input element. */

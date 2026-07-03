@@ -4,10 +4,10 @@ import type {
 	DirectionsResponse,
 	IsochroneParams,
 	IsochroneResponse,
+	LocnativeClient,
 	MatrixParams,
 	MatrixResponse,
-	WheraboutsClient,
-} from "@wherabouts/sdk";
+} from "@locnative/sdk";
 import { useEffect, useRef, useState } from "react";
 import { runResource } from "./async-resource.ts";
 
@@ -18,7 +18,7 @@ export interface RoutingResourceResult<T> {
 }
 
 type RoutingCall<P, R> = (
-	client: WheraboutsClient,
+	client: LocnativeClient,
 	params: P,
 	options: CallOptions
 ) => Promise<R>;
@@ -29,7 +29,7 @@ type RoutingCall<P, R> = (
  * `{ data, loading, error }`. Pass `null` params to stay idle.
  */
 function useRoutingResource<P, R>(
-	client: WheraboutsClient,
+	client: LocnativeClient,
 	params: P | null,
 	call: RoutingCall<P, R>
 ): RoutingResourceResult<R> {
@@ -95,7 +95,7 @@ const isochroneCall: RoutingCall<IsochroneParams, IsochroneResponse> = (
 
 /** Fetch turn-by-turn directions; pass `null` to stay idle. */
 export function useDirections(
-	client: WheraboutsClient,
+	client: LocnativeClient,
 	params: DirectionsParams | null
 ): RoutingResourceResult<DirectionsResponse> {
 	return useRoutingResource(client, params, directionsCall);
@@ -103,7 +103,7 @@ export function useDirections(
 
 /** Fetch a duration/distance matrix; pass `null` to stay idle. */
 export function useMatrix(
-	client: WheraboutsClient,
+	client: LocnativeClient,
 	params: MatrixParams | null
 ): RoutingResourceResult<MatrixResponse> {
 	return useRoutingResource(client, params, matrixCall);
@@ -111,7 +111,7 @@ export function useMatrix(
 
 /** Fetch an isochrone polygon; pass `null` to stay idle. */
 export function useIsochrone(
-	client: WheraboutsClient,
+	client: LocnativeClient,
 	params: IsochroneParams | null
 ): RoutingResourceResult<IsochroneResponse> {
 	return useRoutingResource(client, params, isochroneCall);

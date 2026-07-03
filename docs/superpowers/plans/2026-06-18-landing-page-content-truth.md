@@ -32,7 +32,7 @@ Spec: `docs/superpowers/specs/2026-06-18-landing-page-content-truth-design.md`
 - `apps/web/src/routes/index.tsx` — compose new sections.
 - `apps/web/src/components/shadcn-space/blocks/hero-15/hero.tsx` — subtitle, badge, restore CTAs.
 - `apps/web/src/components/shadcn-space/blocks/hero-15/index.tsx` — nav data.
-- `apps/web/src/components/shadcn-space/blocks/integration-01/integration.tsx` — orbit logos → Wherabouts surfaces.
+- `apps/web/src/components/shadcn-space/blocks/integration-01/integration.tsx` — orbit logos → Locnative surfaces.
 - `apps/web/src/components/shadcn-space/blocks/feature-15/feature.tsx` — remove placeholder image, intl copy.
 - `apps/web/src/components/shadcn-space/blocks/footer-02/footer.tsx` — fix links, remove newsletter form.
 
@@ -616,7 +616,7 @@ git commit -m "feat(landing): expand hero copy and restore working CTAs"
 
 ---
 
-## Task 6: Integration — replace orbit logos with Wherabouts surfaces
+## Task 6: Integration — replace orbit logos with Locnative surfaces
 
 **Files:**
 - Modify: `apps/web/src/components/shadcn-space/blocks/integration-01/integration.tsx`
@@ -638,10 +638,10 @@ import {
 
 - [ ] **Step 2: Update the intro copy to international positioning**
 
-Find the paragraph beginning `Call Wherabouts from your backend or edge with plain REST` and replace its text with:
+Find the paragraph beginning `Call Locnative from your backend or edge with plain REST` and replace its text with:
 
 ```tsx
-							Call Wherabouts from your backend or edge with plain REST—no
+							Call Locnative from your backend or edge with plain REST—no
 							embedded map SDK required to validate an address, power
 							autocomplete, or geocode a signup. US and Australia are at the
 							core, with coverage expanding across Europe, South America, Africa,
@@ -659,7 +659,7 @@ Find the array literal passed to `.map((orbit, orbitIndex) => {` (the three obje
 						duration: 18,
 						icons: [
 							{ icon: Terminal, alt: "REST API", angle: -60 },
-							{ icon: Package, alt: "@wherabouts/sdk", angle: 0 },
+							{ icon: Package, alt: "@locnative/sdk", angle: 0 },
 							{ icon: Webhook, alt: "Webhooks", angle: 60 },
 						],
 					},
@@ -707,7 +707,7 @@ Expected: no errors; build succeeds.
 
 ```bash
 git add apps/web/src/components/shadcn-space/blocks/integration-01/integration.tsx
-git commit -m "feat(landing): replace orbit brand logos with Wherabouts surfaces"
+git commit -m "feat(landing): replace orbit brand logos with Locnative surfaces"
 ```
 
 ---
@@ -801,7 +801,7 @@ Find:
 			{ label: "Privacy", href: "#" },
 			{ label: "Terms", href: "#" },
 			{ label: "Security", href: "#" },
-			{ label: "Contact", href: "mailto:hello@wherabouts.com" },
+			{ label: "Contact", href: "mailto:hello@locnative.com" },
 		];
 ```
 
@@ -815,7 +815,7 @@ Replace with:
 		];
 		const footerLinksLegal = [
 			{ label: "Pricing", href: "/pricing" },
-			{ label: "Contact", href: "mailto:hello@wherabouts.com" },
+			{ label: "Contact", href: "mailto:hello@locnative.com" },
 		];
 ```
 
@@ -900,7 +900,7 @@ const navigationData: NavigationSection[] = [
 		href: "/dashboard",
 	},
 	{
-		name: "Why Wherabouts",
+		name: "Why Locnative",
 		href: "#why",
 		isActive: true,
 	},

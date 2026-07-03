@@ -5,14 +5,14 @@ import {
 	computeBlocked,
 	getOrCreateBillingAccount,
 	utcMonthStart,
-} from "@wherabouts.com/api/billing/account";
+} from "@locnative/api/billing/account";
 import {
 	increment as incrementMeter,
 	type MeterState,
 	peek as peekMeter,
-} from "@wherabouts.com/api/billing/meter-core";
-import { db } from "@wherabouts.com/api/db";
-import { billingAccounts } from "@wherabouts.com/database";
+} from "@locnative/api/billing/meter-core";
+import { db } from "@locnative/api/db";
+import { billingAccounts } from "@locnative/database";
 import { eq } from "drizzle-orm";
 
 const STORAGE_KEY = "meter";

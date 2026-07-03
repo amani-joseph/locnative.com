@@ -1,4 +1,4 @@
-import type { GeoJsonPolygon } from "@wherabouts.com/api/routers/public/zones-schema";
+import type { GeoJsonPolygon } from "@locnative/api/routers/public/zones-schema";
 import { describe, expect, it } from "vitest";
 import {
 	closeRing,

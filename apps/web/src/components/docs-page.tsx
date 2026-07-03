@@ -1,15 +1,14 @@
 "use client";
 
-import { Link } from "@tanstack/react-router";
-import { Badge } from "@wherabouts.com/ui/components/badge";
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Badge } from "@locnative/ui/components/badge";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
+} from "@locnative/ui/components/card";
 import {
 	Sidebar,
 	SidebarContent,
@@ -24,14 +23,15 @@ import {
 	SidebarProvider,
 	SidebarRail,
 	SidebarTrigger,
-} from "@wherabouts.com/ui/components/sidebar";
+} from "@locnative/ui/components/sidebar";
 import {
 	Tabs,
 	TabsContent,
 	TabsList,
 	TabsTrigger,
-} from "@wherabouts.com/ui/components/tabs";
-import { cn } from "@wherabouts.com/ui/lib/utils";
+} from "@locnative/ui/components/tabs";
+import { cn } from "@locnative/ui/lib/utils";
+import { Link } from "@tanstack/react-router";
 import {
 	AlertTriangleIcon,
 	ArrowRightIcon,
@@ -170,10 +170,10 @@ const docsNavGroups: DocsSectionGroup[] = [
 ];
 
 const quickstartCode = {
-	curl: `curl "https://api.wherabouts.com/api/v1/addresses/autocomplete?q=123+Main+St&country=US" \\
+	curl: `curl "https://api.locnative.com/api/v1/addresses/autocomplete?q=123+Main+St&country=US" \\
   -H "Authorization: Bearer wh_live_your_api_key"`,
 	javascript: `const response = await fetch(
-  "https://api.wherabouts.com/api/v1/addresses/autocomplete?q=123+Main+St&country=US",
+  "https://api.locnative.com/api/v1/addresses/autocomplete?q=123+Main+St&country=US",
   {
     headers: {
       Authorization: "Bearer wh_live_your_api_key",
@@ -186,10 +186,10 @@ if (!response.ok) {
 }
 
 const payload = await response.json();`,
-	sdk: `import { createWheraboutsClient } from "@wherabouts/sdk";
+	sdk: `import { createLocnativeClient } from "@locnative/sdk";
 
-const client = createWheraboutsClient({
-  apiKey: process.env.WHERABOUTS_API_KEY!,
+const client = createLocnativeClient({
+  apiKey: process.env.LOCNATIVE_API_KEY!,
 });
 
 const payload = await client.addresses.autocomplete({
@@ -200,7 +200,7 @@ const payload = await client.addresses.autocomplete({
 	python: `import requests
 
 response = requests.get(
-    "https://api.wherabouts.com/api/v1/addresses/autocomplete",
+    "https://api.locnative.com/api/v1/addresses/autocomplete",
     params={"q": "123 Main St", "country": "US"},
     headers={"Authorization": "Bearer wh_live_your_api_key"},
     timeout=10,
@@ -980,7 +980,7 @@ const endpointDocs: EndpointDoc[] = [
 		exampleResponse: `{
   "id": "wh_01HX9AB",
   "projectId": "proj_abc",
-  "url": "https://your-app.example.com/webhooks/wherabouts",
+  "url": "https://your-app.example.com/webhooks/locnative",
   "events": ["zone.enter", "zone.exit"],
   "signingSecret": "whsec_abc123xyz",
   "createdAt": "2026-06-05T00:00:00.000Z"
@@ -1010,7 +1010,7 @@ const endpointDocs: EndpointDoc[] = [
   "webhooks": [
     {
       "id": "wh_01HX9AB",
-      "url": "https://your-app.example.com/webhooks/wherabouts",
+      "url": "https://your-app.example.com/webhooks/locnative",
       "events": ["zone.enter", "zone.exit"],
       "status": "active",
       "createdAt": "2026-06-05T00:00:00.000Z"
@@ -1074,7 +1074,7 @@ const endpointDocs: EndpointDoc[] = [
 		notes: [
 			"Outside Australia the `regions` object is empty — not a `404`.",
 			"Use the `layers` parameter to limit the response to only the layers you need.",
-			'curl example: curl "https://api.wherabouts.com/api/v1/regions?lat=-37.8136&lng=144.9631" -H "Authorization: Bearer YOUR_API_KEY"',
+			'curl example: curl "https://api.locnative.com/api/v1/regions?lat=-37.8136&lng=144.9631" -H "Authorization: Bearer YOUR_API_KEY"',
 		],
 		exampleResponse: `{
   "query": { "lat": -37.8136, "lng": 144.9631 },
@@ -1229,13 +1229,13 @@ const reactComponents: ComponentDoc[] = [
 		name: "AddressAutocomplete",
 		href: "#react-address-autocomplete",
 		summary:
-			"Accessible (WAI-ARIA combobox) debounced address search with keyboard navigation, proximity bias, session tokens, i18n strings, and customizable render slots. Provide a client created with createWheraboutsClient.",
-		example: `import { createWheraboutsClient } from "@wherabouts/sdk";
-import { AddressAutocomplete } from "@wherabouts/react-ui";
-import "@wherabouts/react-ui/styles.css";
+			"Accessible (WAI-ARIA combobox) debounced address search with keyboard navigation, proximity bias, session tokens, i18n strings, and customizable render slots. Provide a client created with createLocnativeClient.",
+		example: `import { createLocnativeClient } from "@locnative/sdk";
+import { AddressAutocomplete } from "@locnative/react-ui";
+import "@locnative/react-ui/styles.css";
 
-const client = createWheraboutsClient({
-  apiKey: import.meta.env.VITE_WHERABOUTS_KEY,
+const client = createLocnativeClient({
+  apiKey: import.meta.env.VITE_LOCNATIVE_KEY,
 });
 
 export function Checkout() {
@@ -1250,9 +1250,9 @@ export function Checkout() {
 		props: [
 			{
 				name: "client",
-				type: "WheraboutsClient",
+				type: "LocnativeClient",
 				required: true,
-				description: "SDK client created with createWheraboutsClient.",
+				description: "SDK client created with createLocnativeClient.",
 			},
 			{
 				name: "onSelect",
@@ -1326,7 +1326,7 @@ export function Checkout() {
 			{
 				name: "id",
 				type: "string",
-				default: '"wherabouts-autocomplete"',
+				default: '"locnative-autocomplete"',
 				description: "id forwarded to the input element.",
 			},
 			{
@@ -1366,12 +1366,12 @@ export function Checkout() {
 		href: "#react-address-form-field",
 		summary:
 			"AddressAutocomplete wrapped with a <label> and error styling — a drop-in form field. Accepts every AddressAutocomplete prop plus the fields below.",
-		example: `import { createWheraboutsClient } from "@wherabouts/sdk";
-import { AddressFormField } from "@wherabouts/react-ui";
-import "@wherabouts/react-ui/styles.css";
+		example: `import { createLocnativeClient } from "@locnative/sdk";
+import { AddressFormField } from "@locnative/react-ui";
+import "@locnative/react-ui/styles.css";
 
-const client = createWheraboutsClient({
-  apiKey: import.meta.env.VITE_WHERABOUTS_KEY,
+const client = createLocnativeClient({
+  apiKey: import.meta.env.VITE_LOCNATIVE_KEY,
 });
 
 export function Checkout() {
@@ -1416,13 +1416,13 @@ export function Checkout() {
 		summary:
 			"A controlled group of structured inputs (street, suburb, state, postcode) for editing a full address. Provide value and onChange.",
 		example: `import { useState } from "react";
-import { createWheraboutsClient } from "@wherabouts/sdk";
+import { createLocnativeClient } from "@locnative/sdk";
 import {
   AddressFieldGroup,
   type AddressFieldGroupValue,
-} from "@wherabouts/react-ui";
+} from "@locnative/react-ui";
 
-const client = createWheraboutsClient({ apiKey: "..." });
+const client = createLocnativeClient({ apiKey: "..." });
 
 const EMPTY: AddressFieldGroupValue = {
   street: "",
@@ -1441,9 +1441,9 @@ function MyForm() {
 		props: [
 			{
 				name: "client",
-				type: "WheraboutsClient",
+				type: "LocnativeClient",
 				required: true,
-				description: "SDK client created with createWheraboutsClient.",
+				description: "SDK client created with createLocnativeClient.",
 			},
 			{
 				name: "value",
@@ -1500,10 +1500,10 @@ function MyForm() {
 		href: "#react-forward-geocode",
 		summary:
 			"Resolves a free-text address string to coordinates (forward geocoding) as the query prop changes. Controlled: the parent owns query and receives results via onResult. Renders a read-only display of the resolved latitude, longitude pair.",
-		example: `import { createWheraboutsClient } from "@wherabouts/sdk";
-import { ForwardGeocodeInput } from "@wherabouts/react-ui";
+		example: `import { createLocnativeClient } from "@locnative/sdk";
+import { ForwardGeocodeInput } from "@locnative/react-ui";
 
-const client = createWheraboutsClient({ apiKey: "..." });
+const client = createLocnativeClient({ apiKey: "..." });
 
 function MyComponent() {
   const [query, setQuery] = React.useState("");
@@ -1522,9 +1522,9 @@ function MyComponent() {
 		props: [
 			{
 				name: "client",
-				type: "WheraboutsClient",
+				type: "LocnativeClient",
 				required: true,
-				description: "SDK client created with createWheraboutsClient.",
+				description: "SDK client created with createLocnativeClient.",
 			},
 			{
 				name: "query",
@@ -1568,10 +1568,10 @@ function MyComponent() {
 		href: "#react-reverse-geocode",
 		summary:
 			"Resolves a latitude/longitude pair to the nearest address (reverse geocoding). No request is made until both coordinates are non-null.",
-		example: `import { createWheraboutsClient } from "@wherabouts/sdk";
-import { ReverseGeocodeInput } from "@wherabouts/react-ui";
+		example: `import { createLocnativeClient } from "@locnative/sdk";
+import { ReverseGeocodeInput } from "@locnative/react-ui";
 
-const client = createWheraboutsClient({ apiKey: "..." });
+const client = createLocnativeClient({ apiKey: "..." });
 
 function MyComponent() {
   const [coords, setCoords] = React.useState<{
@@ -1591,9 +1591,9 @@ function MyComponent() {
 		props: [
 			{
 				name: "client",
-				type: "WheraboutsClient",
+				type: "LocnativeClient",
 				required: true,
-				description: "SDK client created with createWheraboutsClient.",
+				description: "SDK client created with createLocnativeClient.",
 			},
 			{
 				name: "latitude",
@@ -1768,7 +1768,7 @@ export function DocsPage() {
 						<SidebarMenuItem>
 							<SidebarMenuButton render={docsRouteRender("/")}>
 								<LogoIcon />
-								<span className="font-medium text-foreground">Wherabouts</span>
+								<span className="font-medium text-foreground">Locnative</span>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 					</SidebarMenu>
@@ -1861,7 +1861,7 @@ export function DocsPage() {
 											integration quickly.
 										</h1>
 										<p className="max-w-3xl text-base text-muted-foreground leading-7">
-											Wherabouts gives you a clean HTTP interface for address
+											Locnative gives you a clean HTTP interface for address
 											autocomplete, reverse geocoding, nearby lookup, and
 											canonical address retrieval. This page is the opinionated
 											path through the API: what to call first, how
@@ -1945,7 +1945,7 @@ export function DocsPage() {
 
 							<section className="space-y-6" id="quickstart">
 								<SectionHeading
-									description="If you are integrating Wherabouts for the first time, start with autocomplete. It exercises the authentication path, the public API hostname, and the response envelope you will see across the address search surface."
+									description="If you are integrating Locnative for the first time, start with autocomplete. It exercises the authentication path, the public API hostname, and the response envelope you will see across the address search surface."
 									eyebrow="First request"
 									id="quickstart"
 									title="Quickstart"
@@ -2023,7 +2023,7 @@ export function DocsPage() {
 										</CardHeader>
 										<CardContent className="space-y-3">
 											<code className="block break-all rounded bg-muted px-3 py-2 font-mono text-sm">
-												https://api.wherabouts.com/api/openapi.json
+												https://api.locnative.com/api/openapi.json
 											</code>
 											<p className="text-muted-foreground text-sm leading-6">
 												Use this document for SDK generation, contract reviews,
@@ -2090,12 +2090,12 @@ export function DocsPage() {
 										</CardHeader>
 										<CardContent className="space-y-3">
 											<code className="block break-all rounded bg-muted px-3 py-2 font-mono text-sm">
-												@wherabouts/sdk
+												@locnative/sdk
 											</code>
 											<p className="text-muted-foreground text-sm leading-6">
-												It exposes a single `createWheraboutsClient()`
+												It exposes a single `createLocnativeClient()`
 												entrypoint, stable response types for the public address
-												API, and a normalized `WheraboutsApiError` for non-`2xx`
+												API, and a normalized `LocnativeApiError` for non-`2xx`
 												failures.
 											</p>
 										</CardContent>
@@ -2218,7 +2218,7 @@ export function DocsPage() {
 									</p>
 									<div className="space-y-2">
 										<h2 className="font-semibold text-2xl tracking-tight">
-											@wherabouts/react-ui
+											@locnative/react-ui
 										</h2>
 										<p className="max-w-3xl text-base text-muted-foreground leading-7">
 											Production-ready React components for address
@@ -2236,12 +2236,12 @@ export function DocsPage() {
 								</div>
 
 								<CodeBlock
-									code={"npm install @wherabouts/react-ui @wherabouts/sdk"}
+									code={"npm install @locnative/react-ui @locnative/sdk"}
 									label="Install"
 								/>
 								<CodeBlock
 									code={
-										'// Import the stylesheet once, near your app root\nimport "@wherabouts/react-ui/styles.css";'
+										'// Import the stylesheet once, near your app root\nimport "@locnative/react-ui/styles.css";'
 									}
 									label="Stylesheet"
 								/>
@@ -2283,7 +2283,7 @@ export function DocsPage() {
 									</p>
 									<div className="space-y-2">
 										<h2 className="font-semibold text-2xl tracking-tight">
-											@wherabouts/vue-ui
+											@locnative/vue-ui
 										</h2>
 										<p className="max-w-3xl text-base text-muted-foreground leading-7">
 											The Vue 3 counterpart to react-ui — the same address
@@ -2315,7 +2315,7 @@ export function DocsPage() {
 								</div>
 
 								<CodeBlock
-									code={"npm install @wherabouts/vue-ui @wherabouts/sdk"}
+									code={"npm install @locnative/vue-ui @locnative/sdk"}
 									label="Install"
 								/>
 							</section>
@@ -2333,7 +2333,7 @@ export function DocsPage() {
 
 								<CodeBlock
 									code={
-										'import {\n  toAddressWithParsed,\n  cn,\n  type AddressWithParsed,\n  type AddressI18nStrings,\n  type AddressSuggestionInput,\n} from "@wherabouts/vue-ui";'
+										'import {\n  toAddressWithParsed,\n  cn,\n  type AddressWithParsed,\n  type AddressI18nStrings,\n  type AddressSuggestionInput,\n} from "@locnative/vue-ui";'
 									}
 									label="Exports"
 								/>
@@ -2382,15 +2382,14 @@ export function DocsPage() {
 									</div>
 									<p className="max-w-3xl text-base text-muted-foreground leading-7">
 										The Vue 3 SFC components mirror their react-ui counterparts.
-										Each takes a client created with createWheraboutsClient.
-										This is the intended API; the components are not yet
-										exported.
+										Each takes a client created with createLocnativeClient. This
+										is the intended API; the components are not yet exported.
 									</p>
 								</div>
 
 								<CodeBlock
 									code={
-										'<script setup lang="ts">\nimport { createWheraboutsClient } from "@wherabouts/sdk";\nimport { AddressAutocomplete } from "@wherabouts/vue-ui";\nimport "@wherabouts/vue-ui/styles.css";\n\nconst client = createWheraboutsClient({\n  apiKey: import.meta.env.VITE_WHERABOUTS_KEY,\n});\n\nfunction onSelect(address) {\n  console.log(address.formattedAddress, address.latitude);\n}\n</script>\n\n<template>\n  <AddressAutocomplete :client="client" @select="onSelect" />\n</template>'
+										'<script setup lang="ts">\nimport { createLocnativeClient } from "@locnative/sdk";\nimport { AddressAutocomplete } from "@locnative/vue-ui";\nimport "@locnative/vue-ui/styles.css";\n\nconst client = createLocnativeClient({\n  apiKey: import.meta.env.VITE_LOCNATIVE_KEY,\n});\n\nfunction onSelect(address) {\n  console.log(address.formattedAddress, address.latitude);\n}\n</script>\n\n<template>\n  <AddressAutocomplete :client="client" @select="onSelect" />\n</template>'
 									}
 									label="Preview (Phase 2)"
 								/>
@@ -2541,7 +2540,7 @@ export function DocsPage() {
 
 									<CodeBlock
 										code={`// Step 1 — submit
-const { jobId } = await fetch("https://api.wherabouts.com/api/v1/geocode/batch", {
+const { jobId } = await fetch("https://api.locnative.com/api/v1/geocode/batch", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
@@ -2554,7 +2553,7 @@ const { jobId } = await fetch("https://api.wherabouts.com/api/v1/geocode/batch",
 let status = "pending";
 while (status !== "completed" && status !== "failed") {
   await new Promise((resolve) => setTimeout(resolve, 2000));
-  const poll = await fetch(\`https://api.wherabouts.com/api/v1/geocode/batch/\${jobId}\`, {
+  const poll = await fetch(\`https://api.locnative.com/api/v1/geocode/batch/\${jobId}\`, {
     headers: { "X-API-Key": "wh_live_your_api_key" },
   }).then((r) => r.json());
   status = poll.status;
@@ -2562,7 +2561,7 @@ while (status !== "completed" && status !== "failed") {
 
 // Step 3 — fetch results
 const { results } = await fetch(
-  \`https://api.wherabouts.com/api/v1/geocode/batch/\${jobId}/results\`,
+  \`https://api.locnative.com/api/v1/geocode/batch/\${jobId}/results\`,
   { headers: { "X-API-Key": "wh_live_your_api_key" } }
 ).then((r) => r.json());`}
 										label="Batch lifecycle (JavaScript)"
@@ -2572,7 +2571,7 @@ const { results } = await fetch(
 
 							<section className="scroll-mt-24 space-y-6" id="webhook-delivery">
 								<SectionHeading
-									description="Wherabouts delivers webhook events by POSTing to your subscription URL when a device crosses a zone boundary. Use the HMAC signature to verify authenticity."
+									description="Locnative delivers webhook events by POSTing to your subscription URL when a device crosses a zone boundary. Use the HMAC signature to verify authenticity."
 									eyebrow="Webhook delivery"
 									id="webhook-delivery"
 									title="Webhook delivery and HMAC verification"
@@ -2588,7 +2587,7 @@ const { results } = await fetch(
 											</CardHeader>
 											<CardContent className="space-y-3">
 												<p className="text-muted-foreground text-sm leading-6">
-													On a zone boundary crossing, Wherabouts sends a signed
+													On a zone boundary crossing, Locnative sends a signed
 													POST to your subscription URL with a JSON body:
 												</p>
 												<CodeBlock
@@ -2610,9 +2609,9 @@ const { results } = await fetch(
 											</CardHeader>
 											<CardContent className="space-y-3">
 												<p className="text-muted-foreground text-sm leading-6">
-													Wherabouts retries failed deliveries up to 3 times
-													with exponential backoff. After 3 consecutive failures
-													the subscription is marked{" "}
+													Locnative retries failed deliveries up to 3 times with
+													exponential backoff. After 3 consecutive failures the
+													subscription is marked{" "}
 													<code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
 														failing
 													</code>{" "}
@@ -2639,7 +2638,7 @@ const { results } = await fetch(
 											<CardDescription>
 												Every delivery includes an{" "}
 												<code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
-													X-Wherabouts-Signature: hmac-sha256={"<hex>"}
+													X-Locnative-Signature: hmac-sha256={"<hex>"}
 												</code>{" "}
 												header. Verify it using the <code>signingSecret</code>{" "}
 												shown once at webhook creation time.
@@ -2663,7 +2662,7 @@ function verifyWebhookSignature(
 
 // In your Express / TanStack Start handler:
 const rawBody = await request.text();
-const sig = request.headers.get("x-wherabouts-signature") ?? "";
+const sig = request.headers.get("x-locnative-signature") ?? "";
 if (!verifyWebhookSignature(rawBody, sig, process.env.WEBHOOK_SECRET!)) {
   return new Response("Unauthorized", { status: 401 });
 }
@@ -2801,7 +2800,7 @@ const payload = JSON.parse(rawBody);`}
 										</CardHeader>
 										<CardContent className="space-y-3">
 											<code className="block break-all rounded bg-muted px-3 py-2 font-mono text-sm">
-												https://api.wherabouts.com/api/health
+												https://api.locnative.com/api/health
 											</code>
 											<p className="text-muted-foreground text-sm leading-6">
 												The health response includes the published platform SLO

@@ -15,7 +15,7 @@
 - Use the `@/` path alias for intra-app imports inside route files. For the relative import of one lib helper from another lib helper, use `./name.ts` with the `.ts` extension (repo convention for server-adjacent lib files).
 - No new npm dependencies.
 - No `console.log`/`debugger` statements.
-- `SITE_URL` is exactly `https://wherabouts.com` (no trailing slash). The default OG image is exactly `/brand/png/og-image-1200x630.png` (it already exists in `apps/web/public/brand/png/` — do NOT generate a new image).
+- `SITE_URL` is exactly `https://locnative.com` (no trailing slash). The default OG image is exactly `/brand/png/og-image-1200x630.png` (it already exists in `apps/web/public/brand/png/` — do NOT generate a new image).
 - This work is isolated in the `seo-landing-docs` worktree. Do NOT modify any file in the shared main checkout. Stage only the files each task names with explicit `git add <path>` — never `git add -A` or `git commit -a`.
 - Ultracite enforces `lint/performance/useTopLevelRegex`: any regex literal used in a test MUST be a module-scope `const`, never inline in an `it()` block.
 - This app lives in `apps/web`; run vitest from inside `apps/web` (e.g. `cd apps/web && pnpm exec vitest run <path>`).
@@ -30,7 +30,7 @@
 
 **Interfaces:**
 - Produces (consumed by Tasks 3, 4, 5):
-  - `SITE_URL = "https://wherabouts.com"`, `SITE_NAME = "Wherabouts"`, `DEFAULT_OG_IMAGE = "/brand/png/og-image-1200x630.png"` (string consts).
+  - `SITE_URL = "https://locnative.com"`, `SITE_NAME = "Locnative"`, `DEFAULT_OG_IMAGE = "/brand/png/og-image-1200x630.png"` (string consts).
   - `absoluteUrl(pathPrefixOrUrl: string): string`
   - `type SeoMetaTag = Record<string, string>`
   - `type SeoLinkTag = Record<string, string>`
@@ -135,8 +135,8 @@ Expected: FAIL with "Cannot find module './seo.ts'"
 
 ```ts
 // apps/web/src/lib/seo.ts
-export const SITE_URL = "https://wherabouts.com";
-export const SITE_NAME = "Wherabouts";
+export const SITE_URL = "https://locnative.com";
+export const SITE_NAME = "Locnative";
 export const DEFAULT_OG_IMAGE = "/brand/png/og-image-1200x630.png";
 
 export type SeoMetaTag = Record<string, string>;
@@ -209,7 +209,7 @@ Expected: PASS (all cases)
 - [ ] **Step 5: Lint and commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/.claude/worktrees/seo-landing-docs
+cd /Users/mac/Developer/projects/locnative.com/.claude/worktrees/seo-landing-docs
 pnpm dlx ultracite fix apps/web/src/lib/seo.ts apps/web/src/lib/seo.test.ts
 pnpm dlx ultracite check apps/web/src/lib/seo.ts apps/web/src/lib/seo.test.ts
 git add apps/web/src/lib/seo.ts apps/web/src/lib/seo.test.ts
@@ -284,7 +284,7 @@ describe("techArticleJsonLd", () => {
 		});
 		expect(a["@type"]).toBe("TechArticle");
 		expect(a.headline).toBe("Docs");
-		expect(String(a.url).startsWith("https://wherabouts.com/")).toBe(true);
+		expect(String(a.url).startsWith("https://locnative.com/")).toBe(true);
 	});
 });
 
@@ -421,7 +421,7 @@ Expected: PASS (all cases)
 - [ ] **Step 5: Lint and commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/.claude/worktrees/seo-landing-docs
+cd /Users/mac/Developer/projects/locnative.com/.claude/worktrees/seo-landing-docs
 pnpm dlx ultracite fix apps/web/src/lib/structured-data.ts apps/web/src/lib/structured-data.test.ts
 pnpm dlx ultracite check apps/web/src/lib/structured-data.ts apps/web/src/lib/structured-data.test.ts
 git add apps/web/src/lib/structured-data.ts apps/web/src/lib/structured-data.test.ts
@@ -469,7 +469,7 @@ In the `head: () => ({ ... })` option, keep the existing `charSet`, `viewport`, 
 					"width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover",
 			},
 			{
-				title: "Wherabouts — Locations API for developers",
+				title: "Locnative — Locations API for developers",
 			},
 			{
 				name: "description",
@@ -513,7 +513,7 @@ In the `head: () => ({ ... })` option, keep the existing `charSet`, `viewport`, 
 
 Run:
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/.claude/worktrees/seo-landing-docs
+cd /Users/mac/Developer/projects/locnative.com/.claude/worktrees/seo-landing-docs
 pnpm dlx ultracite fix apps/web/src/routes/__root.tsx
 pnpm dlx ultracite check apps/web/src/routes/__root.tsx
 cd apps/web && pnpm exec tsc --noEmit
@@ -523,7 +523,7 @@ Expected: lint clean; typecheck passes (the `head()` return now includes `script
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/.claude/worktrees/seo-landing-docs
+cd /Users/mac/Developer/projects/locnative.com/.claude/worktrees/seo-landing-docs
 git add apps/web/src/routes/__root.tsx
 git commit -m "feat(seo): add site-wide meta defaults and Organization JSON-LD"
 ```
@@ -562,7 +562,7 @@ export const Route = createFileRoute("/")({
 	head: () => {
 		const seo = buildSeo({
 			title:
-				"Geocoding, Geofencing & Routing APIs for Developers | Wherabouts",
+				"Geocoding, Geofencing & Routing APIs for Developers | Locnative",
 			description:
 				"Production-ready location APIs — address autocomplete, geocoding, geofencing, routing, and device tracking. Ship location features fast with US & Australia coverage.",
 			path: "/",
@@ -586,7 +586,7 @@ Keep the existing component imports and `HomeComponent` exactly as they are. Pla
 
 Run:
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/.claude/worktrees/seo-landing-docs
+cd /Users/mac/Developer/projects/locnative.com/.claude/worktrees/seo-landing-docs
 pnpm dlx ultracite fix apps/web/src/routes/index.tsx
 pnpm dlx ultracite check apps/web/src/routes/index.tsx
 cd apps/web && pnpm exec tsc --noEmit
@@ -596,7 +596,7 @@ Expected: lint clean; typecheck passes.
 - [ ] **Step 3: Commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/.claude/worktrees/seo-landing-docs
+cd /Users/mac/Developer/projects/locnative.com/.claude/worktrees/seo-landing-docs
 git add apps/web/src/routes/index.tsx
 git commit -m "feat(seo): add landing-page title, description, OG, and SoftwareApplication JSON-LD"
 ```
@@ -633,9 +633,9 @@ import {
 } from "@/lib/structured-data";
 
 const DOCS_TITLE =
-	"API Documentation — Geocoding & Address Autocomplete | Wherabouts";
+	"API Documentation — Geocoding & Address Autocomplete | Locnative";
 const DOCS_DESCRIPTION =
-	"Developer docs for the Wherabouts location API: address autocomplete, reverse geocoding, nearby lookup, and canonical address retrieval with API-key auth.";
+	"Developer docs for the Locnative location API: address autocomplete, reverse geocoding, nearby lookup, and canonical address retrieval with API-key auth.";
 
 export const Route = createFileRoute("/docs")({
 	head: () => {
@@ -675,7 +675,7 @@ Keep the existing `DocsPage` import and `RouteComponent` exactly as they are.
 
 Run:
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/.claude/worktrees/seo-landing-docs
+cd /Users/mac/Developer/projects/locnative.com/.claude/worktrees/seo-landing-docs
 pnpm dlx ultracite fix apps/web/src/routes/docs.tsx
 pnpm dlx ultracite check apps/web/src/routes/docs.tsx
 cd apps/web && pnpm exec tsc --noEmit
@@ -685,7 +685,7 @@ Expected: lint clean; typecheck passes.
 - [ ] **Step 3: Commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/.claude/worktrees/seo-landing-docs
+cd /Users/mac/Developer/projects/locnative.com/.claude/worktrees/seo-landing-docs
 git add apps/web/src/routes/docs.tsx
 git commit -m "feat(seo): add docs title, description, OG, TechArticle + Breadcrumb JSON-LD"
 ```
@@ -757,7 +757,7 @@ Expected: PASS (3 cases)
 - [ ] **Step 5: Lint and commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/.claude/worktrees/seo-landing-docs
+cd /Users/mac/Developer/projects/locnative.com/.claude/worktrees/seo-landing-docs
 pnpm dlx ultracite fix "apps/web/src/routes/sitemap[.]xml.ts" apps/web/src/routes/sitemap-paths.test.ts
 pnpm dlx ultracite check "apps/web/src/routes/sitemap[.]xml.ts" apps/web/src/routes/sitemap-paths.test.ts
 git add "apps/web/src/routes/sitemap[.]xml.ts" apps/web/src/routes/sitemap-paths.test.ts
@@ -774,7 +774,7 @@ git commit -m "feat(seo): add /docs and /pricing to sitemap; export PUBLIC_PATHS
 
 Run:
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/.claude/worktrees/seo-landing-docs/apps/web
+cd /Users/mac/Developer/projects/locnative.com/.claude/worktrees/seo-landing-docs/apps/web
 pnpm exec vitest run src/lib/seo.test.ts src/lib/structured-data.test.ts src/routes/sitemap-paths.test.ts
 ```
 Expected: all suites pass.
@@ -793,7 +793,7 @@ const html = await (await fetch("http://localhost:<port>/")).text();
 const checks = {
   title: /Geocoding, Geofencing & Routing APIs for Developers/i.test(html),
   description: /<meta[^>]+name="description"[^>]+Production-ready location APIs/i.test(html),
-  canonical: /<link[^>]+rel="canonical"[^>]+href="https:\/\/wherabouts\.com\/"/i.test(html),
+  canonical: /<link[^>]+rel="canonical"[^>]+href="https:\/\/locnative\.com\/"/i.test(html),
   ogImage: /property="og:image"[^>]+og-image-1200x630\.png/i.test(html),
   twitterCard: /name="twitter:card"[^>]+summary_large_image/i.test(html),
   softwareApp: /"@type":"SoftwareApplication"/.test(html),
@@ -809,7 +809,7 @@ Expected: every value `true`.
 const html = await (await fetch("http://localhost:<port>/docs")).text();
 const checks = {
   title: /API Documentation — Geocoding & Address Autocomplete/i.test(html),
-  canonical: /rel="canonical"[^>]+href="https:\/\/wherabouts\.com\/docs"/i.test(html),
+  canonical: /rel="canonical"[^>]+href="https:\/\/locnative\.com\/docs"/i.test(html),
   techArticle: /"@type":"TechArticle"/.test(html),
   breadcrumb: /"@type":"BreadcrumbList"/.test(html),
   ogType: /property="og:type"[^>]+article/i.test(html),
@@ -825,7 +825,7 @@ const xml = await (await fetch("http://localhost:<port>/sitemap.xml")).text();
 console.log({
   docs: xml.includes("/docs"),
   pricing: xml.includes("/pricing"),
-  root: xml.includes("<loc>") && /wherabouts\.com\/<\/loc>|localhost:\d+\/<\/loc>/.test(xml),
+  root: xml.includes("<loc>") && /locnative\.com\/<\/loc>|localhost:\d+\/<\/loc>/.test(xml),
 });
 ```
 Expected: `docs` and `pricing` both `true`.

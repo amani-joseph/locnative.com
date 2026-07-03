@@ -1,7 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Badge } from "@wherabouts.com/ui/components/badge";
-import { buttonVariants } from "@wherabouts.com/ui/components/button";
-import { Input } from "@wherabouts.com/ui/components/input";
+import { Badge } from "@locnative/ui/components/badge";
+import { buttonVariants } from "@locnative/ui/components/button";
+import { Input } from "@locnative/ui/components/input";
 import {
 	Table,
 	TableBody,
@@ -9,8 +8,9 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@wherabouts.com/ui/components/table";
-import { cn } from "@wherabouts.com/ui/lib/utils";
+} from "@locnative/ui/components/table";
+import { cn } from "@locnative/ui/lib/utils";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { CoverageBackground } from "@/components/backgrounds/coverage-background";
 import {
@@ -23,9 +23,9 @@ import {
 import { buildSeo } from "@/lib/seo";
 import { breadcrumbJsonLd, jsonLdScript } from "@/lib/structured-data";
 
-const COVERAGE_TITLE = "Coverage — Countries with Address Data | Wherabouts";
+const COVERAGE_TITLE = "Coverage — Countries with Address Data | Locnative";
 const COVERAGE_DESCRIPTION =
-	"See which countries the Wherabouts location API supports for geocoding, reverse geocoding, and address autocomplete before you integrate.";
+	"See which countries the Locnative location API supports for geocoding, reverse geocoding, and address autocomplete before you integrate.";
 
 const COUNTRY_COUNT = COVERAGE_COUNTRIES.length;
 
@@ -77,7 +77,7 @@ function RouteComponent() {
 				<header className="mb-8">
 					<h1 className="font-semibold text-3xl tracking-tight">Coverage</h1>
 					<p className="mt-2 max-w-xl text-muted-foreground text-sm">
-						Address data available through the Wherabouts API. Check which
+						Address data available through the Locnative API. Check which
 						countries and capabilities are supported before you integrate.
 					</p>
 				</header>
@@ -221,7 +221,7 @@ function RouteComponent() {
 					Don't see your country?{" "}
 					<a
 						className="underline underline-offset-4 hover:text-foreground"
-						href="mailto:hello@wherabouts.com"
+						href="mailto:hello@locnative.com"
 					>
 						Request coverage <span aria-hidden="true">→</span>
 					</a>

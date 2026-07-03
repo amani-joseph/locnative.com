@@ -51,7 +51,7 @@ describe("techArticleJsonLd", () => {
 		});
 		expect(a["@type"]).toBe("TechArticle");
 		expect(a.headline).toBe("Docs");
-		expect(String(a.url).startsWith("https://wherabouts.com/")).toBe(true);
+		expect(String(a.url).startsWith("https://locnative.com/")).toBe(true);
 	});
 });
 

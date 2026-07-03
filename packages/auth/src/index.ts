@@ -3,8 +3,8 @@ import {
 	securityAuditLog,
 	teamMembers,
 	teams,
-} from "@wherabouts.com/database";
-import { serverEnv } from "@wherabouts.com/env/server";
+} from "@locnative/database";
+import { serverEnv } from "@locnative/env/server";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware } from "better-auth/api";
@@ -20,20 +20,20 @@ const TRAILING_SLASH_REGEX = /\/$/;
 const SLUG_SANITIZE_REGEX = /[^a-z0-9]+/g;
 const SLUG_TRIM_REGEX = /^-+|-+$/g;
 const DEPLOYED_WEB_ORIGIN =
-	process.env.DEPLOYED_WEB_ORIGIN ?? "https://wherabouts.com";
+	process.env.DEPLOYED_WEB_ORIGIN ?? "https://locnative.com";
 
 const trustedOrigins = Array.from(
 	new Set([
 		serverEnv.WEB_BASE_URL.replace(TRAILING_SLASH_REGEX, ""),
 		DEPLOYED_WEB_ORIGIN,
 		"http://localhost:3001",
-		"https://wherabouts.com",
-		"https://api.wherabouts.com",
+		"https://locnative.com",
+		"https://api.locnative.com",
 	])
 );
 
 // On localhost the auth server runs at localhost:3003 and the web app at
-// localhost:3001. A cookie scoped to Domain=.wherabouts.com would not match
+// localhost:3001. A cookie scoped to Domain=.locnative.com would not match
 // the `localhost` host, so the browser silently drops the session cookie and
 // the user never appears authenticated. Only attach the production cookie
 // domain when the auth server is not running on localhost.
@@ -53,7 +53,7 @@ function buildResetPasswordHtml(resetUrl: string): string {
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Reset your Wherabouts password</title>
+    <title>Reset your Locnative password</title>
   </head>
   <body style="margin:0;padding:0;background:#ffffff;color:#1a1a1a;font-family:${fontStack};">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;">
@@ -62,7 +62,7 @@ function buildResetPasswordHtml(resetUrl: string): string {
           <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
             <tr>
               <td style="padding:0 0 24px 0;font-family:${fontStack};font-size:14px;font-weight:600;color:#1a1a1a;letter-spacing:0.02em;">
-                Wherabouts
+                Locnative
               </td>
             </tr>
             <tr>
@@ -99,7 +99,7 @@ function buildResetPasswordHtml(resetUrl: string): string {
  */
 function buildResetPasswordText(resetUrl: string): string {
 	return [
-		"Reset your Wherabouts password.",
+		"Reset your Locnative password.",
 		"",
 		"We received a request to reset your password. Open the link below to choose a new one. It expires in 1 hour.",
 		"",
@@ -110,7 +110,7 @@ function buildResetPasswordText(resetUrl: string): string {
 }
 
 export const auth = betterAuth({
-	appName: "Wherabouts",
+	appName: "Locnative",
 	baseURL: serverEnv.BETTER_AUTH_URL,
 	secret: serverEnv.BETTER_AUTH_SECRET,
 	database: drizzleAdapter(db, {
@@ -133,13 +133,13 @@ export const auth = betterAuth({
 			await resend.emails.send({
 				from: serverEnv.EMAIL_FROM,
 				to: user.email,
-				subject: "Reset your Wherabouts password",
+				subject: "Reset your Locnative password",
 				html: buildResetPasswordHtml(resetUrl),
 				text: buildResetPasswordText(resetUrl),
 			});
 		},
 	},
-	plugins: [twoFactor({ issuer: "Wherabouts" })],
+	plugins: [twoFactor({ issuer: "Locnative" })],
 	user: {
 		deleteUser: { enabled: true },
 	},
@@ -195,7 +195,7 @@ export const auth = betterAuth({
 	},
 	advanced: {
 		// In production the web app and auth API live on different subdomains of
-		// wherabouts.com, so the session cookie must be cross-site capable
+		// locnative.com, so the session cookie must be cross-site capable
 		// (SameSite=None; Secure) and shared across the parent domain. On
 		// localhost both apps are same-site (host `localhost`, different ports),
 		// where SameSite=Lax without Secure works reliably over plain http and

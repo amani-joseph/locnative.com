@@ -1,4 +1,4 @@
-import type { AddressSuggestion } from "@wherabouts/sdk";
+import type { AddressSuggestion } from "@locnative/sdk";
 
 /**
  * Minimal structural view of the Web Storage API (sessionStorage/localStorage).

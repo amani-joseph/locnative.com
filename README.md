@@ -1,6 +1,6 @@
-# wherabouts.com
+# locnative.com
 
-This project is a TanStack Start monorepo for `wherabouts.com`, with a separate ORPC server, Better Auth, Drizzle, and Neon Postgres.
+This project is a TanStack Start monorepo for `locnative.com`, with a separate ORPC server, Better Auth, Drizzle, and Neon Postgres.
 
 ## Features
 
@@ -16,7 +16,7 @@ This project is a TanStack Start monorepo for `wherabouts.com`, with a separate 
 
 ## Getting Started
 
-First, install the dependencies:
+Use Node.js 20.19 or newer, then install the dependencies:
 
 ```bash
 pnpm install
@@ -72,7 +72,7 @@ npx shadcn@latest add accordion dialog popover sheet table -c packages/ui
 Import shared components like this:
 
 ```tsx
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Button } from "@locnative/ui/components/button";
 ```
 
 ### Add app-specific blocks
@@ -86,7 +86,7 @@ If you want to add app-specific blocks instead of shared primitives, run the sha
 ## Project Structure
 
 ```
-wherabouts.com/
+locnative.com/
 ├── apps/
 │   ├── web/         # Frontend application (React + TanStack Start)
 │   └── server/      # ORPC + Better Auth server

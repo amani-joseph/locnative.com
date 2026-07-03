@@ -1,4 +1,4 @@
-import { apiKeys, projects } from "@wherabouts.com/database";
+import { apiKeys, projects } from "@locnative/database";
 import { and, asc, eq, isNull, ne } from "drizzle-orm";
 import { z } from "zod";
 import type { Context } from "../../context.ts";

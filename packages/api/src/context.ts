@@ -1,10 +1,10 @@
-import { auth } from "@wherabouts.com/auth";
+import { auth } from "@locnative/auth";
 import type {
 	accounts,
 	sessions,
 	users,
 	verifications,
-} from "@wherabouts.com/database";
+} from "@locnative/database";
 import type { InferSelectModel } from "drizzle-orm";
 import type { HonoRequest } from "hono";
 import { db } from "./db.ts";

@@ -1,4 +1,4 @@
-import type { WheraboutsClient, ZoneRecord } from "@wherabouts/sdk";
+import type { LocnativeClient, ZoneRecord } from "@locnative/sdk";
 import { useEffect, useRef, useState } from "react";
 
 import type { LatLng } from "./use-reverse-geocode.ts";
@@ -10,7 +10,7 @@ export interface UseZoneContainsResult {
 }
 
 export function useZoneContains(
-	client: WheraboutsClient,
+	client: LocnativeClient,
 	coords: LatLng | null
 ): UseZoneContainsResult {
 	const [zones, setZones] = useState<ZoneRecord[]>([]);

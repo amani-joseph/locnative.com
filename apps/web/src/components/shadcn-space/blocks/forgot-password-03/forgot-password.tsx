@@ -58,7 +58,7 @@ const ForgotPassword = () => {
 						<div className="flex items-center gap-1.5">
 							<span className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />
 							<p className="font-normal text-base text-muted-foreground">
-								Welcome to Wherabouts
+								Welcome to Locnative
 							</p>
 						</div>
 						<p className="font-semibold text-5xl text-foreground md:text-6xl lg:text-7xl">
@@ -109,7 +109,7 @@ const ForgotPassword = () => {
 													disabled={isSubmitting}
 													id="email"
 													name="email"
-													placeholder="you@wherabouts.com"
+													placeholder="you@locnative.com"
 													required
 													type="email"
 												/>

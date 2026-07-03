@@ -8,9 +8,9 @@ import {
 } from "@/lib/structured-data";
 
 const DOCS_TITLE =
-	"API Documentation — Geocoding & Address Autocomplete | Wherabouts";
+	"API Documentation — Geocoding & Address Autocomplete | Locnative";
 const DOCS_DESCRIPTION =
-	"Developer docs for the Wherabouts location API: address autocomplete, reverse geocoding, nearby lookup, and canonical address retrieval with API-key auth.";
+	"Developer docs for the Locnative location API: address autocomplete, reverse geocoding, nearby lookup, and canonical address retrieval with API-key auth.";
 
 export const Route = createFileRoute("/docs")({
 	head: () => {

@@ -1,4 +1,4 @@
-import { createWheraboutsClient } from "@wherabouts/sdk";
+import { createLocnativeClient } from "@locnative/sdk";
 import { describe, expect, it, vi } from "vitest";
 
 describe("useReverseGeocode — client integration", () => {
@@ -25,7 +25,7 @@ describe("useReverseGeocode — client integration", () => {
 			)
 		);
 
-		const client = createWheraboutsClient({
+		const client = createLocnativeClient({
 			apiKey: "wh_test_key",
 			baseUrl: "http://localhost",
 			fetch: fetchMock,
@@ -54,7 +54,7 @@ describe("useReverseGeocode — client integration", () => {
 				})
 		);
 
-		const client = createWheraboutsClient({
+		const client = createLocnativeClient({
 			apiKey: "wh_test_key",
 			baseUrl: "http://localhost",
 			fetch: fetchMock,
@@ -85,7 +85,7 @@ describe("useReverseGeocode — client integration", () => {
 			)
 		);
 
-		const client = createWheraboutsClient({
+		const client = createLocnativeClient({
 			apiKey: "wh_test_key",
 			baseUrl: "http://localhost",
 			fetch: fetchMock,

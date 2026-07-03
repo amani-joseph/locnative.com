@@ -1,4 +1,4 @@
-import type { WheraboutsClient } from "@wherabouts/sdk";
+import type { LocnativeClient } from "@locnative/sdk";
 import type { ReactNode } from "react";
 import type { AddressWithParsed } from "../types";
 import { cn } from "../utils/cn";
@@ -25,8 +25,8 @@ const baseLabelClass = "mb-1 block font-medium text-foreground text-sm";
 export interface AddressFieldGroupProps {
 	/** Class applied to the root container. */
 	className?: string;
-	/** Required. SDK client created with `createWheraboutsClient`. */
-	client: WheraboutsClient;
+	/** Required. SDK client created with `createLocnativeClient`. */
+	client: LocnativeClient;
 	/** Disable all fields. */
 	disabled?: boolean;
 	/**
@@ -102,10 +102,7 @@ export function AddressFieldGroup({
 				data-slot="address-field-group-inputs"
 			>
 				<div className="col-span-2">
-					<label
-						className={labelClass}
-						htmlFor="field-street"
-					>
+					<label className={labelClass} htmlFor="field-street">
 						{streetLabel}
 					</label>
 					<input
@@ -120,10 +117,7 @@ export function AddressFieldGroup({
 				</div>
 
 				<div>
-					<label
-						className={labelClass}
-						htmlFor="field-suburb"
-					>
+					<label className={labelClass} htmlFor="field-suburb">
 						{suburbLabel}
 					</label>
 					<input
@@ -138,10 +132,7 @@ export function AddressFieldGroup({
 				</div>
 
 				<div>
-					<label
-						className={labelClass}
-						htmlFor="field-state"
-					>
+					<label className={labelClass} htmlFor="field-state">
 						{stateLabel}
 					</label>
 					<input
@@ -156,10 +147,7 @@ export function AddressFieldGroup({
 				</div>
 
 				<div>
-					<label
-						className={labelClass}
-						htmlFor="field-postcode"
-					>
+					<label className={labelClass} htmlFor="field-postcode">
 						{postcodeLabel}
 					</label>
 					<input

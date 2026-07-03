@@ -85,7 +85,9 @@ export async function structuredAutocomplete(
 			ORDER BY ${orderBy}
 			LIMIT ${opts.limit}
 		`);
-		const rows = (result.rows as unknown as RawAddressRow[]).map(mapRowToResult);
+		const rows = (result.rows as unknown as RawAddressRow[]).map(
+			mapRowToResult
+		);
 		if (rows.length > 0) {
 			return rows;
 		}

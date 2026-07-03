@@ -1,8 +1,8 @@
-# @wherabouts/react-ui
+# @locnative/react-ui
 
-Production-ready, accessible React components for the [Wherabouts](https://wherabouts.com)
+Production-ready, accessible React components for the [Locnative](https://locnative.com)
 location API — address autocomplete, forward/reverse geocoding inputs, and structured
-address form fields. Built on [`@wherabouts/sdk`](https://www.npmjs.com/package/@wherabouts/sdk),
+address form fields. Built on [`@locnative/sdk`](https://www.npmjs.com/package/@locnative/sdk),
 styled with Tailwind, and shipped with a prebuilt stylesheet so you can drop them in
 without any build setup.
 
@@ -13,28 +13,28 @@ without any build setup.
 ## Requirements
 
 - React **19+** and React DOM 19+ (peer dependencies)
-- A Wherabouts API key (`wh_...`)
+- A Locnative API key (`wh_...`)
 
 ## Installation
 
 ```bash
 # npm
-npm install @wherabouts/react-ui @wherabouts/sdk @wherabouts/react
+npm install @locnative/react-ui @locnative/sdk @locnative/react
 
 # pnpm
-pnpm add @wherabouts/react-ui @wherabouts/sdk @wherabouts/react
+pnpm add @locnative/react-ui @locnative/sdk @locnative/react
 
 # yarn
-yarn add @wherabouts/react-ui @wherabouts/sdk @wherabouts/react
+yarn add @locnative/react-ui @locnative/sdk @locnative/react
 ```
 
-Peer dependencies: `react` & `react-dom` (>=19), `@wherabouts/sdk` (>=0.4.2), and
-`@wherabouts/react` (>=0.2.0).
+Peer dependencies: `react` & `react-dom` (>=19), `@locnative/sdk` (>=0.4.2), and
+`@locnative/react` (>=0.2.0).
 
 Import the stylesheet once, near your app root:
 
 ```ts
-import "@wherabouts/react-ui/styles.css";
+import "@locnative/react-ui/styles.css";
 ```
 
 ## Quick start
@@ -42,11 +42,11 @@ import "@wherabouts/react-ui/styles.css";
 Every component takes a `client` created with the SDK. Create it once and share it.
 
 ```tsx
-import { createWheraboutsClient } from "@wherabouts/sdk";
-import { AddressAutocomplete } from "@wherabouts/react-ui";
-import "@wherabouts/react-ui/styles.css";
+import { createLocnativeClient } from "@locnative/sdk";
+import { AddressAutocomplete } from "@locnative/react-ui";
+import "@locnative/react-ui/styles.css";
 
-const client = createWheraboutsClient({ apiKey: import.meta.env.VITE_WHERABOUTS_KEY });
+const client = createLocnativeClient({ apiKey: import.meta.env.VITE_LOCNATIVE_KEY });
 
 export function Checkout() {
   return (
@@ -82,7 +82,7 @@ keyboard navigation, and customizable rendering.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `client` | `WheraboutsClient` | — | **Required.** SDK client. |
+| `client` | `LocnativeClient` | — | **Required.** SDK client. |
 | `onSelect` | `(address: AddressWithParsed) => void` | — | Called when a suggestion is chosen. |
 | `onQueryChange` | `(query: string) => void` | — | Called as the input text changes. |
 | `placeholder` | `string` | — | Input placeholder. |
@@ -120,7 +120,7 @@ Resolves a free-text address to coordinates as `query` changes (forward geocodin
 
 | Prop | Type | Description |
 |---|---|---|
-| `client` | `WheraboutsClient` | **Required.** SDK client. |
+| `client` | `LocnativeClient` | **Required.** SDK client. |
 | `query` | `string \| null` | Address text to geocode. |
 | `onResult` | `(r: { latitude, longitude, formattedAddress }) => void` | Geocode result callback. |
 | `placeholder` / `id` / `className` | `string` | Pass-through. |
@@ -132,7 +132,7 @@ Resolves `latitude`/`longitude` to the nearest address (reverse geocoding).
 
 | Prop | Type | Description |
 |---|---|---|
-| `client` | `WheraboutsClient` | **Required.** SDK client. |
+| `client` | `LocnativeClient` | **Required.** SDK client. |
 | `latitude` / `longitude` | `number \| null` | Coordinates to reverse-geocode. |
 | `onResult` | `(r: { address, distance }) => void` | Result callback. |
 | `placeholder` / `id` / `className` | `string` | Pass-through. |
@@ -145,7 +145,7 @@ full address.
 
 | Prop | Type | Description |
 |---|---|---|
-| `client` | `WheraboutsClient` | **Required.** SDK client. |
+| `client` | `LocnativeClient` | **Required.** SDK client. |
 | `value` | `AddressFieldGroupValue` | **Required.** Controlled value. |
 | `onChange` | `(value: AddressFieldGroupValue) => void` | **Required.** Change handler. |
 | `streetLabel` / `suburbLabel` / `stateLabel` / `postcodeLabel` | `string` | Override field labels. |
@@ -169,12 +169,12 @@ live in [`docs/`](./docs/README.md).
 This package ships a Storybook with live, interactive examples of every component.
 
 ```bash
-pnpm --filter @wherabouts/react-ui storybook
+pnpm --filter @locnative/react-ui storybook
 ```
 
 Live stories call the real API. Set `VITE_DEMO_API_KEY` (a publishable,
 origin-scoped key) and optionally `VITE_DEMO_API_BASE_URL` (default
-`https://api.wherabouts.com`) to enable results; without a key, components still
+`https://api.locnative.com`) to enable results; without a key, components still
 render with a configuration banner.
 
 ## Styling
@@ -190,5 +190,5 @@ payloads are fully typed.
 
 ## License
 
-MIT — © Wherabouts.
+MIT — © Locnative.
 </content>

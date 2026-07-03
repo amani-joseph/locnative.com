@@ -57,19 +57,19 @@
 **Order** (automatically enforced by Biome):
 1. Node built-ins (`node:crypto`)
 2. External packages (`better-auth`, `@tanstack/...`, `drizzle-orm`, `lucide-react`, `react`, `zod`)
-3. Workspace packages (`@wherabouts.com/ui/...`, `@wherabouts.com/database/...`, `@wherabouts.com/env/...`)
+3. Workspace packages (`@locnative/ui/...`, `@locnative/database/...`, `@locnative/env/...`)
 4. Local aliases (`@/components/...`, `@/lib/...`)
 5. Relative imports (`../index.css?url`)
 
 **Path Aliases:**
 - `@/*` maps to `./src/*` (configured in `tsconfig.json`)
-- `@wherabouts.com/ui/*` maps to `../../packages/ui/src/*`
+- `@locnative/ui/*` maps to `../../packages/ui/src/*`
 - Use `@/` for all intra-app imports: `import { getDb } from "@/lib/db"`
-- Use workspace package imports for shared code: `import { Button } from "@wherabouts.com/ui/components/button"`
+- Use workspace package imports for shared code: `import { Button } from "@locnative/ui/components/button"`
 
 **Import style:**
 - Use named imports, not default imports (except for React component default exports from shadcn blocks)
-- Use `type` keyword for type-only imports: `import type { Database } from "@wherabouts.com/database"`
+- Use `type` keyword for type-only imports: `import type { Database } from "@locnative/database"`
 - Include `.ts` extension in relative imports within server-side lib files: `import { getDb } from "./db.ts"`
 
 ## Error Handling
@@ -161,7 +161,7 @@ if (!userId) {
 
 **Barrel Files:**
 - Not used in the web app `src/` directory
-- UI components from `@wherabouts.com/ui` are imported individually by path
+- UI components from `@locnative/ui` are imported individually by path
 
 ## Component Patterns
 

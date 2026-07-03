@@ -1,11 +1,11 @@
 {
-  "extends": "@wherabouts.com/config/tsconfig.base.json",
+  "extends": "@locnative/config/tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "jsx": "react-jsx",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "paths": {
-      "@wherabouts.com/ui/*": ["./src/*"]
+      "@locnative/ui/*": ["./src/*"]
     },
     "strictNullChecks": true,
     "types": ["node", "geojson"]

@@ -15,7 +15,7 @@ date: 2026-06-14
 | 2 — Tests | `routing.test.ts` (mirrors `regions.test.ts`) over a mock `Requester`: asserts each method's path/method, GET→query vs POST→body, `originAddressId`→`origin` mapping, `includeRegions` stringification, value pass-through, and the widened `directions` profile. |
 | 3 — CHANGELOG | `[Unreleased]` entry for the four methods + widened profile. **No version bump** — publishing is Phase 9's gated path. |
 
-**Verification:** `pnpm -F @wherabouts/sdk test` → **7/7** green; `check-types` clean; `build` emits dual ESM+CJS dist; `lint:pkg` (publint + attw) all 🟢.
+**Verification:** `pnpm -F @locnative/sdk test` → **7/7** green; `check-types` clean; `build` emits dual ESM+CJS dist; `lint:pkg` (publint + attw) all 🟢.
 
 ## SC #6 status
 ✅ **Met** — every new endpoint (matrix, isochrone, match, optimize) has a typed SDK method + tests. `createRouting` was already registered in `client.ts`, so no wiring change was needed.

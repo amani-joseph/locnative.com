@@ -6,11 +6,11 @@
 
 **Architecture:** Three stages on a shared foundation. Stage A widens the `apiExplorer.sendRequest` oRPC proxy to send POST/PUT/DELETE with a JSON body (a new `body` input channel + non-GET allowlist entries + `regions`). Stage B makes the Explorer UI execute non-GET endpoints via a JSON body editor with a confirm gate before DELETE. Stage C adds a separate Playground page that shows the equivalent SDK snippet and runs it through the same Stage-A proxy.
 
-**Tech Stack:** TypeScript, oRPC, Zod, TanStack Start/Router (file routes), React 19, `@wherabouts.com/ui` (Card/Button/Textarea/Dialog/Select/Tabs), vitest, Testing Library + jsdom.
+**Tech Stack:** TypeScript, oRPC, Zod, TanStack Start/Router (file routes), React 19, `@locnative/ui` (Card/Button/Textarea/Dialog/Select/Tabs), vitest, Testing Library + jsdom.
 
 **Spec:** `docs/superpowers/specs/2026-06-07-interactive-explorer-and-sdk-playground-design.md`
 
-**Working dir:** `/Users/mac/Developer/projects/wherabouts.com/.claude/worktrees/interactive-explorer-playground` (branch `worktree-interactive-explorer-playground`). Run all commands from there.
+**Working dir:** `/Users/mac/Developer/projects/locnative.com/.claude/worktrees/interactive-explorer-playground` (branch `worktree-interactive-explorer-playground`). Run all commands from there.
 
 **Dependency note (spec §3):** the Playground generates namespaced SDK snippets (`client.zones.create(...)`) and the `regions` endpoint comes from other branches open against `feat/pricing-page`. The snippet generator and `regions` catalog entry are self-contained here (no import of the SDK or regions handler), so this plan builds and tests independently; only a *live* `regions` run and the literal SDK-package availability assume those merges.
 
@@ -32,7 +32,7 @@
 - **Frontend catalog** `apps/web/src/lib/api-explorer-endpoints.ts`: `ApiEndpoint = { description, exampleBody?, id, method, params: ApiParam[], path, summary }`. Non-GET endpoints carry a whole-JSON `exampleBody` (zones.create/update, webhooks.create, devices.location.push, geocode.batch.submit already have one). Body fields are NOT individual params — the body is the `exampleBody` object.
 - **Explorer component** `apps/web/src/components/api-explorer.tsx`: per-endpoint card with `paramValues` state, `isExecutable = endpoint.method === "GET"`, `handleSend` calling `orpcClient.apiExplorer.sendRequest({...})`.
 - **Routes** are file-based: `apps/web/src/routes/_protected/<name>.tsx` exporting `Route = createFileRoute("/_protected/<name>")({ component })`. Sidebar nav items live in `apps/web/src/components/app-sidebar.tsx`.
-- **UI components** at `@wherabouts.com/ui/components/*`: `card`, `button`, `textarea`, `dialog`, `select`, `tabs`. (No `alert-dialog` — use `dialog` for the confirm gate.)
+- **UI components** at `@locnative/ui/components/*`: `card`, `button`, `textarea`, `dialog`, `select`, `tabs`. (No `alert-dialog` — use `dialog` for the confirm gate.)
 - Tabs: indent with **tabs**, double quotes, `.ts` extensions in relative imports (ultracite/biome).
 
 ---
@@ -136,7 +136,7 @@ describe("EXPLORER_ENDPOINT_IDS drift guard", () => {
 
 - [ ] **Step 2: Run it, verify FAIL**
 
-Run: `corepack pnpm --filter @wherabouts.com/api exec vitest run src/routers/domains/api-explorer.test.ts`
+Run: `corepack pnpm --filter @locnative/api exec vitest run src/routers/domains/api-explorer.test.ts`
 Expected: FAIL — `buildProxyRequest`/`getExplorerEndpoint`/`EXPLORER_ENDPOINT_IDS` not exported.
 
 - [ ] **Step 3: Edit the proxy.** In `packages/api/src/routers/domains/api-explorer.ts`:
@@ -325,12 +325,12 @@ And update the returned `requestUrl` field to `proxyReq.url` if it referenced th
 
 - [ ] **Step 4: Run the test, verify PASS**
 
-Run: `corepack pnpm --filter @wherabouts.com/api exec vitest run src/routers/domains/api-explorer.test.ts`
+Run: `corepack pnpm --filter @locnative/api exec vitest run src/routers/domains/api-explorer.test.ts`
 Expected: PASS (all `buildProxyRequest` cases + drift guard).
 
 - [ ] **Step 5: Typecheck + lint**
 
-Run: `corepack pnpm --filter @wherabouts.com/api check-types` (expect pass; note any PRE-EXISTING unrelated errors and ignore).
+Run: `corepack pnpm --filter @locnative/api check-types` (expect pass; note any PRE-EXISTING unrelated errors and ignore).
 Run: `corepack pnpm dlx ultracite check packages/api/src/routers/domains/api-explorer.ts packages/api/src/routers/domains/api-explorer.test.ts` (fix auto-fixable in these files).
 
 - [ ] **Step 6: Commit**
@@ -373,7 +373,7 @@ git commit -m "feat(api): explorer proxy supports non-GET + JSON body + regions"
 
 - [ ] **Step 3: Typecheck**
 
-Run: `corepack pnpm --filter @wherabouts.com/web check-types 2>&1 | grep -i api-explorer-endpoints || echo "no catalog errors"`
+Run: `corepack pnpm --filter @locnative/web check-types 2>&1 | grep -i api-explorer-endpoints || echo "no catalog errors"`
 Expected: no errors referencing the catalog.
 
 - [ ] **Step 4: Commit**
@@ -475,14 +475,14 @@ Then change the existing `handleSend` so that, after the existing auth-ready and
 
 - [ ] **Step 3: Render the body editor + confirm dialog.** Import the UI primitives at the top of the file:
 ```ts
-import { Textarea } from "@wherabouts.com/ui/components/textarea";
+import { Textarea } from "@locnative/ui/components/textarea";
 import {
 	Dialog,
 	DialogContent,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@wherabouts.com/ui/components/dialog";
+} from "@locnative/ui/components/dialog";
 ```
 In the card body, where params render, add (for non-GET endpoints) a JSON body editor below the param inputs:
 ```tsx
@@ -567,7 +567,7 @@ describe("ApiEndpointCard", () => {
 		render(
 			<ApiEndpointCard
 				authState={{ isReady: true, mode: "raw", rawApiKey: "wh_x_y" }}
-				baseUrl="https://api.wherabouts.com"
+				baseUrl="https://api.locnative.com"
 				endpoint={zoneCreate}
 			/>
 		);
@@ -580,7 +580,7 @@ describe("ApiEndpointCard", () => {
 		render(
 			<ApiEndpointCard
 				authState={{ isReady: true, mode: "raw", rawApiKey: "wh_x_y" }}
-				baseUrl="https://api.wherabouts.com"
+				baseUrl="https://api.locnative.com"
 				endpoint={zoneDelete}
 			/>
 		);
@@ -596,8 +596,8 @@ describe("ApiEndpointCard", () => {
 
 - [ ] **Step 5: Run tests + typecheck + lint**
 
-Run: `corepack pnpm --filter @wherabouts.com/web exec vitest run src/components/api-explorer.test.tsx`
-Run: `corepack pnpm --filter @wherabouts.com/web check-types 2>&1 | grep -i api-explorer || echo "no api-explorer errors"`
+Run: `corepack pnpm --filter @locnative/web exec vitest run src/components/api-explorer.test.tsx`
+Run: `corepack pnpm --filter @locnative/web check-types 2>&1 | grep -i api-explorer || echo "no api-explorer errors"`
 Run: `corepack pnpm dlx ultracite check apps/web/src/components/api-explorer.tsx apps/web/src/components/api-explorer.test.tsx`
 Expected: tests pass; no new type/lint errors in these files.
 
@@ -640,7 +640,7 @@ describe("sdkCallForEndpoint", () => {
 describe("buildSdkSnippet", () => {
 	it("renders a runnable snippet for a method with a single params arg", () => {
 		const snippet = buildSdkSnippet("regions.classify", { lat: "-37.8", lng: "144.9" }, undefined);
-		expect(snippet).toContain('import { createWheraboutsClient } from "@wherabouts.com/sdk";');
+		expect(snippet).toContain('import { createLocnativeClient } from "@locnative/sdk";');
 		expect(snippet).toContain("client.regions.classify({");
 		expect(snippet).toContain('lat: -37.8');
 		expect(snippet).toContain('lng: 144.9');
@@ -654,7 +654,7 @@ describe("buildSdkSnippet", () => {
 });
 ```
 
-- [ ] **Step 2: Run it, verify FAIL.** `corepack pnpm --filter @wherabouts.com/web exec vitest run src/lib/sdk-snippet.test.ts` → FAIL.
+- [ ] **Step 2: Run it, verify FAIL.** `corepack pnpm --filter @locnative/web exec vitest run src/lib/sdk-snippet.test.ts` → FAIL.
 
 - [ ] **Step 3: Create `apps/web/src/lib/sdk-snippet.ts`:**
 
@@ -705,10 +705,10 @@ export function buildSdkSnippet(
 	const call = sdkCallForEndpoint(endpointId);
 	const arg = renderArg(paramValues, body);
 	return [
-		'import { createWheraboutsClient } from "@wherabouts.com/sdk";',
+		'import { createLocnativeClient } from "@locnative/sdk";',
 		"",
-		"const client = createWheraboutsClient({",
-		"  apiKey: process.env.WHERABOUTS_API_KEY!,",
+		"const client = createLocnativeClient({",
+		"  apiKey: process.env.LOCNATIVE_API_KEY!,",
 		"});",
 		"",
 		`const result = await ${call}(${arg});`,
@@ -750,7 +750,7 @@ function RouteComponent() {
 				<h1 className="font-semibold text-2xl tracking-tight">SDK Playground</h1>
 				<p className="text-muted-foreground text-sm">
 					Pick a method, fill in inputs, see the equivalent
-					@wherabouts.com/sdk code, and run it against the live API.
+					@locnative/sdk code, and run it against the live API.
 				</p>
 			</div>
 			<SdkPlayground />
@@ -762,21 +762,21 @@ function RouteComponent() {
 - [ ] **Step 2: Create the playground component** `apps/web/src/components/sdk-playground.tsx`. It reuses the catalog (`apiExplorerEndpoints`) for the method list + params + example bodies, the snippet generator, and the same `orpcClient.apiExplorer.sendRequest` proxy. Reuse the Explorer's auth key-selector by importing it if it is exported from `api-explorer.tsx`; otherwise render a minimal managed-key `<Select>` (the auth wiring mirrors `api-explorer.tsx`).
 
 ```tsx
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
+} from "@locnative/ui/components/card";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@wherabouts.com/ui/components/select";
-import { Textarea } from "@wherabouts.com/ui/components/textarea";
+} from "@locnative/ui/components/select";
+import { Textarea } from "@locnative/ui/components/textarea";
 import { useMemo, useState } from "react";
 import { apiExplorerEndpoints } from "@/lib/api-explorer-endpoints";
 import { orpcClient } from "@/lib/orpc";
@@ -913,7 +913,7 @@ export function SdkPlayground() {
 
 - [ ] **Step 3: Add the sidebar nav entry.** Read `apps/web/src/components/app-sidebar.tsx`, find the nav-items array that includes the `api-docs` entry, and add an entry pointing to `/sdk-playground` titled "SDK Playground" with a sensible existing lucide icon (e.g. `Code2Icon`, already used in the app). Follow the exact shape of the adjacent items (title/url/icon).
 
-- [ ] **Step 4: Typecheck + lint + route generation.** Run `corepack pnpm --filter @wherabouts.com/web check-types 2>&1 | grep -iE "sdk-playground|app-sidebar" || echo "clean"` and `corepack pnpm dlx ultracite check apps/web/src/components/sdk-playground.tsx apps/web/src/routes/_protected/sdk-playground.tsx`. (TanStack route tree regenerates on dev/build; if a `routeTree.gen.ts` check is needed, run the web build once.)
+- [ ] **Step 4: Typecheck + lint + route generation.** Run `corepack pnpm --filter @locnative/web check-types 2>&1 | grep -iE "sdk-playground|app-sidebar" || echo "clean"` and `corepack pnpm dlx ultracite check apps/web/src/components/sdk-playground.tsx apps/web/src/routes/_protected/sdk-playground.tsx`. (TanStack route tree regenerates on dev/build; if a `routeTree.gen.ts` check is needed, run the web build once.)
 
 - [ ] **Step 5: Commit**
 
@@ -928,13 +928,13 @@ git commit -m "feat(web): SDK Playground page with live run via the explorer pro
 
 - [ ] **Step 1: Full test suites**
 
-Run: `corepack pnpm --filter @wherabouts.com/api exec vitest run` (api: includes the new proxy test)
-Run: `corepack pnpm --filter @wherabouts.com/web exec vitest run` (web: explorer + snippet + playground)
+Run: `corepack pnpm --filter @locnative/api exec vitest run` (api: includes the new proxy test)
+Run: `corepack pnpm --filter @locnative/web exec vitest run` (web: explorer + snippet + playground)
 Expected: all pass.
 
 - [ ] **Step 2: Typecheck both packages**
 
-Run: `corepack pnpm --filter @wherabouts.com/api check-types && corepack pnpm --filter @wherabouts.com/web check-types`
+Run: `corepack pnpm --filter @locnative/api check-types && corepack pnpm --filter @locnative/web check-types`
 Expected: no NEW errors (note/ignore any pre-existing unrelated ones).
 
 - [ ] **Step 3: Lint the changed surface**

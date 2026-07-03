@@ -16,7 +16,7 @@ next_action: Deploy and capture logs via wrangler tail
 
 expected: POST to /api/auth/sign-in/social should redirect to GitHub OAuth
 actual: 500 Internal Server Error
-errors: POST https://wherabouts-server.mr-amanijoseph.workers.dev/api/auth/sign-in/social 500 (Internal Server Error)
+errors: POST https://locnative-server.mr-amanijoseph.workers.dev/api/auth/sign-in/social 500 (Internal Server Error)
 reproduction: Click "Sign in with GitHub" on deployed app
 started: After fixing previous "Provider not found" error - code now committed with socialProviders.github, CF secrets set
 

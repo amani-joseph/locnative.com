@@ -1,5 +1,5 @@
-import type { Database } from "@wherabouts.com/database";
-import { addresses, type Zone, zones } from "@wherabouts.com/database/schema";
+import type { Database } from "@locnative/database";
+import { addresses, type Zone, zones } from "@locnative/database/schema";
 import { and, eq, sql } from "drizzle-orm";
 import type { GeoJsonPolygon } from "../routers/public/zones-schema.ts";
 
@@ -70,7 +70,7 @@ export async function listZoneRows(
 	limit: number,
 	offset: number
 ): Promise<ZoneRow[]> {
-	return db
+	return await db
 		.select({
 			id: zones.id,
 			projectId: zones.projectId,
@@ -93,7 +93,7 @@ export async function zonesContainingPoint(
 	lng: number
 ): Promise<ZoneRow[]> {
 	const point = sql`ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)`;
-	return db
+	return await db
 		.select({
 			id: zones.id,
 			projectId: zones.projectId,

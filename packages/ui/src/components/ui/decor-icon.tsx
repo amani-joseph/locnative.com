@@ -1,4 +1,4 @@
-import { cn } from "@wherabouts.com/ui/lib/utils";
+import { cn } from "@locnative/ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const DecorIconVariants = cva(

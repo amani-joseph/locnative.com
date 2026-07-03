@@ -1,8 +1,8 @@
-import { ORPCError } from "@orpc/server";
 import {
 	webhookDeliveryAttempts,
 	webhookSubscriptions,
-} from "@wherabouts.com/database/schema";
+} from "@locnative/database/schema";
+import { ORPCError } from "@orpc/server";
 import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { protectedProcedure } from "../../procedures.ts";
@@ -74,8 +74,13 @@ export const webhooksRouter = {
 					active: webhookSubscriptions.active,
 					createdAt: webhookSubscriptions.createdAt,
 				});
+			if (!sub) {
+				throw new ORPCError("INTERNAL_SERVER_ERROR", {
+					message: "Failed to create webhook.",
+				});
+			}
 			// Return plaintext secret ONCE — never stored, never retrievable again
-			return { ...sub!, secret };
+			return { ...sub, secret };
 		}),
 
 	delete: protectedProcedure

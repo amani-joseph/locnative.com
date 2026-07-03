@@ -1,5 +1,5 @@
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
-import { serverEnv } from "@wherabouts.com/env/server";
+import { serverEnv } from "@locnative/env/server";
 
 const ALGORITHM = "aes-256-gcm" as const;
 const IV_LENGTH = 12;

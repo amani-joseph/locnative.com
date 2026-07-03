@@ -184,7 +184,7 @@ export function GlobeDemo({
 							Search infrastructure that feels instantly local
 						</h2>
 						<p className="mx-auto mt-3 max-w-xl text-pretty text-muted-foreground text-sm md:text-base">
-							Wherabouts powers address lookup flows used across Australian
+							Locnative powers address lookup flows used across Australian
 							products, with low-latency delivery and globally distributed
 							clients.
 						</p>

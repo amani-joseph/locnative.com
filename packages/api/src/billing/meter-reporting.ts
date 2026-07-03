@@ -1,10 +1,10 @@
+import type { Database } from "@locnative/database";
 import {
 	apiUsageDaily,
 	billingAccounts,
 	billingMeterReports,
-} from "@wherabouts.com/database";
-import type { Database } from "@wherabouts.com/database";
-import { serverEnv } from "@wherabouts.com/env/server";
+} from "@locnative/database";
+import { serverEnv } from "@locnative/env/server";
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { getStripeClient } from "./stripe.ts";
 

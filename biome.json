@@ -9,6 +9,19 @@
     "ignoreUnknown": false,
     "includes": [
       "!**/.next",
+      "!**/.claude",
+      "!**/.superpowers",
+      "!**/Rg4xacSoJdQxVWTQ6Npgo",
+      "!**/.fuse_hidden*",
+      "!**/_tmp_*",
+      "!Locnative.com footer requirement",
+      "!marketing-assets",
+      "!apps/web/public/brand.html",
+      "!domain-availability-checker.html",
+      "!domain-availability-checker-v2.html",
+      "!locnative-flow-brand-package.html",
+      "!logo-concepts.html",
+      "!packages/database/.env",
       "!**/dist",
       "!**/.turbo",
       "!**/.nx",
@@ -80,5 +93,52 @@
       "tailwindDirectives": true
     }
   },
+  "overrides": [
+    {
+      "includes": [
+        "packages/vue-ui/**/*.vue",
+        "packages/vue-ui/src/composables/**/*.ts"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedImports": "off",
+            "noUnusedVariables": "off",
+            "useHookAtTopLevel": "off"
+          },
+          "style": {
+            "useFilenamingConvention": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["apps/web/src/routes/**/*"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "**/src/index.ts",
+        "**/src/**/index.ts",
+        "apps/web/src/components/ui/*.tsx",
+        "apps/web/src/lib/api-key-auth.ts",
+        "apps/web/src/lib/api-response.ts",
+        "apps/web/src/lib/with-api-key.ts"
+      ],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noBarrelFile": "off"
+          }
+        }
+      }
+    }
+  ],
   "extends": ["ultracite/biome/core", "ultracite/biome/react"]
 }

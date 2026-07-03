@@ -69,9 +69,9 @@ ALTER TABLE "batch_geocode_jobs" ALTER COLUMN "api_key_id" DROP NOT NULL;
 - [ ] **Step 3: Type-check + commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/packages/database && pnpm check-types 2>&1 | grep -i error || echo "no errors"
-git -C /Users/mac/Developer/projects/wherabouts.com add packages/database/src/schema/jobs.ts packages/database/drizzle/0012_batch_jobs_apikey_nullable.sql
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(db): make batch_geocode_jobs.apiKeyId nullable (migration 0012)"
+cd /Users/mac/Developer/projects/locnative.com/packages/database && pnpm check-types 2>&1 | grep -i error || echo "no errors"
+git -C /Users/mac/Developer/projects/locnative.com add packages/database/src/schema/jobs.ts packages/database/drizzle/0012_batch_jobs_apikey_nullable.sql
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(db): make batch_geocode_jobs.apiKeyId nullable (migration 0012)"
 ```
 
 ---
@@ -94,7 +94,7 @@ Proceed with the handlers below, adapting the env access to what you found.
 
 ```typescript
 import { ORPCError } from "@orpc/server";
-import { batchGeocodeJobs } from "@wherabouts.com/database/schema";
+import { batchGeocodeJobs } from "@locnative/database/schema";
 import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { protectedProcedure } from "../../procedures.ts";
@@ -224,9 +224,9 @@ Add `import { geocodeRouter } from "./domains/geocode.ts";` and `geocode: geocod
 - [ ] **Step 3: Type-check + commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/packages/api && pnpm check-types 2>&1 | grep -v "api-explorer.ts(204" | grep -i error || echo "no new errors"
-git -C /Users/mac/Developer/projects/wherabouts.com add packages/api/src/routers/domains/geocode.ts packages/api/src/routers/index.ts apps/server/src/index.ts
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(api): add session-authed dashboard geocode (batch) oRPC domain"
+cd /Users/mac/Developer/projects/locnative.com/packages/api && pnpm check-types 2>&1 | grep -v "api-explorer.ts(204" | grep -i error || echo "no new errors"
+git -C /Users/mac/Developer/projects/locnative.com add packages/api/src/routers/domains/geocode.ts packages/api/src/routers/index.ts apps/server/src/index.ts
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(api): add session-authed dashboard geocode (batch) oRPC domain"
 ```
 (Include `apps/server/src/index.ts` in the add only if you modified it to thread `env`.)
 
@@ -278,7 +278,7 @@ describe("parseAddresses", () => {
 - [ ] **Step 2: Run it — expect FAIL**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm vitest run src/components/batch/parse-addresses.test.ts
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm vitest run src/components/batch/parse-addresses.test.ts
 ```
 
 - [ ] **Step 3: Implement `parse-addresses.ts`**
@@ -350,9 +350,9 @@ export function parseAddresses(input: string): ParseResult {
 - [ ] **Step 4: Run the test — expect PASS (7 tests)** then commit
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm vitest run src/components/batch/parse-addresses.test.ts
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/src/components/batch/parse-addresses.ts apps/web/src/components/batch/parse-addresses.test.ts
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): add pure address/CSV parser for batch geocoding"
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm vitest run src/components/batch/parse-addresses.test.ts
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/src/components/batch/parse-addresses.ts apps/web/src/components/batch/parse-addresses.test.ts
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(web): add pure address/CSV parser for batch geocoding"
 ```
 
 ---
@@ -367,8 +367,8 @@ git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): add pu
 - [ ] **Step 1: Batch input component**
 
 ```typescript
-import { Button } from "@wherabouts.com/ui/components/button";
-import { Textarea } from "@wherabouts.com/ui/components/textarea";
+import { Button } from "@locnative/ui/components/button";
+import { Textarea } from "@locnative/ui/components/textarea";
 import { useRef, useState } from "react";
 
 export interface BatchInputProps {
@@ -415,12 +415,12 @@ export function BatchInput({ submitting, onSubmit }: BatchInputProps) {
 	);
 }
 ```
-> Verify `Textarea` is exported from `@wherabouts.com/ui/components/textarea` (it is, per the components list). Adjust import if needed.
+> Verify `Textarea` is exported from `@locnative/ui/components/textarea` (it is, per the components list). Adjust import if needed.
 
 - [ ] **Step 2: Job progress component**
 
 ```typescript
-import { Progress } from "@wherabouts.com/ui/components/progress";
+import { Progress } from "@locnative/ui/components/progress";
 
 export interface JobProgressProps {
 	status: string;
@@ -448,7 +448,7 @@ export function JobProgress({ status, processedCount, inputCount, error }: JobPr
 
 ```typescript
 import { createFileRoute } from "@tanstack/react-router";
-import { Card, CardContent, CardHeader, CardTitle } from "@wherabouts.com/ui/components/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@locnative/ui/components/card";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ActiveProjectSelector } from "@/components/active-project-selector";
@@ -549,9 +549,9 @@ function RouteComponent() {
 - [ ] **Step 4: Build + commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm build 2>&1 | tail -8
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/src/components/batch/batch-input.tsx apps/web/src/components/batch/job-progress.tsx apps/web/src/routes/_protected/batch.tsx
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): batch geocoding page with submit + polling progress"
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm build 2>&1 | tail -8
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/src/components/batch/batch-input.tsx apps/web/src/components/batch/job-progress.tsx apps/web/src/routes/_protected/batch.tsx
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(web): batch geocoding page with submit + polling progress"
 ```
 
 ---
@@ -566,7 +566,7 @@ git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): batch 
 - [ ] **Step 1: Results table + CSV/JSON export `results-table.tsx`**
 
 ```typescript
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Table,
 	TableBody,
@@ -574,7 +574,7 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@wherabouts.com/ui/components/table";
+} from "@locnative/ui/components/table";
 
 export interface BatchResultRow {
 	input: string;
@@ -668,7 +668,7 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@wherabouts.com/ui/components/table";
+} from "@locnative/ui/components/table";
 
 export interface JobHistoryItem {
 	id: string;
@@ -751,9 +751,9 @@ import { JobHistory, type JobHistoryItem } from "@/components/batch/job-history"
 - [ ] **Step 4: Build + commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm build 2>&1 | tail -8
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/src/components/batch/results-table.tsx apps/web/src/components/batch/job-history.tsx apps/web/src/routes/_protected/batch.tsx
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): batch results table with export + job history"
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm build 2>&1 | tail -8
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/src/components/batch/results-table.tsx apps/web/src/components/batch/job-history.tsx apps/web/src/routes/_protected/batch.tsx
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(web): batch results table with export + job history"
 ```
 
 ---
@@ -781,9 +781,9 @@ export interface DashboardBatchJobSummary {
 - [ ] **Step 2: Type-check + commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/packages/sdk && pnpm check-types 2>&1 | grep -i error || echo "no errors"
-git -C /Users/mac/Developer/projects/wherabouts.com add packages/sdk/src/types.ts
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(sdk): add dashboard batch job summary type"
+cd /Users/mac/Developer/projects/locnative.com/packages/sdk && pnpm check-types 2>&1 | grep -i error || echo "no errors"
+git -C /Users/mac/Developer/projects/locnative.com add packages/sdk/src/types.ts
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(sdk): add dashboard batch job summary type"
 ```
 
 ---

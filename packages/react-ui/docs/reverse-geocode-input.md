@@ -21,10 +21,10 @@ Resolves a `latitude`/`longitude` pair to the nearest address (reverse geocoding
 ## Import & minimal example
 
 ```tsx
-import { createWheraboutsClient } from "@wherabouts/sdk";
-import { ReverseGeocodeInput } from "@wherabouts/react-ui";
+import { createLocnativeClient } from "@locnative/sdk";
+import { ReverseGeocodeInput } from "@locnative/react-ui";
 
-const client = createWheraboutsClient({ apiKey: "..." });
+const client = createLocnativeClient({ apiKey: "..." });
 
 function MyComponent() {
   const [coords, setCoords] = React.useState<{
@@ -97,7 +97,7 @@ Pass `null` for either coordinate to suppress the network request entirely. The 
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `client` | `WheraboutsClient` | **Required** | SDK client created with `createWheraboutsClient`. |
+| `client` | `LocnativeClient` | **Required** | SDK client created with `createLocnativeClient`. |
 | `latitude` | `number \| null` | **Required** | Latitude to reverse-geocode. `null` suppresses the request. |
 | `longitude` | `number \| null` | **Required** | Longitude to reverse-geocode. `null` suppresses the request. |
 | `onResult` | `(r: { address: string \| null; distance: number \| null }) => void` | — | Called whenever the resolved address changes. Both fields are `null` when no result is available. |

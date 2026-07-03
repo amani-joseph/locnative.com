@@ -1,4 +1,4 @@
-import { type AddressSuggestion, countryName } from "@wherabouts/sdk";
+import { type AddressSuggestion, countryName } from "@locnative/sdk";
 import type { AddressWithParsed } from "../types";
 
 export function toAddressWithParsed(

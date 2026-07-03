@@ -1,12 +1,12 @@
-import type { Database } from "@wherabouts.com/database";
-import { billingAccounts } from "@wherabouts.com/database";
+import type { Database } from "@locnative/database";
+import { billingAccounts } from "@locnative/database";
 import { eq } from "drizzle-orm";
 import type Stripe from "stripe";
 
 export interface AccountUpdate {
-	status?: "free" | "active" | "past_due" | "canceled";
-	hasPaymentMethod?: boolean;
 	blocked?: boolean;
+	hasPaymentMethod?: boolean;
+	status?: "free" | "active" | "past_due" | "canceled";
 	stripeSubscriptionId?: string | null;
 }
 

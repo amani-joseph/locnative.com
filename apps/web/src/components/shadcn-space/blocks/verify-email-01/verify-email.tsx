@@ -1,3 +1,4 @@
+import { LogoIcon } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -21,17 +22,8 @@ const VerifyEmail = () => {
 				<Card className="relative px-6 py-8 sm:p-12">
 					<CardHeader className="gap-6 p-0 text-center">
 						<div className="mx-auto">
-							<a href="">
-								<img
-									alt="shadcnspace"
-									className="h-10 w-10 dark:hidden"
-									src="https://images.shadcnspace.com/assets/logo/logo-icon-black.svg"
-								/>
-								<img
-									alt="shadcnspace"
-									className="hidden h-10 w-10 dark:block"
-									src="https://images.shadcnspace.com/assets/logo/logo-icon-white.svg"
-								/>
+							<a href="/">
+								<LogoIcon alt="Locnative" className="h-10 w-10" />
 							</a>
 						</div>
 						<div className="flex flex-col gap-1">
@@ -58,12 +50,12 @@ const VerifyEmail = () => {
 									</Button>
 									<FieldDescription className="text-center font-normal text-muted-foreground text-sm">
 										Didn&apos;t get the email?{" "}
-										<a
+										<button
 											className="no-underline! font-medium text-card-foreground"
-											href="#"
+											type="button"
 										>
 											Resend
-										</a>
+										</button>
 									</FieldDescription>
 								</Field>
 							</FieldGroup>

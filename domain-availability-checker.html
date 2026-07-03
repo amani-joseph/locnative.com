@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Domain Availability Checker — 90 .com Candidates</title>
+		<style>
+		:root {
+			--bg: #0c0c0d;
+			--surface: #131315;
+			--border: #2a2a2d;
+			--fg: #f4f4f5;
+			--muted: #a1a1aa;
+			--green: #22c55e;
+			--red: #ef4444;
+			--amber: #f59e0b;
+			--blue: #38bdf8;
+			--accent: #00d4ff;
+		}
+		* {
+			box-sizing: border-box;
+			padding: 0;
+			margin: 0;
+		}
+		body {
+			min-height: 100vh;
+			padding: 32px 24px;
+			font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+			color: var(--fg);
+			background: var(--bg);
+		}
+		h1 {
+			margin-bottom: 6px;
+			font-size: 26px;
+			font-weight: 800;
+			color: var(--accent);
+			letter-spacing: -0.03em;
+		}
+		.subtitle {
+			margin-bottom: 28px;
+			font-size: 14px;
+			color: var(--muted);
+		}
+		.stats {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 16px;
+			margin-bottom: 24px;
+		}
+		.stat {
+			min-width: 120px;
+			padding: 12px 20px;
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 10px;
+		}
+		.stat .num {
+			font-size: 28px;
+			font-weight: 800;
+			line-height: 1;
+		}
+		.stat .label {
+			margin-top: 4px;
+			font-size: 12px;
+			color: var(--muted);
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+		}
+		.stat.available .num {
+			color: var(--green);
+		}
+		.stat.taken .num {
+			color: var(--red);
+		}
+		.stat.checking .num {
+			color: var(--amber);
+		}
+		.stat.total .num {
+			color: var(--blue);
+		}
+
+		.controls {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			align-items: center;
+			margin-bottom: 20px;
+		}
+		button {
+			padding: 10px 22px;
+			font-size: 14px;
+			font-weight: 600;
+			cursor: pointer;
+			border: none;
+			border-radius: 8px;
+			transition: opacity 0.15s;
+		}
+		button:disabled {
+			cursor: not-allowed;
+			opacity: 0.4;
+		}
+		#startBtn {
+			color: #000;
+			background: var(--accent);
+		}
+		#filterAvail {
+			color: var(--green);
+			background: var(--surface);
+			border: 1px solid var(--green);
+		}
+		#filterAll {
+			color: var(--fg);
+			background: var(--surface);
+			border: 1px solid var(--border);
+		}
+
+		.progress-bar {
+			height: 4px;
+			margin-bottom: 20px;
+			overflow: hidden;
+			background: var(--border);
+			border-radius: 2px;
+		}
+		.progress-fill {
+			width: 0%;
+			height: 100%;
+			background: linear-gradient(90deg, var(--accent), #6ee7ff);
+			border-radius: 2px;
+			transition: width 0.3s ease;
+		}
+
+		table {
+			width: 100%;
+			font-size: 14px;
+			border-collapse: collapse;
+		}
+		thead th {
+			position: sticky;
+			top: 0;
+			z-index: 10;
+			padding: 10px 14px;
+			font-size: 11px;
+			font-weight: 700;
+			color: var(--muted);
+			text-align: left;
+			text-transform: uppercase;
+			letter-spacing: 0.1em;
+			background: var(--surface);
+			border-bottom: 1px solid var(--border);
+		}
+		tbody tr {
+			border-bottom: 1px solid var(--border);
+			transition: background 0.1s;
+		}
+		tbody tr:hover {
+			background: rgba(255, 255, 255, 0.03);
+		}
+		tbody td {
+			padding: 10px 14px;
+			vertical-align: middle;
+		}
+
+		.domain-name {
+			font-family: ui-monospace, "SF Mono", monospace;
+			font-size: 15px;
+			font-weight: 600;
+			color: var(--fg);
+		}
+		.category-badge {
+			display: inline-block;
+			padding: 2px 8px;
+			font-size: 11px;
+			color: var(--muted);
+			background: rgba(255, 255, 255, 0.06);
+			border: 1px solid var(--border);
+			border-radius: 999px;
+		}
+		.status-badge {
+			display: inline-flex;
+			gap: 6px;
+			align-items: center;
+			padding: 4px 12px;
+			font-size: 12px;
+			font-weight: 700;
+			letter-spacing: 0.05em;
+			border-radius: 999px;
+		}
+		.status-badge.available {
+			color: var(--green);
+			background: rgba(34, 197, 94, 0.12);
+			border: 1px solid rgba(34, 197, 94, 0.3);
+		}
+		.status-badge.taken {
+			color: var(--red);
+			background: rgba(239, 68, 68, 0.1);
+			border: 1px solid rgba(239, 68, 68, 0.25);
+		}
+		.status-badge.pending {
+			color: var(--amber);
+			background: rgba(245, 158, 11, 0.1);
+			border: 1px solid rgba(245, 158, 11, 0.25);
+		}
+		.status-badge.error {
+			color: var(--muted);
+			background: rgba(161, 161, 170, 0.1);
+			border: 1px solid var(--border);
+		}
+
+		.dot {
+			flex-shrink: 0;
+			width: 7px;
+			height: 7px;
+			border-radius: 50%;
+		}
+		.dot.available {
+			background: var(--green);
+			box-shadow: 0 0 6px var(--green);
+		}
+		.dot.taken {
+			background: var(--red);
+		}
+		.dot.pending {
+			background: var(--amber);
+			animation: pulse 1s ease-in-out infinite;
+		}
+		.dot.error {
+			background: var(--muted);
+		}
+
+		@keyframes pulse {
+			0%,
+			100% {
+				opacity: 1;
+			}
+			50% {
+				opacity: 0.3;
+			}
+		}
+
+		.cf-link {
+			display: inline-flex;
+			gap: 5px;
+			align-items: center;
+			padding: 5px 12px;
+			font-size: 12px;
+			font-weight: 600;
+			color: var(--accent);
+			text-decoration: none;
+			background: rgba(0, 212, 255, 0.08);
+			border: 1px solid rgba(0, 212, 255, 0.25);
+			border-radius: 6px;
+			transition: background 0.15s;
+		}
+		.cf-link:hover {
+			background: rgba(0, 212, 255, 0.16);
+		}
+		.cf-link svg {
+			width: 12px;
+			height: 12px;
+		}
+
+		.note {
+			padding: 14px 18px;
+			margin-top: 24px;
+			font-size: 13px;
+			line-height: 1.6;
+			color: var(--muted);
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 10px;
+		}
+		.note strong {
+			color: var(--fg);
+		}
+
+		.hidden {
+			display: none !important;
+		}
+		</style>
+	</head>
+	<body>
+		<h1>Domain Availability Checker</h1>
+		<p class="subtitle">
+			90 unique .com candidates · checked live against the RDAP registry ·
+			Cloudflare links for available names
+		</p>
+
+		<div class="stats">
+			<div class="stat total">
+				<div class="num" id="totalCount">90</div>
+				<div class="label">Total</div>
+			</div>
+			<div class="stat available">
+				<div class="num" id="availCount">—</div>
+				<div class="label">Available</div>
+			</div>
+			<div class="stat taken">
+				<div class="num" id="takenCount">—</div>
+				<div class="label">Taken</div>
+			</div>
+			<div class="stat checking">
+				<div class="num" id="pendingCount">—</div>
+				<div class="label">Checking</div>
+			</div>
+		</div>
+
+		<div class="controls">
+			<button id="startBtn" onclick="startCheck()">▶ Check All Domains</button>
+			<button id="filterAvail" onclick="filterAvailable()" style="display:none">
+				✓ Show Available Only
+			</button>
+			<button id="filterAll" onclick="filterAll()" style="display:none">
+				Show All
+			</button>
+		</div>
+
+		<div class="progress-bar">
+			<div class="progress-fill" id="progressFill"></div>
+		</div>
+
+		<table>
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Domain</th>
+					<th>Category</th>
+					<th>Root / Meaning</th>
+					<th>Status</th>
+					<th>Register on Cloudflare</th>
+				</tr>
+			</thead>
+			<tbody id="tableBody"></tbody>
+		</table>
+
+		<div class="note">
+			<strong>How this works:</strong>
+			Availability is checked via RDAP (Registration Data Access Protocol), the
+			public IANA-standard registry lookup that replaced WHOIS. A 404 response
+			means the domain is not currently registered and is likely available. A
+			200 means it is registered. This is the same data source Cloudflare's
+			registrar queries. <br><br>
+			<strong>Note:</strong>
+			Available via RDAP ≠ guaranteed purchasable — some domains may be in the
+			Cloudflare marketplace, premium-priced, or reserved. Always confirm on
+			Cloudflare before committing. Checking ~90 domains takes about 15–30
+			seconds.
+		</div>
+
+		<script>
+		"use strict";
+		const DOMAINS = [
+			// A. Pure Latin Roots
+			{ domain: "loci.com", cat: "Latin", meaning: "locus — places" },
+			{ domain: "situs.com", cat: "Latin", meaning: "position, site" },
+			{ domain: "nodus.com", cat: "Latin", meaning: "node, junction" },
+			{ domain: "orbis.com", cat: "Latin", meaning: "world, globe" },
+			{ domain: "regio.com", cat: "Latin", meaning: "region, district" },
+			{ domain: "vicus.com", cat: "Latin", meaning: "street, neighborhood" },
+			{ domain: "signum.com", cat: "Latin", meaning: "sign, mark, signal" },
+			{ domain: "puncta.com", cat: "Latin", meaning: "points (punctum)" },
+			{ domain: "spatia.com", cat: "Latin", meaning: "spaces, extents" },
+			{ domain: "itera.com", cat: "Latin", meaning: "from iter: journey" },
+			{ domain: "cursio.com", cat: "Latin", meaning: "course, path (cursus)" },
+			{ domain: "meridio.com", cat: "Latin", meaning: "meridian, direction" },
+			{ domain: "orbita.com", cat: "Latin", meaning: "orbit, track, groove" },
+			{ domain: "vestigio.com", cat: "Latin", meaning: "footprint, trace" },
+			{
+				domain: "terramo.com",
+				cat: "Latin",
+				meaning: "terra + amo: I love the earth",
+			},
+			// B. Greek Roots
+			{ domain: "topos.com", cat: "Greek", meaning: "τόπος — place" },
+			{ domain: "chorex.com", cat: "Greek", meaning: "χώρα — region, space" },
+			{ domain: "topix.com", cat: "Greek", meaning: "topos + ix: place-index" },
+			{
+				domain: "chorix.com",
+				cat: "Greek",
+				meaning: "chora + ix: space registry",
+			},
+			{
+				domain: "topio.com",
+				cat: "Greek",
+				meaning: "topos + io: place platform",
+			},
+			{
+				domain: "choreia.com",
+				cat: "Greek",
+				meaning: "χωρεία: spatial movement",
+			},
+			{
+				domain: "loxio.com",
+				cat: "Greek",
+				meaning: "λοξός: loxodrome (nav path)",
+			},
+			{
+				domain: "loxo.com",
+				cat: "Greek",
+				meaning: "oblique, the navigator's line",
+			},
+			{
+				domain: "gnomex.com",
+				cat: "Greek",
+				meaning: "gnomon: pointer, indicator",
+			},
+			{ domain: "semio.com", cat: "Greek", meaning: "σήμα: sign, signal" },
+			{ domain: "scopex.com", cat: "Greek", meaning: "σκοπεῖν: to observe" },
+			{
+				domain: "tropex.com",
+				cat: "Greek",
+				meaning: "τροπή: turning, direction",
+			},
+			{
+				domain: "topaxis.com",
+				cat: "Greek",
+				meaning: "topos + axis: place coordinate",
+			},
+			{
+				domain: "topolis.com",
+				cat: "Greek",
+				meaning: "topos + polis: city of places",
+			},
+			{
+				domain: "chorema.com",
+				cat: "Greek",
+				meaning: "χώρεμα: space container",
+			},
+			// C. Geo- Compounds
+			{ domain: "geovex.com", cat: "Geo-", meaning: "geo + vex: earth-drive" },
+			{ domain: "geonex.com", cat: "Geo-", meaning: "geo + nexus: geo hub" },
+			{
+				domain: "geodex.com",
+				cat: "Geo-",
+				meaning: "geo + index: geographic index",
+			},
+			{
+				domain: "geoplex.com",
+				cat: "Geo-",
+				meaning: "geo + plex: multi-layer platform",
+			},
+			{
+				domain: "geoflex.com",
+				cat: "Geo-",
+				meaning: "geo + flex: flexible geo APIs",
+			},
+			{
+				domain: "geolar.com",
+				cat: "Geo-",
+				meaning: "geo + lares: guardian of places",
+			},
+			{
+				domain: "geolix.com",
+				cat: "Geo-",
+				meaning: "geo + lix: flowing geo data",
+			},
+			{ domain: "geomio.com", cat: "Geo-", meaning: "geo + mio: my location" },
+			{
+				domain: "geovio.com",
+				cat: "Geo-",
+				meaning: "geo + via: geographic pathways",
+			},
+			{ domain: "geonova.com", cat: "Geo-", meaning: "geo + nova: new earth" },
+			{
+				domain: "geonar.com",
+				cat: "Geo-",
+				meaning: "geo + nar: geo data stream",
+			},
+			{
+				domain: "georic.com",
+				cat: "Geo-",
+				meaning: "geo + oric: of the earth",
+			},
+			{
+				domain: "geotra.com",
+				cat: "Geo-",
+				meaning: "geo + tra: geographic path",
+			},
+			{ domain: "geomex.com", cat: "Geo-", meaning: "geo + mex: geo matrix" },
+			{ domain: "geora.com", cat: "Geo-", meaning: "geo + ora: geo edge" },
+			// D. Loc- Compounds
+			{
+				domain: "locix.com",
+				cat: "Loc-",
+				meaning: "locus + ix: location index",
+			},
+			{
+				domain: "locio.com",
+				cat: "Loc-",
+				meaning: "locus + io: location platform",
+			},
+			{
+				domain: "locamo.com",
+				cat: "Loc-",
+				meaning: "locus + amo: love of place",
+			},
+			{
+				domain: "locaxis.com",
+				cat: "Loc-",
+				meaning: "location + axis: coordinate spine",
+			},
+			{
+				domain: "locaris.com",
+				cat: "Loc-",
+				meaning: "locus + aris: relating to place",
+			},
+			{
+				domain: "locplex.com",
+				cat: "Loc-",
+				meaning: "location + plex: complex, simply",
+			},
+			{
+				domain: "locatra.com",
+				cat: "Loc-",
+				meaning: "locus + atra: black stone marker",
+			},
+			{
+				domain: "locovex.com",
+				cat: "Loc-",
+				meaning: "locus + ovex: location velocity",
+			},
+			{
+				domain: "locara.com",
+				cat: "Loc-",
+				meaning: "locus + ara: place altar",
+			},
+			{
+				domain: "loqo.com",
+				cat: "Loc-",
+				meaning: "loquor: locations that speak",
+			},
+			{
+				domain: "locanova.com",
+				cat: "Loc-",
+				meaning: "locus + nova: new location",
+			},
+			{
+				domain: "locivus.com",
+				cat: "Loc-",
+				meaning: "locus + ivus: of/related to place",
+			},
+			{
+				domain: "locomo.com",
+				cat: "Loc-",
+				meaning: "locomotion root: movement + place",
+			},
+			{
+				domain: "locify.com",
+				cat: "Loc-",
+				meaning: "location + ify: to make locatable",
+			},
+			// E. Terra- Compounds
+			{
+				domain: "terrax.com",
+				cat: "Terra-",
+				meaning: "terra + x: earth accelerated",
+			},
+			{
+				domain: "terrix.com",
+				cat: "Terra-",
+				meaning: "terra + ix: earth index",
+			},
+			{
+				domain: "terrana.com",
+				cat: "Terra-",
+				meaning: "terra + ana: of the earth",
+			},
+			{
+				domain: "terraloc.com",
+				cat: "Terra-",
+				meaning: "terra + loc: earth location",
+			},
+			{
+				domain: "terrapin.com",
+				cat: "Terra-",
+				meaning: "terra + pin: earth pin (also a turtle)",
+			},
+			{
+				domain: "terranova.com",
+				cat: "Terra-",
+				meaning: "terra + nova: new land",
+			},
+			{
+				domain: "terrio.com",
+				cat: "Terra-",
+				meaning: "terra + io: earth platform",
+			},
+			{
+				domain: "terraxis.com",
+				cat: "Terra-",
+				meaning: "terra + axis: axis of the earth",
+			},
+			{
+				domain: "terrex.com",
+				cat: "Terra-",
+				meaning: "terra + ex (⚠ Adidas conflict risk)",
+			},
+			// F. Via / Route
+			{ domain: "viatra.com", cat: "Via-", meaning: "via + tra: road through" },
+			{
+				domain: "viax.com",
+				cat: "Via-",
+				meaning: "via + x: the road accelerated",
+			},
+			{
+				domain: "viamo.com",
+				cat: "Via-",
+				meaning: "via + amo: I love the road",
+			},
+			{
+				domain: "nexvia.com",
+				cat: "Via-",
+				meaning: "nexus + via: connected road",
+			},
+			{
+				domain: "iterum.com",
+				cat: "Via-",
+				meaning: "Latin iterum: again, reliable",
+			},
+			{
+				domain: "iternex.com",
+				cat: "Via-",
+				meaning: "iter + nexus: journey connection",
+			},
+			// G. Signal / Mark
+			{
+				domain: "semafor.com",
+				cat: "Signal",
+				meaning: "σήμα: sign-bearer / semaphore",
+			},
+			{
+				domain: "punctex.com",
+				cat: "Signal",
+				meaning: "punctum + ex: point extraction",
+			},
+			{
+				domain: "punctix.com",
+				cat: "Signal",
+				meaning: "punctum + ix: point index",
+			},
+			{
+				domain: "stigmo.com",
+				cat: "Signal",
+				meaning: "στίγμα: mark, pinpoint",
+			},
+			{
+				domain: "pinara.com",
+				cat: "Signal",
+				meaning: "pin + ara: classical pin",
+			},
+			{
+				domain: "positrix.com",
+				cat: "Signal",
+				meaning: "positio + trix: that which positions",
+			},
+			{
+				domain: "meridiem.com",
+				cat: "Signal",
+				meaning: "meridies: the meridian direction",
+			},
+			// H. Short / Punchy
+			{ domain: "nodi.com", cat: "Short", meaning: "Latin: nodes (junctions)" },
+			{
+				domain: "sito.com",
+				cat: "Short",
+				meaning: "Latin: from situs (position)",
+			},
+			{ domain: "orbix.com", cat: "Short", meaning: "orbis + ix: world index" },
+			{
+				domain: "arion.com",
+				cat: "Short",
+				meaning: "Greek myth: fastest horse",
+			},
+			// I. Portmanteaux
+			{
+				domain: "peregrio.com",
+				cat: "Blend",
+				meaning: "peregrinus: traveler, pilgrim",
+			},
+			{
+				domain: "centrix.com",
+				cat: "Blend",
+				meaning: "centrum + ix: centre matrix",
+			},
+			{
+				domain: "radiux.com",
+				cat: "Blend",
+				meaning: "radius + x: radial geo search",
+			},
+			{
+				domain: "apexio.com",
+				cat: "Blend",
+				meaning: "apex + io: outermost point platform",
+			},
+			{
+				domain: "trajecto.com",
+				cat: "Blend",
+				meaning: "trajectus: the path traced in space",
+			},
+		];
+
+		const RDAP_BASE = "https://rdap.verisign.com/com/v1/domain/";
+		const CF_SEARCH = "https://www.cloudflare.com/products/registrar/";
+		// Cloudflare's search page doesn't have a direct domain param, but we can link to their registrar
+		// and note the domain. The best direct link is actually:
+		// https://dash.cloudflare.com/?account=&to=/:account/domains/register
+
+		const stateCounts = { available: 0, taken: 0, pending: 0 };
+		let showingAvailOnly = false;
+
+		function updateStats(available, taken, pending) {
+			document.getElementById("availCount").textContent = available;
+			document.getElementById("takenCount").textContent = taken;
+			document.getElementById("pendingCount").textContent = pending;
+			document.getElementById("progressFill").style.width =
+				((available + taken) / DOMAINS.length) * 100 + "%";
+		}
+
+		function buildTable() {
+			const tbody = document.getElementById("tableBody");
+			tbody.innerHTML = "";
+			DOMAINS.forEach((d, i) => {
+				const tr = document.createElement("tr");
+				tr.id = "row-" + i;
+				tr.dataset.status = "pending";
+				tr.innerHTML = `
+      <td style="color:var(--muted);font-size:12px;">${i + 1}</td>
+      <td><span class="domain-name">${d.domain}</span></td>
+      <td><span class="category-badge">${d.cat}</span></td>
+      <td style="color:var(--muted);font-size:13px;">${d.meaning}</td>
+      <td id="status-${i}"><span class="status-badge pending"><span class="dot pending"></span>Pending</span></td>
+      <td id="link-${i}">—</td>
+    `;
+				tbody.appendChild(tr);
+			});
+		}
+
+		async function checkDomain(domain, index) {
+			const url = RDAP_BASE + domain;
+			try {
+				const res = await fetch(url, {
+					method: "GET",
+					signal: AbortSignal.timeout(10_000),
+				});
+				return res.status === 404 ? "available" : "taken";
+			} catch (e) {
+				// 404 throws in some fetch implementations, check message
+				if (e.message && e.message.includes("404")) {
+					return "available";
+				}
+				return "error";
+			}
+		}
+
+		async function startCheck() {
+			document.getElementById("startBtn").disabled = true;
+			document.getElementById("startBtn").textContent = "⏳ Checking…";
+			buildTable();
+
+			let available = 0,
+				taken = 0,
+				pending = DOMAINS.length;
+			updateStats(available, taken, pending);
+
+			// Run in batches of 8 for good throughput without hammering the server
+			const BATCH = 8;
+			for (let i = 0; i < DOMAINS.length; i += BATCH) {
+				const batch = DOMAINS.slice(i, Math.min(i + BATCH, DOMAINS.length));
+				await Promise.all(
+					batch.map(async (d, bi) => {
+						const idx = i + bi;
+						const result = await checkDomain(d.domain, idx);
+						const statusEl = document.getElementById("status-" + idx);
+						const linkEl = document.getElementById("link-" + idx);
+						const row = document.getElementById("row-" + idx);
+
+						pending--;
+						if (result === "available") {
+							available++;
+							row.dataset.status = "available";
+							statusEl.innerHTML = `<span class="status-badge available"><span class="dot available"></span>AVAILABLE</span>`;
+							linkEl.innerHTML = `<a class="cf-link" href="https://www.cloudflare.com/products/registrar/" target="_blank" title="Search ${d.domain} on Cloudflare">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          Register on Cloudflare
+        </a>`;
+						} else if (result === "taken") {
+							taken++;
+							row.dataset.status = "taken";
+							statusEl.innerHTML = `<span class="status-badge taken"><span class="dot taken"></span>TAKEN</span>`;
+							linkEl.innerHTML = `<span style="color:var(--muted);font-size:12px;">Already registered</span>`;
+						} else {
+							row.dataset.status = "error";
+							statusEl.innerHTML = `<span class="status-badge error"><span class="dot error"></span>Unknown</span>`;
+							linkEl.innerHTML = `<a class="cf-link" href="https://www.cloudflare.com/products/registrar/" target="_blank">Check manually</a>`;
+						}
+
+						if (showingAvailOnly && result !== "available") {
+							row.classList.add("hidden");
+						}
+						updateStats(available, taken, pending);
+					})
+				);
+				// Small pause between batches
+				await new Promise((r) => setTimeout(r, 200));
+			}
+
+			document.getElementById("startBtn").textContent = "✓ Done";
+			document.getElementById("filterAvail").style.display = "inline-block";
+			document.getElementById("filterAll").style.display = "inline-block";
+
+			// Sort: available first
+			const tbody = document.getElementById("tableBody");
+			const rows = Array.from(tbody.querySelectorAll("tr"));
+			rows.sort((a, b) => {
+				const order = { available: 0, error: 1, taken: 2 };
+				return (order[a.dataset.status] ?? 3) - (order[b.dataset.status] ?? 3);
+			});
+			rows.forEach((r) => tbody.appendChild(r));
+		}
+
+		function filterAvailable() {
+			showingAvailOnly = true;
+			document.querySelectorAll("#tableBody tr").forEach((r) => {
+				r.classList.toggle("hidden", r.dataset.status !== "available");
+			});
+		}
+
+		function filterAll() {
+			showingAvailOnly = false;
+			document
+				.querySelectorAll("#tableBody tr")
+				.forEach((r) => r.classList.remove("hidden"));
+		}
+
+		// Build table on load so user can see domains before checking
+		buildTable();
+		</script>
+	</body>
+</html>

@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { apiKeys } from "@wherabouts.com/database";
+import { apiKeys } from "@locnative/database";
 import { and, asc, eq, isNull } from "drizzle-orm";
 import {
 	API_KEY_PREFIX,

@@ -4,7 +4,7 @@
 
 **Goal:** Add `GET /api/v1/routing/directions` — driving distance, duration, and route geometry between two points (coords or G-NAF address IDs) over a self-hosted OSRM engine, with an SDK method and docs wiring.
 
-**Architecture:** A Docker OSRM service (car profile, AU OSM extract) runs off-Cloudflare and is reachable only by the Worker. A shared query helper resolves inputs to coordinates, calls OSRM over HTTP, and maps the response to the Wherabouts envelope. A public oRPC route exposes it under `/api/v1/*` with the existing API-key auth + usage middleware. The hand-written SDK gains a `routing` namespace.
+**Architecture:** A Docker OSRM service (car profile, AU OSM extract) runs off-Cloudflare and is reachable only by the Worker. A shared query helper resolves inputs to coordinates, calls OSRM over HTTP, and maps the response to the Locnative envelope. A public oRPC route exposes it under `/api/v1/*` with the existing API-key auth + usage middleware. The hand-written SDK gains a `routing` namespace.
 
 **Tech Stack:** TypeScript (ESM, `.ts` import specifiers), oRPC + Zod, Drizzle/Neon, vitest, Docker + OSRM (`osrm-backend`), Fly.io.
 
@@ -57,7 +57,7 @@
 
 - [ ] **Step 3: Type-check.**
 
-Run: `pnpm -F @wherabouts.com/env check-types` (if no such script, `pnpm -F @wherabouts.com/api check-types`)
+Run: `pnpm -F @locnative/env check-types` (if no such script, `pnpm -F @locnative/api check-types`)
 Expected: PASS.
 
 - [ ] **Step 4: Document the vars for local dev.** Append to the repo `.env` example / `apps/server/.dev.vars` if present (grep first: `git grep -l KEY_ENC_KEY -- '*.vars' '*.env*'`). Add:
@@ -79,7 +79,7 @@ process.env.OSRM_BASE_URL ??= "http://localhost:5000";
 process.env.OSRM_AUTH_TOKEN ??= "test-token";
 ```
 
-Then run `pnpm -F @wherabouts.com/api test` and confirm the existing suite still passes (no env-validation throw at import).
+Then run `pnpm -F @locnative/api test` and confirm the existing suite still passes (no env-validation throw at import).
 
 - [ ] **Step 6: Commit.**
 
@@ -209,14 +209,14 @@ describe("fetchOsrmRoute", () => {
 
 - [ ] **Step 2: Run it to confirm it fails.**
 
-Run: `pnpm -F @wherabouts.com/api test -- routing-queries`
+Run: `pnpm -F @locnative/api test -- routing-queries`
 Expected: FAIL ("Cannot find module './routing-queries.ts'").
 
 - [ ] **Step 3: Implement the helper.** Create `packages/api/src/shared/routing-queries.ts`:
 
 ```ts
-import type { Database } from "@wherabouts.com/database";
-import { addresses } from "@wherabouts.com/database/schema";
+import type { Database } from "@locnative/database";
+import { addresses } from "@locnative/database/schema";
 import { eq } from "drizzle-orm";
 
 export interface LatLng {
@@ -351,7 +351,7 @@ export async function fetchOsrmRoute(
 
 - [ ] **Step 4: Run the tests.**
 
-Run: `pnpm -F @wherabouts.com/api test -- routing-queries`
+Run: `pnpm -F @locnative/api test -- routing-queries`
 Expected: PASS (5 tests).
 
 - [ ] **Step 5: Commit.**
@@ -417,15 +417,15 @@ describe("resolveDirectionsInput", () => {
 
 - [ ] **Step 2: Run it to confirm it fails.**
 
-Run: `pnpm -F @wherabouts.com/api test -- routers/public/routing`
+Run: `pnpm -F @locnative/api test -- routers/public/routing`
 Expected: FAIL ("Cannot find module './routing.ts'").
 
 - [ ] **Step 3: Implement the route.** Create `packages/api/src/routers/public/routing.ts`:
 
 ```ts
 import { ORPCError } from "@orpc/server";
-import type { Database } from "@wherabouts.com/database";
-import { serverEnv } from "@wherabouts.com/env/server";
+import type { Database } from "@locnative/database";
+import { serverEnv } from "@locnative/env/server";
 import { z } from "zod";
 import { o as baseBuilder } from "../../builder.ts";
 import {
@@ -546,12 +546,12 @@ export const routingDirections = baseBuilder
 
 - [ ] **Step 4: Run the tests.**
 
-Run: `pnpm -F @wherabouts.com/api test -- routers/public/routing`
+Run: `pnpm -F @locnative/api test -- routers/public/routing`
 Expected: PASS (4 tests).
 
 - [ ] **Step 5: Type-check the package.**
 
-Run: `pnpm -F @wherabouts.com/api check-types`
+Run: `pnpm -F @locnative/api check-types`
 Expected: PASS.
 
 - [ ] **Step 6: Commit.**
@@ -593,12 +593,12 @@ import { routingDirections } from "./public/routing.ts";
 
 - [ ] **Step 4: Type-check both packages.**
 
-Run: `pnpm -F @wherabouts.com/api check-types && pnpm -F @wherabouts.com/server check-types`
+Run: `pnpm -F @locnative/api check-types && pnpm -F @locnative/server check-types`
 Expected: PASS.
 
 - [ ] **Step 5: Run the API test suite (no regressions).**
 
-Run: `pnpm -F @wherabouts.com/api test`
+Run: `pnpm -F @locnative/api test`
 Expected: PASS (all prior + new routing tests).
 
 - [ ] **Step 6: Commit.**
@@ -672,7 +672,7 @@ echo "Done. Artifacts in $DATA_DIR (australia-latest.osrm*)."
 - [ ] **Step 3: Fly config.** Create `infra/osrm/fly.toml`:
 
 ```toml
-app = "wherabouts-osrm"
+app = "locnative-osrm"
 primary_region = "syd"
 
 [build]
@@ -695,7 +695,7 @@ primary_region = "syd"
 - [ ] **Step 4: Runbook.** Create `infra/osrm/README.md`:
 
 ```markdown
-# OSRM routing engine (Wherabouts)
+# OSRM routing engine (Locnative)
 
 Self-hosted OSRM serving the driving profile over the Australia OSM extract.
 Backs `GET /api/v1/routing/directions` (the Worker proxies to it).
@@ -763,7 +763,7 @@ And add the call (after `await c.regions.classify(...)`):
 
 - [ ] **Step 2: Run it to confirm it fails.**
 
-Run: `pnpm -F @wherabouts/sdk test -- client`
+Run: `pnpm -F @locnative/sdk test -- client`
 Expected: FAIL (`c.routing` is undefined / path not seen).
 
 - [ ] **Step 3: Create the resource.** Create `packages/sdk/src/resources/routing.ts` (mirrors `regions.ts`):
@@ -827,13 +827,13 @@ Add the import (with the other resource imports):
 import { createRouting, type RoutingResource } from "./resources/routing.ts";
 ```
 
-Add to the `WheraboutsClient` interface (keep alphabetical with siblings):
+Add to the `LocnativeClient` interface (keep alphabetical with siblings):
 
 ```ts
 	routing: RoutingResource;
 ```
 
-Add to the returned object in `createWheraboutsClient`:
+Add to the returned object in `createLocnativeClient`:
 
 ```ts
 		routing: createRouting(request),
@@ -847,12 +847,12 @@ export * from "./resources/routing.ts";
 
 - [ ] **Step 6: Run the SDK tests.**
 
-Run: `pnpm -F @wherabouts/sdk test`
+Run: `pnpm -F @locnative/sdk test`
 Expected: PASS (coverage guard now includes routing).
 
 - [ ] **Step 7: Type-check + build.**
 
-Run: `pnpm -F @wherabouts/sdk check-types && pnpm -F @wherabouts/sdk build`
+Run: `pnpm -F @locnative/sdk check-types && pnpm -F @locnative/sdk build`
 Expected: PASS; `dist/` rebuilt.
 
 - [ ] **Step 8: Commit.**
@@ -931,7 +931,7 @@ Run: `sed -n '540,575p' apps/web/src/lib/api-explorer-endpoints.ts` (the regions
 
 - [ ] **Step 4: Run the explorer tests.**
 
-Run: `pnpm -F web test -- api-explorer && pnpm -F @wherabouts.com/api test -- api-explorer`
+Run: `pnpm -F web test -- api-explorer && pnpm -F @locnative/api test -- api-explorer`
 Expected: PASS. (If a test enumerates expected endpoints, update it to include `routing.directions`.)
 
 - [ ] **Step 5: Type-check web.**
@@ -954,12 +954,12 @@ git commit -m "feat(web,api): expose routing.directions in API explorer catalog 
 
 - [ ] **Step 1: Full type-check across the affected packages.**
 
-Run: `pnpm -F @wherabouts.com/api check-types && pnpm -F @wherabouts.com/server check-types && pnpm -F @wherabouts/sdk check-types && pnpm -F web check-types`
+Run: `pnpm -F @locnative/api check-types && pnpm -F @locnative/server check-types && pnpm -F @locnative/sdk check-types && pnpm -F web check-types`
 Expected: PASS for api, server, sdk. (web may still show the pre-existing `globe.tsx` errors — confirm no *new* errors in files this plan touched.)
 
 - [ ] **Step 2: Full test run for the touched packages.**
 
-Run: `pnpm -F @wherabouts.com/api test && pnpm -F @wherabouts/sdk test`
+Run: `pnpm -F @locnative/api test && pnpm -F @locnative/sdk test`
 Expected: PASS.
 
 - [ ] **Step 3: Lint.**
@@ -969,7 +969,7 @@ Expected: no outstanding errors.
 
 - [ ] **Step 4: SDK build + smoke.**
 
-Run: `pnpm -F @wherabouts/sdk build && pnpm -F @wherabouts/sdk smoke`
+Run: `pnpm -F @locnative/sdk build && pnpm -F @locnative/sdk smoke`
 Expected: "Smoke test PASSED".
 
 - [ ] **Step 5: Manual OSRM-backed smoke (requires a deployed/local OSRM).**

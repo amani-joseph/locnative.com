@@ -1,5 +1,6 @@
 export const MAX_BATCH = 1000;
 const MIN_LEN = 5;
+const LINE_BREAK_REGEX = /\r?\n/;
 
 export interface ParseResult {
 	addresses: string[];
@@ -47,7 +48,7 @@ function firstColumn(line: string): string {
  */
 export function parseAddresses(input: string): ParseResult {
 	const lines = input
-		.split(/\r?\n/)
+		.split(LINE_BREAK_REGEX)
 		.map((line) => firstColumn(line))
 		.filter((line) => line.length > 0);
 

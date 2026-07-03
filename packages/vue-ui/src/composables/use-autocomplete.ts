@@ -1,9 +1,9 @@
 import type {
 	AddressSuggestion,
 	AutocompleteParams,
-	WheraboutsClient,
-} from "@wherabouts/sdk";
-import { isRateLimitError } from "@wherabouts/sdk";
+	LocnativeClient,
+} from "@locnative/sdk";
+import { isRateLimitError } from "@locnative/sdk";
 import { computed, onScopeDispose, ref } from "vue";
 import { logDevError } from "../utils/dev-log";
 
@@ -61,7 +61,7 @@ export function deriveStatus(s: {
  * requests, and exposes coarse `status` plus raw flags.
  */
 export function useAutocomplete(
-	client: WheraboutsClient,
+	client: LocnativeClient,
 	options: UseAutocompleteOptions = {}
 ) {
 	const {
@@ -143,7 +143,7 @@ export function useAutocomplete(
 		}
 		loading.value = true;
 		timer = setTimeout(() => {
-			void runFetch(trimmed);
+			runFetch(trimmed).catch(() => undefined);
 		}, debounceMs);
 	};
 
@@ -168,5 +168,14 @@ export function useAutocomplete(
 		})
 	);
 
-	return { query, results, loading, error, rateLimited, status, setQuery, reset };
+	return {
+		query,
+		results,
+		loading,
+		error,
+		rateLimited,
+		status,
+		setQuery,
+		reset,
+	};
 }

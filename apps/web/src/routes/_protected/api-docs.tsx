@@ -11,7 +11,7 @@ function RouteComponent() {
 			<div>
 				<h1 className="font-semibold text-2xl tracking-tight">API Docs</h1>
 				<p className="text-muted-foreground text-sm">
-					Explore and test the Wherabouts API endpoints with managed keys or a
+					Explore and test the Locnative API endpoints with managed keys or a
 					temporary raw key, while keeping explorer traffic separate from
 					production usage
 				</p>

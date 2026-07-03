@@ -1,7 +1,4 @@
-import {
-	buildInviteHtml,
-	buildInviteText,
-} from "@wherabouts.com/auth/invitations";
+import { buildInviteHtml, buildInviteText } from "@locnative/auth/invitations";
 import { describe, expect, it } from "vitest";
 
 describe("invite templates", () => {

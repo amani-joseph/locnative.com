@@ -1,4 +1,4 @@
-import type { ReverseGeocodeAddress, WheraboutsClient } from "@wherabouts/sdk";
+import type { LocnativeClient, ReverseGeocodeAddress } from "@locnative/sdk";
 import { type MaybeRefOrGetter, ref, toValue, watch } from "vue";
 import { logDevError } from "../utils/dev-log";
 
@@ -13,7 +13,7 @@ export interface LatLng {
  * address, aborting stale requests as the coordinates change.
  */
 export function useReverseGeocode(
-	client: WheraboutsClient,
+	client: LocnativeClient,
 	coords: MaybeRefOrGetter<LatLng | null>
 ) {
 	const address = ref<ReverseGeocodeAddress | null>(null);

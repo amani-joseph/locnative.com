@@ -35,7 +35,7 @@ There is **no** reactivate, no update/edit, and **no test-send** endpoint in the
 - Queue message `WebhookDeliveryMessage { type, projectId, deviceId, lat, lng, zoneId, zoneName, event, timestamp }`.
 - Matches subs: same project, `active=true`, `failing=false`, (zoneId match OR zoneId NULL), and event in `events[]`.
 - Payload POSTed: `{ event, zone: { id, name }, device: { id, lat, lng }, timestamp }` (JSON).
-- Signs with `hmacSign(secret, payload)` → header **`X-Wherabouts-Signature`** (HMAC-SHA256). Also sends `X-Wherabouts-Attempt`. 10s timeout per attempt.
+- Signs with `hmacSign(secret, payload)` → header **`X-Locnative-Signature`** (HMAC-SHA256). Also sends `X-Locnative-Attempt`. 10s timeout per attempt.
 - Retries up to `MAX_ATTEMPTS = 3`; if all fail (or secret decrypt fails) it sets **`failing: true`** and stops delivering to that sub. A `failing` sub is permanently excluded from delivery until something flips `failing` back to false — **and nothing in the codebase ever clears it.** This is the core reason a reactivate endpoint is needed.
 
 ---
@@ -49,7 +49,7 @@ Scope note: session procedures resolve the user via `context.session.user.id`, t
 Procedures to implement in `webhooks.create/list/delete` (re-implement against session+projectId, do NOT call the public apiKey procedures):
 
 - **`webhooks.list`** — input `{ projectId }`; returns rows `{ id, url, events, zoneId, active, failing, createdAt }`. Verify project belongs to session user.
-- **`webhooks.create`** — input `{ projectId, url, events[], zoneId? }`; generate + encrypt secret; return `{ ...row, secret }` (plaintext once). Reuse `generateWebhookSecret`/`encryptSecret` exported from `@wherabouts.com/api` (`secret-crypto.ts`).
+- **`webhooks.create`** — input `{ projectId, url, events[], zoneId? }`; generate + encrypt secret; return `{ ...row, secret }` (plaintext once). Reuse `generateWebhookSecret`/`encryptSecret` exported from `@locnative/api` (`secret-crypto.ts`).
 - **`webhooks.delete`** — input `{ projectId, id }`; scoped delete; returns `{ id, deleted: true }`.
 
 ### NEW backend additions to recommend (do not exist yet — flag for human sign-off)
@@ -62,7 +62,7 @@ Procedures to implement in `webhooks.create/list/delete` (re-implement against s
 
 ## Components needed
 
-Mirror `api-keys.tsx` conventions: `createFileRoute("/_protected/webhooks")`, `orpcClient` from `@/lib/orpc`, shadcn from `@wherabouts.com/ui/components/*`, `sonner` toasts, lucide-react icons.
+Mirror `api-keys.tsx` conventions: `createFileRoute("/_protected/webhooks")`, `orpcClient` from `@/lib/orpc`, shadcn from `@locnative/ui/components/*`, `sonner` toasts, lucide-react icons.
 
 - **Route**: `apps/web/src/routes/_protected/webhooks.tsx`.
 - **List/table**: `Card` + table or row cards showing `url`, `events` (Badges: Entry/Exit), zone label ("All zones" when `zoneId` null, else zone name), and a status `Badge` (Active / Failing / Inactive). Use `Skeleton` for loading (matches api-keys).
@@ -89,7 +89,7 @@ Mirror `api-keys.tsx` conventions: `createFileRoute("/_protected/webhooks")`, `o
 
 - **Zones list (Phase 1)** — the create dialog's optional zone picker needs the user's zones. As with webhooks, the public zones router (`zoneList`, apiKeyAuth) is **not** in the session `appRouter`. A session-authed `zones.list` procedure (Phase 1 deliverable) is a prerequisite for the picker. Until it exists, ship the zone picker disabled/"all zones only", or block this surface on Phase 1.
 - **Active project selection** — webhooks are project-scoped; the page depends on whatever active-project mechanism the dashboard uses (see `projects.list`). The selected `projectId` must be passed to every webhooks procedure.
-- **`secret-crypto.ts`** — `generateWebhookSecret`/`encryptSecret` are exported from `@wherabouts.com/api`; the new session procedures should reuse them (no new crypto).
+- **`secret-crypto.ts`** — `generateWebhookSecret`/`encryptSecret` are exported from `@locnative/api`; the new session procedures should reuse them (no new crypto).
 
 ---
 

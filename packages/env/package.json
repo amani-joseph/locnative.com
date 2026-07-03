@@ -1,5 +1,5 @@
 {
-  "name": "@wherabouts.com/env",
+  "name": "@locnative/env",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.19.39",
-    "@wherabouts.com/config": "workspace:*",
+    "@locnative/config": "workspace:*",
     "typescript": "^5"
   }
 }

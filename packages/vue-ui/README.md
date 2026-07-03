@@ -1,10 +1,10 @@
-# @wherabouts/vue-ui
+# @locnative/vue-ui
 
-Vue 3 components and helpers for the [Wherabouts](https://wherabouts.com) location API —
+Vue 3 components and helpers for the [Locnative](https://locnative.com) location API —
 address autocomplete, forward/reverse geocoding inputs, and structured address form fields.
-Built on [`@wherabouts/sdk`](https://www.npmjs.com/package/@wherabouts/sdk), styled with
+Built on [`@locnative/sdk`](https://www.npmjs.com/package/@locnative/sdk), styled with
 Tailwind, and shipped with a prebuilt stylesheet so you can drop them in without any build
-setup. This is the Vue counterpart to [`@wherabouts/react-ui`](../react-ui/README.md).
+setup. This is the Vue counterpart to [`@locnative/react-ui`](../react-ui/README.md).
 
 > **Coverage:** Authoritative Australian addresses (G-NAF). International coverage
 > (US, parts of the EU, and more) is in **beta** and rolling out — availability may
@@ -16,33 +16,33 @@ setup. This is the Vue counterpart to [`@wherabouts/react-ui`](../react-ui/READM
 > `AddressFormField`, `AddressFieldGroup`, `ForwardGeocodeInput`, `ReverseGeocodeInput` —
 > plus the backing composables (`useAutocomplete`, `useForwardGeocode`,
 > `useReverseGeocode`, `useAddressGeolocation`, `useCombobox`) are implemented and
-> exported. They mirror the [`@wherabouts/react-ui`](../react-ui/README.md) API, surfacing
+> exported. They mirror the [`@locnative/react-ui`](../react-ui/README.md) API, surfacing
 > callbacks as Vue `@`-events.
 
 ## Requirements
 
 - Vue **3.0+** (peer dependency)
-- A Wherabouts API key (`wh_...`)
+- A Locnative API key (`wh_...`)
 
 ## Installation
 
 ```bash
 # npm
-npm install @wherabouts/vue-ui @wherabouts/sdk
+npm install @locnative/vue-ui @locnative/sdk
 
 # pnpm
-pnpm add @wherabouts/vue-ui @wherabouts/sdk
+pnpm add @locnative/vue-ui @locnative/sdk
 
 # yarn
-yarn add @wherabouts/vue-ui @wherabouts/sdk
+yarn add @locnative/vue-ui @locnative/sdk
 ```
 
-Peer dependencies: `vue` (>=3.0.0) and `@wherabouts/sdk` (>=0.5.0).
+Peer dependencies: `vue` (>=3.0.0) and `@locnative/sdk` (>=0.5.0).
 
 Import the stylesheet once, near your app root:
 
 ```ts
-import "@wherabouts/vue-ui/styles.css";
+import "@locnative/vue-ui/styles.css";
 ```
 
 ## Exports
@@ -71,7 +71,7 @@ import {
   type AddressFieldGroupValue,
   type AddressI18nStrings,
   type AddressSuggestionInput,
-} from "@wherabouts/vue-ui";
+} from "@locnative/vue-ui";
 ```
 
 - **`toAddressWithParsed(suggestion)`** — maps a raw SDK `AddressSuggestion` into the
@@ -95,11 +95,11 @@ Each component takes a `client` created with the SDK. Create it once and share i
 
 ```vue
 <script setup lang="ts">
-import { createWheraboutsClient } from "@wherabouts/sdk";
-import { AddressAutocomplete } from "@wherabouts/vue-ui";
-import "@wherabouts/vue-ui/styles.css";
+import { createLocnativeClient } from "@locnative/sdk";
+import { AddressAutocomplete } from "@locnative/vue-ui";
+import "@locnative/vue-ui/styles.css";
 
-const client = createWheraboutsClient({ apiKey: import.meta.env.VITE_WHERABOUTS_KEY });
+const client = createLocnativeClient({ apiKey: import.meta.env.VITE_LOCNATIVE_KEY });
 
 function onSelect(address) {
   console.log(address.formattedAddress, address.latitude, address.longitude);
@@ -133,7 +133,7 @@ function onSelect(address) {
   postcode) for editing a full address. Takes a `value` and emits `change`
   (`AddressFieldGroupValue`).
 
-Props mirror the [`@wherabouts/react-ui`](../react-ui/README.md) components (props as Vue
+Props mirror the [`@locnative/react-ui`](../react-ui/README.md) components (props as Vue
 props; React callbacks surfaced as `@`-events). Custom render-prop slots on
 `AddressAutocomplete` are exposed as named slots: `suggestion`, `loading`, `error`,
 `empty`.
@@ -153,9 +153,9 @@ composables you can use directly:
 ## Development
 
 ```bash
-pnpm --filter @wherabouts/vue-ui build   # vite build + prebuilt styles.css
-pnpm --filter @wherabouts/vue-ui dev     # build in watch mode
-pnpm --filter @wherabouts/vue-ui test    # vitest
+pnpm --filter @locnative/vue-ui build   # vite build + prebuilt styles.css
+pnpm --filter @locnative/vue-ui dev     # build in watch mode
+pnpm --filter @locnative/vue-ui test    # vitest
 ```
 
 ## Styling
@@ -169,4 +169,4 @@ Ships dual ESM + CJS builds with bundled type declarations. All exports are full
 
 ## License
 
-UNLICENSED — © Wherabouts. See the repository for usage terms.
+UNLICENSED — © Locnative. See the repository for usage terms.

@@ -1,4 +1,4 @@
-# Wherabouts.com — Go-To-Market & Monetization Plan
+# Locnative.com — Go-To-Market & Monetization Plan
 
 **Version:** 1.0 · **Date:** 2026-06-11 · **Owner:** Founder
 **Assumptions (locked with founder):** Bootstrapped budget **< $2,000 AUD/mo** · **Product-led self-serve (PLG)** motion · **Solo founder** execution · **90-day launch sprint nested inside a 12-month arc**.
@@ -9,7 +9,7 @@
 
 ## 1. Executive Summary
 
-Wherabouts.com is the **only** product sitting in an uncontested square: *authoritative Australian location data (G-NAF + ABS ASGS) combined with a real-time geofencing / device / webhook stack.* The strategic one-liner we own:
+Locnative.com is the **only** product sitting in an uncontested square: *authoritative Australian location data (G-NAF + ABS ASGS) combined with a real-time geofencing / device / webhook stack.* The strategic one-liner we own:
 
 > **"Radar for Australia, built on authoritative government data."**
 
@@ -17,7 +17,7 @@ The GTM thesis for a bootstrapped solo founder is **not** to out-spend Radar or 
 
 1. **A frictionless free tier + transparent AUD pricing** (beat Google/HERE on simplicity, match Mappify/Geoapify on developer-friendliness).
 2. **SEO + content + free tools** as the primary, compounding acquisition engine (near-zero marginal cost, ideal for solo + bootstrapped).
-3. **The published `@wherabouts/sdk` on npm** as a distribution and discovery channel.
+3. **The published `@locnative/sdk` on npm** as a distribution and discovery channel.
 4. **A handful of lighthouse design partners** in logistics, proptech, and govtech to produce case studies and referenceable revenue.
 
 **12-month goal:** reach **$8–12k AUD MRR** from self-serve + 1–2 larger accounts, with a content/SEO moat that makes acquisition cheaper every quarter.
@@ -133,7 +133,7 @@ Needs authoritative address + ABS boundary classification for risk scoring, catc
 **Supporting:** *"Geocode, classify, and geofence on authoritative G-NAF + ABS data — with a typed SDK and honest AUD pricing."*
 
 **By persona headline:**
-- **Dana:** "Australian address autocomplete & geocoding in 5 minutes. `npm i @wherabouts/sdk`."
+- **Dana:** "Australian address autocomplete & geocoding in 5 minutes. `npm i @locnative/sdk`."
 - **Owen:** "Know the moment a driver or asset enters a zone — geofencing + webhooks, built in."
 - **Sam:** "Official ABS boundaries — SA1–SA4, LGA, electoral, mesh block — from one endpoint, hosted in Australia."
 - **Finn:** "Transparent AUD pricing. Generous free tier. No sales call, no lock-in."
@@ -173,7 +173,7 @@ The defensible moat. AU geocoding/boundary queries are long-tail and under-serve
 - **Free public widgets:** address autocomplete demo, postcode/boundary explorer (map), spreadsheet/CSV geocoder, "what region am I in" tool. Each gated lightly (free key) → top-of-funnel.
 
 ### C. Distribution via the SDK
-- Publish `@wherabouts/sdk` to npm (P0). Rich README, keywords, badges. npm + GitHub are discovery + SEO surfaces. Add a Python SDK when bandwidth allows.
+- Publish `@locnative/sdk` to npm (P0). Rich README, keywords, badges. npm + GitHub are discovery + SEO surfaces. Add a Python SDK when bandwidth allows.
 
 ### D. Launch & community
 - **Show HN / Hacker News**, **Product Hunt**, **Reddit** (r/webdev, r/australia, r/programming, r/sysadmin), **Dev.to / Hashnode** cross-posts, **Lobsters**.
@@ -183,7 +183,7 @@ The defensible moat. AU geocoding/boundary queries are long-tail and under-serve
 - 20–30 hand-picked logistics/proptech/gov targets → personalised email offering founding-customer deal + white-glove onboarding in exchange for a case study.
 
 ### F. Partnerships (low-cost, high-leverage)
-- AU SaaS/agencies that build for clients (proptech, logistics, gov consultancies); integration listings; "powered by Wherabouts" referrals.
+- AU SaaS/agencies that build for clients (proptech, logistics, gov consultancies); integration listings; "powered by Locnative" referrals.
 
 ### G. Email
 - Onboarding drip (activation), usage-trigger nudges, monthly changelog/newsletter.
@@ -195,7 +195,7 @@ The defensible moat. AU geocoding/boundary queries are long-tail and under-serve
 ## 10. 90-Day Launch Sprint
 
 ### Pre-launch — Days 0–14 ("Make it buyable")
-- [ ] **Publish `@wherabouts/sdk` to npm** (org + token + license decision). *P0 — nothing ships without this.*
+- [ ] **Publish `@locnative/sdk` to npm** (org + token + license decision). *P0 — nothing ships without this.*
 - [ ] Stripe AUD billing live; self-serve signup → API key → checkout verified end-to-end.
 - [ ] Pricing page + 5 persona landing sections + 1 comparison page (vs Google).
 - [ ] Docs quickstart polished; live API explorer working; 3 copy-paste recipes.
@@ -295,14 +295,14 @@ Review weekly (funnel + content), monthly (budget reallocation + cohort retentio
 
 ## Appendix A — First 10 Content Assets (write in order)
 1. Quickstart: "AU address autocomplete in a React form (5 min)"
-2. Comparison: "Wherabouts vs Google Maps Platform for Australian geocoding"
+2. Comparison: "Locnative vs Google Maps Platform for Australian geocoding"
 3. Tutorial: "Geocode a CSV of Australian addresses"
 4. Tutorial: "Build a delivery geofence with webhooks"
-5. Comparison: "Wherabouts vs Mappify"
+5. Comparison: "Locnative vs Mappify"
 6. Guide: "Classify any coordinate into ABS regions (SA1–SA4, LGA, electoral)"
 7. Free tool: CSV/spreadsheet geocoder
 8. Free tool: ABS boundary explorer
-9. Comparison: "Wherabouts vs Geoapify for AU data"
+9. Comparison: "Locnative vs Geoapify for AU data"
 10. Use-case: "Address verification at signup for AU fintech/KYC"
 
 ## Appendix B — Design-Partner Outreach Shortlist (categories to source)

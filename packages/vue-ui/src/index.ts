@@ -1,4 +1,3 @@
-// biome-ignore lint/performance/noBarrelFile: public entry point
 export { default as AddressAutocomplete } from "./components/AddressAutocomplete.vue";
 export { default as AddressFieldGroup } from "./components/AddressFieldGroup.vue";
 export { default as AddressFormField } from "./components/AddressFormField.vue";
@@ -17,7 +16,10 @@ export {
 	type GeocodeAddress,
 	useForwardGeocode,
 } from "./composables/use-forward-geocode";
-export { type LatLng, useReverseGeocode } from "./composables/use-reverse-geocode";
+export {
+	type LatLng,
+	useReverseGeocode,
+} from "./composables/use-reverse-geocode";
 export type {
 	AddressFieldGroupValue,
 	AddressI18nStrings,

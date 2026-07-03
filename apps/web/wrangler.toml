@@ -1,13 +1,13 @@
-name = "wherabouts-web"
+name = "locnative-web"
 compatibility_date = "2026-04-14"
 compatibility_flags = ["nodejs_compat"]
 main = "./node_modules/@tanstack/react-start/dist/default-entry/esm/server.js"
 routes = [
-  { pattern = "wherabouts.com", custom_domain = true }
+  { pattern = "locnative.com", custom_domain = true }
 ]
 
 [vars]
-VITE_SERVER_URL = "https://api.wherabouts.com"
+VITE_SERVER_URL = "https://api.locnative.com"
 
 # Same-zone Service Binding to the API Worker. A public worker→worker subrequest
 # over the Cloudflare edge is blocked with 403, which breaks SSR getSession and
@@ -15,7 +15,7 @@ VITE_SERVER_URL = "https://api.wherabouts.com"
 # Consumed in src/lib/auth-server.ts via `env.SERVER` (prod only).
 [[services]]
 binding = "SERVER"
-service = "wherabouts-server"
+service = "locnative-server"
 
 [observability]
 enabled = true

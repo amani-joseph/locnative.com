@@ -94,7 +94,7 @@ None - AUTH_COOKIE_DOMAIN env var was already added to serverEnv (Plan 01) and w
 
 ## Next Phase Readiness
 - Auth cookie domain configuration complete
-- Production deployment will use AUTH_COOKIE_DOMAIN=.wherabouts.com for cross-subdomain cookie sharing
+- Production deployment will use AUTH_COOKIE_DOMAIN=.locnative.com for cross-subdomain cookie sharing
 - Local dev continues to work without the env var set
 
 ---

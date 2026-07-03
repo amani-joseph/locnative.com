@@ -1,4 +1,4 @@
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Table,
 	TableBody,
@@ -6,7 +6,7 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@wherabouts.com/ui/components/table";
+} from "@locnative/ui/components/table";
 
 export interface BatchResultRow {
 	address?: {
@@ -35,15 +35,15 @@ function download(filename: string, content: string, type: string) {
 
 function toCsv(results: BatchResultRow[]): string {
 	const header = "input,matched,formatted_address,latitude,longitude,error";
-	const escape = (v: string) => `"${v.replace(/"/g, '""')}"`;
+	const escapeCsv = (v: string) => `"${v.replace(/"/g, '""')}"`;
 	const rows = results.map((r) =>
 		[
-			escape(r.input),
+			escapeCsv(r.input),
 			r.matched ? "true" : "false",
-			escape(r.address?.formattedAddress ?? ""),
+			escapeCsv(r.address?.formattedAddress ?? ""),
 			r.address?.latitude ?? "",
 			r.address?.longitude ?? "",
-			escape(r.error ?? ""),
+			escapeCsv(r.error ?? ""),
 		].join(",")
 	);
 	return [header, ...rows].join("\n");

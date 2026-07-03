@@ -120,7 +120,7 @@ KEY_ENC_KEY=<64 hex chars>      # Generate: openssl rand -hex 32
 ## Next Phase Readiness
 
 - Plan 02 (backfill + NOT NULL tightening) can proceed: schemas + migration SQL are ready to apply
-- All downstream plans (03-07) can import `{ teams, teamMembers, teamInvitations }` from `@wherabouts.com/database/schema`
+- All downstream plans (03-07) can import `{ teams, teamMembers, teamInvitations }` from `@locnative/database/schema`
 - Env vars are declared; plans using `serverEnv.RESEND_API_KEY` etc. will typecheck once values are provided
 
 ---

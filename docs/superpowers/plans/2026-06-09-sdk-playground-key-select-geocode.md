@@ -83,7 +83,7 @@ describe("mapAutocompleteCandidates", () => {
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `pnpm --filter @wherabouts.com/api test -- geocode.test.ts`
+Run: `pnpm --filter @locnative/api test -- geocode.test.ts`
 Expected: FAIL — `mapAutocompleteCandidates` is not exported.
 
 - [ ] **Step 3: Implement the procedure + mapper**
@@ -91,8 +91,8 @@ Expected: FAIL — `mapAutocompleteCandidates` is not exported.
 In `packages/api/src/routers/domains/geocode.ts`, add the import at the top (alongside existing imports):
 
 ```ts
-import { autocompleteAddresses } from "@wherabouts.com/database/queries";
-import type { AutocompleteResult } from "@wherabouts.com/database/queries";
+import { autocompleteAddresses } from "@locnative/database/queries";
+import type { AutocompleteResult } from "@locnative/database/queries";
 ```
 
 Add the exported pure mapper above `export const geocodeRouter`:
@@ -143,17 +143,17 @@ Add the `autocomplete` procedure as a new property inside the `geocodeRouter` ob
 
 - [ ] **Step 4: Run the test to verify it passes**
 
-Run: `pnpm --filter @wherabouts.com/api test -- geocode.test.ts`
+Run: `pnpm --filter @locnative/api test -- geocode.test.ts`
 Expected: PASS (both cases).
 
 - [ ] **Step 5: Verify the import is exported by the database package**
 
 Run: `grep -n "AutocompleteResult\|autocompleteAddresses" packages/database/src/queries/index.ts`
-Expected: both symbols are re-exported. If `AutocompleteResult` is not exported as a type from the queries barrel, change the import in geocode.ts to `import type { AutocompleteResult } from "@wherabouts.com/database/queries/autocomplete.ts";` (the file path it is defined in). Re-run Step 4.
+Expected: both symbols are re-exported. If `AutocompleteResult` is not exported as a type from the queries barrel, change the import in geocode.ts to `import type { AutocompleteResult } from "@locnative/database/queries/autocomplete.ts";` (the file path it is defined in). Re-run Step 4.
 
 - [ ] **Step 6: Typecheck the api package**
 
-Run: `pnpm --filter @wherabouts.com/api check-types`
+Run: `pnpm --filter @locnative/api check-types`
 Expected: no new errors.
 
 - [ ] **Step 7: Commit**
@@ -737,10 +737,10 @@ export function buildSdkSnippet(
 	const call = sdkCallForEndpoint(endpointId);
 	const arg = renderArg(paramValues, body, comments);
 	return [
-		'import { createWheraboutsClient } from "@wherabouts/sdk";',
+		'import { createLocnativeClient } from "@locnative/sdk";',
 		"",
-		"const client = createWheraboutsClient({",
-		"  apiKey: process.env.WHERABOUTS_API_KEY!,",
+		"const client = createLocnativeClient({",
+		"  apiKey: process.env.LOCNATIVE_API_KEY!,",
 		"});",
 		"",
 		`const result = await ${call}(${arg});`,

@@ -2,13 +2,13 @@
 
 **Date:** 2026-06-07
 **Status:** Approved (design), pending implementation plan
-**Goal:** Extend `@wherabouts.com/sdk` from 4 addresses-only methods to **full coverage of all 18 public API endpoints**, organized as resource namespaces, hand-written (matching the existing dependency-free fetch client), with a real test suite. Stays private; no build/publish tooling in this slice.
+**Goal:** Extend `@locnative/sdk` from 4 addresses-only methods to **full coverage of all 18 public API endpoints**, organized as resource namespaces, hand-written (matching the existing dependency-free fetch client), with a real test suite. Stays private; no build/publish tooling in this slice.
 
 ---
 
 ## 1. Background & motivation
 
-`packages/sdk` (`@wherabouts.com/sdk`, v0.1.0, private) is a clean, dependency-free,
+`packages/sdk` (`@locnative/sdk`, v0.1.0, private) is a clean, dependency-free,
 runtime-agnostic fetch client, but only covers the **addresses** endpoints
 (`autocomplete`, `nearby`, `reverse`, `getAddressById`). The public API has **18
 endpoints** across addresses, geocoding/batch, zones, devices, webhooks, and the
@@ -31,11 +31,11 @@ OpenAPI auto-generation, and mobile/on-device SDKs are separate future efforts.
 
 ## 3. Existing pattern (preserved)
 
-- `WheraboutsClientConfig = { apiKey, baseUrl?, fetch?, headers? }` — runtime-agnostic.
+- `LocnativeClientConfig = { apiKey, baseUrl?, fetch?, headers? }` — runtime-agnostic.
 - `createHeaders`: `accept: application/json`, `authorization: Bearer <apiKey>`,
-  `x-wherabouts-sdk: js-ts/<sdkVersion> api/<apiVersion>`.
-- `parseApiError`: maps `{ error: { code, message } }` → `WheraboutsApiError`.
-- Version consts in `types.ts` (`WHERABOUTS_API_VERSION`, `WHERABOUTS_SDK_VERSION`).
+  `x-locnative-sdk: js-ts/<sdkVersion> api/<apiVersion>`.
+- `parseApiError`: maps `{ error: { code, message } }` → `LocnativeApiError`.
+- Version consts in `types.ts` (`LOCNATIVE_API_VERSION`, `LOCNATIVE_SDK_VERSION`).
 
 These are kept; the request helper and module layout are what change.
 
@@ -65,10 +65,10 @@ type Requester = <T>(opts: RequestOptions) => Promise<T>;
 - GET: build query string via the existing `appendQueryValue` (skips `undefined`).
 - POST/PUT/DELETE: `JSON.stringify(body)` with `content-type: application/json` when
   a body is present.
-- Non-2xx → `parseApiError` → throw `WheraboutsApiError` (unchanged behavior).
+- Non-2xx → `parseApiError` → throw `LocnativeApiError` (unchanged behavior).
 - 204/empty body → resolve `undefined` (for `delete`/`reactivate` style responses).
 
-`createWheraboutsClient` builds one `Requester` bound to config and passes it to each
+`createLocnativeClient` builds one `Requester` bound to config and passes it to each
 resource factory.
 
 ## 5. Resource modules
@@ -97,7 +97,7 @@ Types are hand-written to mirror those; a coverage test (§7) guards against dri
 `src/client.ts` composes the namespaces:
 
 ```ts
-export const createWheraboutsClient = (config): WheraboutsClient => {
+export const createLocnativeClient = (config): LocnativeClient => {
   const request = createRequester(config);   // from http.ts
   return {
     addresses: createAddresses(request),
@@ -110,14 +110,14 @@ export const createWheraboutsClient = (config): WheraboutsClient => {
 };
 ```
 
-`WheraboutsClient` becomes an interface of the six namespace interfaces. `src/index.ts`
-remains the package's public barrel, re-exporting `createWheraboutsClient`,
-`WheraboutsApiError`, the version consts, and all public request/response types.
+`LocnativeClient` becomes an interface of the six namespace interfaces. `src/index.ts`
+remains the package's public barrel, re-exporting `createLocnativeClient`,
+`LocnativeApiError`, the version consts, and all public request/response types.
 `errors.ts` is unchanged.
 
 Usage:
 ```ts
-const client = createWheraboutsClient({ apiKey: "wh_..." });
+const client = createLocnativeClient({ apiKey: "wh_..." });
 await client.regions.classify({ lat: -37.8136, lng: 144.9631 });
 await client.zones.create({ name: "depot", geometry: {...} });
 ```
@@ -128,7 +128,7 @@ await client.zones.create({ name: "depot", geometry: {...} });
   `config.fetch` that captures the `Request` (method, URL, headers, body) and returns
   a canned `Response`. Assert each method builds the correct request and parses the
   response. Include at least one error case asserting a non-2xx body becomes a
-  `WheraboutsApiError` with the right `code`/`message`.
+  `LocnativeApiError` with the right `code`/`message`.
 - **Coverage test** (`src/coverage.test.ts`): a hard-coded list of all 18 endpoint
   paths; assert every one is exercised by a client method (e.g. by walking the mock
   client and collecting requested URLs). Fails if a future endpoint is added without
@@ -139,7 +139,7 @@ await client.zones.create({ name: "depot", geometry: {...} });
 
 - Update the SDK usage examples in `apps/web/src/components/docs-page.tsx` (the only
   internal reference) to the new namespaced API.
-- Bump `WHERABOUTS_SDK_VERSION` to reflect the expanded surface (e.g. `0.2.0-preview`).
+- Bump `LOCNATIVE_SDK_VERSION` to reflect the expanded surface (e.g. `0.2.0-preview`).
 
 ## 9. Out of scope (this slice)
 

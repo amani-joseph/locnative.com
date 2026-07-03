@@ -1,4 +1,4 @@
-import { createDb } from "@wherabouts.com/database";
+import { createDb } from "@locnative/database";
 
 let db: ReturnType<typeof createDb> | null = null;
 

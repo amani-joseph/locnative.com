@@ -46,7 +46,7 @@ function RegionMarker({ region, index }: { region: Region; index: number }) {
 
 /**
  * Coverage — "the world layer". An equirectangular dotted field with a faint
- * graticule, brand-green signal arcs travelling between the regions Wherabouts
+ * graticule, brand-green signal arcs travelling between the regions Locnative
  * actually serves, and pulsing region markers (green = live, amber = beta).
  *
  * Pure SVG + CSS: SSR-safe, no canvas/WebGL, cheap on mobile. Arcs render as a

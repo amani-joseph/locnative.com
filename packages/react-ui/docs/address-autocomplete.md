@@ -2,13 +2,13 @@
 
 ## Summary
 
-Accessible (WAI-ARIA combobox), debounced address search with keyboard navigation, proximity bias, session tokens, i18n strings, and customizable render slots. Provide a `client` created with `createWheraboutsClient`.
+Accessible (WAI-ARIA combobox), debounced address search with keyboard navigation, proximity bias, session tokens, i18n strings, and customizable render slots. Provide a `client` created with `createLocnativeClient`.
 
 ## When to use / when not
 
 **Use it when:**
 
-- You need a freeform "start typing an address" search box backed by the Wherabouts
+- You need a freeform "start typing an address" search box backed by the Locnative
   autocomplete API (checkout forms, shipping address capture, location search).
 - You want built-in keyboard navigation (arrow keys, enter, escape) and ARIA semantics
   without wiring up a combobox yourself.
@@ -26,11 +26,11 @@ Accessible (WAI-ARIA combobox), debounced address search with keyboard navigatio
 ## Import & minimal example
 
 ```tsx
-import { createWheraboutsClient } from "@wherabouts/sdk";
-import { AddressAutocomplete } from "@wherabouts/react-ui";
-import "@wherabouts/react-ui/styles.css";
+import { createLocnativeClient } from "@locnative/sdk";
+import { AddressAutocomplete } from "@locnative/react-ui";
+import "@locnative/react-ui/styles.css";
 
-const client = createWheraboutsClient({ apiKey: import.meta.env.VITE_WHERABOUTS_KEY });
+const client = createLocnativeClient({ apiKey: import.meta.env.VITE_LOCNATIVE_KEY });
 
 export function Checkout() {
   return (
@@ -145,7 +145,7 @@ the parsed `AddressWithParsed` result and whether it's the currently keyboard-ac
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `client` | `WheraboutsClient` | — | **Required.** SDK client created with `createWheraboutsClient`. |
+| `client` | `LocnativeClient` | — | **Required.** SDK client created with `createLocnativeClient`. |
 | `onSelect` | `(address: AddressWithParsed) => void` | — | Called when a suggestion is selected. |
 | `onQueryChange` | `(query: string) => void` | — | Called as the input text changes. |
 | `placeholder` | `string` | — | Input placeholder text. |
@@ -159,7 +159,7 @@ the parsed `AddressWithParsed` result and whether it's the currently keyboard-ac
 | `disabled` | `boolean` | — | Disable the input. |
 | `required` | `boolean` | — | Mark the input as required. |
 | `error` | `string` | — | External error message to display. |
-| `id` | `string` | `"wherabouts-autocomplete"` | id forwarded to the input element. |
+| `id` | `string` | `"locnative-autocomplete"` | id forwarded to the input element. |
 | `className` | `string` | — | Class applied to the root container. |
 | `i18nStrings` | `Partial<AddressI18nStrings>` | — | Override built-in UI strings (no results, retry, etc.). |
 | `renderSuggestion` | `(address: AddressWithParsed, isActive: boolean) => ReactNode` | — | Render a custom suggestion row. |
@@ -180,7 +180,7 @@ the parsed `AddressWithParsed` result and whether it's the currently keyboard-ac
   dropdown.
 - The component does **not** render its own `<label>`. When using `AddressAutocomplete`
   directly, pair it with a `<label htmlFor={id}>` (matching the `id` prop, default
-  `"wherabouts-autocomplete"`), or use `AddressFormField`, which does this for you.
+  `"locnative-autocomplete"`), or use `AddressFormField`, which does this for you.
 - Loading, error, and empty states are announced as plain list items inside the same
   listbox region so screen readers traversing the list encounter them in context.
 

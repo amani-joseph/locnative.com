@@ -1,7 +1,7 @@
-import { Button } from "@wherabouts.com/ui/components/button";
-import { Input } from "@wherabouts.com/ui/components/input";
-import { Textarea } from "@wherabouts.com/ui/components/textarea";
-import { cn } from "@wherabouts.com/ui/lib/utils";
+import { Button } from "@locnative/ui/components/button";
+import { Input } from "@locnative/ui/components/input";
+import { Textarea } from "@locnative/ui/components/textarea";
+import { cn } from "@locnative/ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import type * as React from "react";
 

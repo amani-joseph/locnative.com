@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { WheraboutsClient } from "@wherabouts/sdk";
+import type { LocnativeClient } from "@locnative/sdk";
 import { computed } from "vue";
 import { cn } from "../utils/cn";
-import AddressAutocomplete from "./AddressAutocomplete.vue";
 
 // Extra attrs (disabled, placeholder, minCharsToSearch, @select, ...) pass
 // straight through to the wrapped AddressAutocomplete via $attrs. `client` is
@@ -10,8 +9,8 @@ import AddressAutocomplete from "./AddressAutocomplete.vue";
 defineOptions({ inheritAttrs: false });
 
 const props = defineProps<{
-	/** Required. SDK client created with `createWheraboutsClient`. */
-	client: WheraboutsClient;
+	/** Required. SDK client created with `createLocnativeClient`. */
+	client: LocnativeClient;
 	/** Class applied to the error text element. */
 	errorClass?: string;
 	/** External error message; renders below the field and reddens the label. */
@@ -26,7 +25,7 @@ const props = defineProps<{
 	required?: boolean;
 }>();
 
-const fieldId = computed(() => props.id ?? "wherabouts-field");
+const fieldId = computed(() => props.id ?? "locnative-field");
 </script>
 
 <template>

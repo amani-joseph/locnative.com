@@ -2,6 +2,13 @@ packages:
   - apps/*
   - packages/*
 
+allowBuilds:
+  core-js-pure: true
+  esbuild: true
+  msw: true
+  sharp: true
+  workerd: true
+
 catalog:
   dotenv: ^17.2.2
   zod: ^4.1.13
@@ -13,3 +20,8 @@ catalog:
   tailwindcss: ^4.1.18
   '@types/react': ^19.2.10
   '@types/react-dom': ^19.2.3
+
+overrides:
+  stripe: 22.2.2
+  hono: 4.12.26
+  '@types/node@^20': 20.19.43

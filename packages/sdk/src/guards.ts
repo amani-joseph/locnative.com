@@ -11,13 +11,16 @@ export function isWheraboutsApiError(
 	if (error instanceof WheraboutsApiError) {
 		return true;
 	}
+	const errorName = (error as { name?: unknown })?.name;
 	return (
 		typeof error === "object" &&
 		error !== null &&
-		(error as { name?: unknown }).name === "WheraboutsApiError" &&
+		(errorName === "WheraboutsApiError" || errorName === "LocnativeApiError") &&
 		typeof (error as { status?: unknown }).status === "number"
 	);
 }
+
+export const isLocnativeApiError = isWheraboutsApiError;
 
 /** True when the error is a rate-limit response (HTTP 429 / `rate_limited`). */
 export function isRateLimitError(error: unknown): error is WheraboutsApiError {

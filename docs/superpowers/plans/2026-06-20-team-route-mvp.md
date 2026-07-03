@@ -13,7 +13,7 @@
 - Indent with **tabs**; **double quotes**; self-closing elements; sorted Tailwind classes (Ultracite/Biome — run `pnpm dlx ultracite fix` before committing).
 - **Named exports** only (except React route component default patterns). No barrel files.
 - Relative imports in server/lib `.ts` files include the **`.ts` extension** (e.g. `import { foo } from "./bar.ts"`).
-- Intra-app web imports use `@/`; shared packages use `@wherabouts.com/...`.
+- Intra-app web imports use `@/`; shared packages use `@locnative/...`.
 - Type-only imports use `import type`.
 - No `console.log`, `debugger`, `alert` in committed code.
 - Roles are exactly `"owner" | "admin" | "member"`.
@@ -26,7 +26,7 @@
 ## File Structure
 
 **Created**
-- `packages/auth/src/invitations.ts` — invite email templates + `buildInviteUrl` + `sendInvitationEmail` (Resend). Importable as `@wherabouts.com/auth/invitations`.
+- `packages/auth/src/invitations.ts` — invite email templates + `buildInviteUrl` + `sendInvitationEmail` (Resend). Importable as `@locnative/auth/invitations`.
 - `packages/api/src/routers/domains/teams.ts` — pure team logic functions + `teamsRouter`.
 - `packages/api/src/routers/domains/teams.test.ts` — unit tests for the pure logic.
 - `apps/web/src/routes/invite.$id.tsx` — invite acceptance landing route.
@@ -98,7 +98,7 @@ Expected: FAIL — `Cannot find module "./invitations.ts"`.
 Move the invite template bodies verbatim from `packages/auth/src/index.ts` (lines defining `InviteTemplateParams`, `buildInviteHtml`, `buildInviteText`) and add the URL builder + Resend sender:
 
 ```typescript
-import { serverEnv } from "@wherabouts.com/env/server";
+import { serverEnv } from "@locnative/env/server";
 import { Resend } from "resend";
 
 const TRAILING_SLASH_REGEX = /\/$/;
@@ -121,7 +121,7 @@ export function buildInviteHtml({
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Invitation to ${teamName} on Wherabouts</title>
+    <title>Invitation to ${teamName} on Locnative</title>
   </head>
   <body style="margin:0;padding:0;background:#ffffff;color:#1a1a1a;font-family:${fontStack};">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;">
@@ -130,12 +130,12 @@ export function buildInviteHtml({
           <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
             <tr>
               <td style="padding:0 0 24px 0;font-family:${fontStack};font-size:14px;font-weight:600;color:#1a1a1a;letter-spacing:0.02em;">
-                Wherabouts
+                Locnative
               </td>
             </tr>
             <tr>
               <td style="padding:0 0 16px 0;font-family:${fontStack};font-size:24px;font-weight:600;line-height:1.3;color:#1a1a1a;">
-                ${inviterName} has invited you to join ${teamName} on Wherabouts
+                ${inviterName} has invited you to join ${teamName} on Locnative
               </td>
             </tr>
             <tr>
@@ -167,7 +167,7 @@ export function buildInviteText({
 	inviteUrl,
 }: Omit<InviteTemplateParams, "inviterEmail">): string {
 	return [
-		`${inviterName} has invited you to join ${teamName} on Wherabouts.`,
+		`${inviterName} has invited you to join ${teamName} on Locnative.`,
 		"",
 		"Accept this invitation by opening the link below. It expires in 72 hours.",
 		"",
@@ -200,7 +200,7 @@ export async function sendInvitationEmail({
 	await resend.emails.send({
 		from: serverEnv.EMAIL_FROM,
 		to,
-		subject: `${inviterName} invited you to ${teamName} on Wherabouts`,
+		subject: `${inviterName} invited you to ${teamName} on Locnative`,
 		html: buildInviteHtml({ teamName, inviterName, inviterEmail, inviteUrl }),
 		text: buildInviteText({ teamName, inviterName, inviteUrl }),
 	});
@@ -334,7 +334,7 @@ import {
 	teamMembers,
 	teams,
 	users,
-} from "@wherabouts.com/database";
+} from "@locnative/database";
 import { and, eq, inArray } from "drizzle-orm";
 import type { Context } from "../../context.ts";
 import { protectedProcedure } from "../../procedures.ts";
@@ -569,7 +569,7 @@ Add to the top imports of `teams.ts`:
 
 ```typescript
 import { ORPCError } from "@orpc/server";
-import { projects } from "@wherabouts.com/database";
+import { projects } from "@locnative/database";
 import { z } from "zod";
 ```
 
@@ -721,7 +721,7 @@ git commit -m "feat(api): add team create/rename/delete with projects guard"
 - Modify: `packages/api/src/routers/domains/teams.test.ts`
 
 **Interfaces:**
-- Consumes: Task 3/4 helpers; `sendInvitationEmail` from `@wherabouts.com/auth/invitations`.
+- Consumes: Task 3/4 helpers; `sendInvitationEmail` from `@locnative/auth/invitations`.
 - Produces:
   - `createInvitation(db, args: { teamId: string; email: string; role: TeamRole; invitedBy: string; now: Date }): Promise<{ id: string; email: string; role: TeamRole; expiresAt: Date }>` — throws `ORPCError("CONFLICT")` if the email is already a member or has a pending invite.
   - `getInvitationForLanding(db, args: { invitationId: string; now: Date }): Promise<{ teamName: string; invitedEmail: string; role: TeamRole; status: string; expired: boolean } | null>`
@@ -833,7 +833,7 @@ Expected: FAIL — `createInvitation` not exported.
 Add to imports in `teams.ts`:
 
 ```typescript
-import { sendInvitationEmail } from "@wherabouts.com/auth/invitations";
+import { sendInvitationEmail } from "@locnative/auth/invitations";
 ```
 
 Add constants + functions:
@@ -1449,16 +1449,16 @@ Write `apps/web/src/routes/_protected/team.tsx`:
 
 ```tsx
 import { createFileRoute } from "@tanstack/react-router";
-import { Avatar, AvatarFallback } from "@wherabouts.com/ui/components/avatar";
-import { Badge } from "@wherabouts.com/ui/components/badge";
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Avatar, AvatarFallback } from "@locnative/ui/components/avatar";
+import { Badge } from "@locnative/ui/components/badge";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
+} from "@locnative/ui/components/card";
 import {
 	Dialog,
 	DialogContent,
@@ -1467,17 +1467,17 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-} from "@wherabouts.com/ui/components/dialog";
-import { Input } from "@wherabouts.com/ui/components/input";
-import { Label } from "@wherabouts.com/ui/components/label";
+} from "@locnative/ui/components/dialog";
+import { Input } from "@locnative/ui/components/input";
+import { Label } from "@locnative/ui/components/label";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@wherabouts.com/ui/components/select";
-import { Skeleton } from "@wherabouts.com/ui/components/skeleton";
+} from "@locnative/ui/components/select";
+import { Skeleton } from "@locnative/ui/components/skeleton";
 import { MailIcon, ShieldIcon, UserPlusIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -1856,7 +1856,7 @@ function RouteComponent() {
 }
 ```
 
-> The `Select`, `Dialog`, etc. imports must match the UI package's actual export paths. If `@wherabouts.com/ui/components/select` does not exist, check `packages/ui/src/components/` and adjust the import (the project uses Base UI-wrapped shadcn primitives). `DialogTrigger`'s `render` prop pattern follows the existing usage in `api-keys.tsx` — if that file uses `asChild` instead, match it.
+> The `Select`, `Dialog`, etc. imports must match the UI package's actual export paths. If `@locnative/ui/components/select` does not exist, check `packages/ui/src/components/` and adjust the import (the project uses Base UI-wrapped shadcn primitives). `DialogTrigger`'s `render` prop pattern follows the existing usage in `api-keys.tsx` — if that file uses `asChild` instead, match it.
 
 - [ ] **Step 2: Verify it typechecks**
 
@@ -1895,15 +1895,15 @@ Write `apps/web/src/routes/invite.$id.tsx`:
 
 ```tsx
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@wherabouts.com/ui/components/card";
-import { Skeleton } from "@wherabouts.com/ui/components/skeleton";
+} from "@locnative/ui/components/card";
+import { Skeleton } from "@locnative/ui/components/skeleton";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { signOut, useSession } from "@/lib/auth-client";

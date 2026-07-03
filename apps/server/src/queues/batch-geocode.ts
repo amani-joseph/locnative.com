@@ -1,6 +1,6 @@
-import { db } from "@wherabouts.com/api";
-import { autocompleteAddresses } from "@wherabouts.com/database/queries";
-import { batchGeocodeJobs } from "@wherabouts.com/database/schema";
+import { db } from "@locnative/api";
+import { autocompleteAddresses } from "@locnative/database/queries";
+import { batchGeocodeJobs } from "@locnative/database/schema";
 import { eq } from "drizzle-orm";
 
 export interface BatchGeocodeMessage {

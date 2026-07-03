@@ -44,7 +44,7 @@ Aligned both wrangler configs with mydeffo.com-web patterns: added structured ob
 ### apps/server/wrangler.jsonc
 - Restructured flat `head_sampling_rate` into nested `observability.logs` object matching mydeffo pattern
 - Added `env.production` block with `AUTH_COOKIE_DOMAIN`, production `BETTER_AUTH_URL`, `WEB_BASE_URL`
-- Added `env.production.routes` with `api.wherabouts.com` custom domain
+- Added `env.production.routes` with `api.locnative.com` custom domain
 - Updated default vars to workers.dev URLs
 
 ### apps/server/package.json

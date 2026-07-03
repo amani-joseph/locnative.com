@@ -1,23 +1,23 @@
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
-import { Button } from "@wherabouts.com/ui/components/button";
-import { Input } from "@wherabouts.com/ui/components/input";
-import { Separator } from "@wherabouts.com/ui/components/separator";
+import { Button } from "@locnative/ui/components/button";
+import { Input } from "@locnative/ui/components/input";
+import { Separator } from "@locnative/ui/components/separator";
 import {
 	Sheet,
 	SheetContent,
 	SheetDescription,
 	SheetHeader,
 	SheetTitle,
-} from "@wherabouts.com/ui/components/sheet";
-import { Skeleton } from "@wherabouts.com/ui/components/skeleton";
+} from "@locnative/ui/components/sheet";
+import { Skeleton } from "@locnative/ui/components/skeleton";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
-} from "@wherabouts.com/ui/components/tooltip";
-import { useIsMobile } from "@wherabouts.com/ui/hooks/use-mobile";
-import { cn } from "@wherabouts.com/ui/lib/utils";
+} from "@locnative/ui/components/tooltip";
+import { useIsMobile } from "@locnative/ui/hooks/use-mobile";
+import { cn } from "@locnative/ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { PanelLeftIcon } from "lucide-react";
 // biome-ignore lint/performance/noNamespaceImport: React namespace import is the conventional shadcn pattern; React is not tree-shaken, so there is no bundle cost.

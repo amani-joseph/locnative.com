@@ -75,7 +75,7 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
 		items: [
 			{
 				tag: "New",
-				text: "Shipped an MCP server (mcp.wherabouts.com) that fronts the location API with geocoding, routing, and zone tools.",
+				text: "Shipped an MCP server (mcp.locnative.com) that fronts the location API with geocoding, routing, and zone tools.",
 			},
 			{
 				tag: "New",

@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Extend the Wherabouts API with forward geocoding, batch geocoding, developer-defined polygon geofencing (CRUD + PIP + addresses-in-zone + entry/exit webhooks), and device location tracking — all backed by a shared PostGIS spatial layer.
+**Goal:** Extend the Locnative API with forward geocoding, batch geocoding, developer-defined polygon geofencing (CRUD + PIP + addresses-in-zone + entry/exit webhooks), and device location tracking — all backed by a shared PostGIS spatial layer.
 
 **Architecture:** Polygon-first — the `zones` table (PostGIS geometry) is the shared primitive. Forward geocoding reuses the existing `autocompleteAddresses` query with `limit=1`. Batch geocoding and webhook delivery use Cloudflare Queues; batch results land in R2. Device boundary-crossing detection diffs against `device_zone_state` on every location push.
 
@@ -296,7 +296,7 @@ Cut the following from `public-http.ts` (lines ~19–105, everything from `const
 
 ```typescript
 import { ORPCError } from "@orpc/server";
-import { serverEnv } from "@wherabouts.com/env/server";
+import { serverEnv } from "@locnative/env/server";
 import { o as baseBuilder } from "../builder.ts";
 import {
 	INTERNAL_API_AUTH_HEADER,
@@ -396,7 +396,7 @@ import {
 	deviceZoneState,
 	zones,
 	type Zone,
-} from "@wherabouts.com/database/schema";
+} from "@locnative/database/schema";
 import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { o as baseBuilder } from "../../builder.ts";
@@ -799,7 +799,7 @@ git commit -m "feat(api): add zone CRUD, PIP, and addresses-in-zone endpoints"
 
 ```typescript
 import { ORPCError } from "@orpc/server";
-import { autocompleteAddresses } from "@wherabouts.com/database/queries";
+import { autocompleteAddresses } from "@locnative/database/queries";
 import { z } from "zod";
 import { o as baseBuilder } from "../../builder.ts";
 import { apiKeyAuth, usageMiddleware } from "../public-middleware.ts";
@@ -974,21 +974,21 @@ git commit -m "feat(api): add forward geocoding endpoint GET /api/v1/addresses/g
   // ... existing config ...
   "queues": {
     "producers": [
-      { "queue": "wherabouts-batch-geocode", "binding": "BATCH_GEOCODE_QUEUE" },
-      { "queue": "wherabouts-webhook-delivery", "binding": "WEBHOOK_DELIVERY_QUEUE" }
+      { "queue": "locnative-batch-geocode", "binding": "BATCH_GEOCODE_QUEUE" },
+      { "queue": "locnative-webhook-delivery", "binding": "WEBHOOK_DELIVERY_QUEUE" }
     ],
     "consumers": [
-      { "queue": "wherabouts-batch-geocode", "max_batch_size": 10 },
-      { "queue": "wherabouts-webhook-delivery", "max_batch_size": 5 }
+      { "queue": "locnative-batch-geocode", "max_batch_size": 10 },
+      { "queue": "locnative-webhook-delivery", "max_batch_size": 5 }
     ]
   },
   "r2_buckets": [
-    { "binding": "GEOCODE_RESULTS", "bucket_name": "wherabouts-geocode-results" }
+    { "binding": "GEOCODE_RESULTS", "bucket_name": "locnative-geocode-results" }
   ]
 }
 ```
 
-Create the queues and bucket in your Cloudflare dashboard (or via `wrangler queues create wherabouts-batch-geocode` and `wrangler r2 bucket create wherabouts-geocode-results`).
+Create the queues and bucket in your Cloudflare dashboard (or via `wrangler queues create locnative-batch-geocode` and `wrangler r2 bucket create locnative-geocode-results`).
 
 - [ ] **Step 2: Export `db` from `packages/api/src/index.ts`**
 
@@ -1001,9 +1001,9 @@ export { db } from "./db.ts";
 - [ ] **Step 3: Create `apps/server/src/queues/batch-geocode.ts`**
 
 ```typescript
-import { autocompleteAddresses } from "@wherabouts.com/database/queries";
-import { batchGeocodeJobs } from "@wherabouts.com/database/schema";
-import { db } from "@wherabouts.com/api";
+import { autocompleteAddresses } from "@locnative/database/queries";
+import { batchGeocodeJobs } from "@locnative/database/schema";
+import { db } from "@locnative/api";
 import { eq } from "drizzle-orm";
 
 export interface BatchGeocodeMessage {
@@ -1090,7 +1090,7 @@ export async function processBatchGeocodeMessage(
 Append to the existing file:
 
 ```typescript
-import { batchGeocodeJobs } from "@wherabouts.com/database/schema";
+import { batchGeocodeJobs } from "@locnative/database/schema";
 import { eq, and } from "drizzle-orm";
 
 // Queue and R2 come from the Worker env — accessed via context
@@ -1322,7 +1322,7 @@ git commit -m "feat(api): add batch geocoding endpoints with CF Queue + R2 stora
 
 ```typescript
 import { ORPCError } from "@orpc/server";
-import { deviceZoneState, zones } from "@wherabouts.com/database/schema";
+import { deviceZoneState, zones } from "@locnative/database/schema";
 import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { o as baseBuilder } from "../../builder.ts";
@@ -1558,7 +1558,7 @@ git commit -m "feat(api): add device location push + boundary crossing detection
 
 ```typescript
 import { ORPCError } from "@orpc/server";
-import { webhookSubscriptions, zones } from "@wherabouts.com/database/schema";
+import { webhookSubscriptions, zones } from "@locnative/database/schema";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { o as baseBuilder } from "../../builder.ts";
@@ -1723,8 +1723,8 @@ git commit -m "feat(api): add webhook subscription CRUD endpoints"
 - [ ] **Step 1: Create `apps/server/src/queues/webhook-delivery.ts`**
 
 ```typescript
-import { webhookSubscriptions } from "@wherabouts.com/database/schema";
-import { db } from "@wherabouts.com/api";
+import { webhookSubscriptions } from "@locnative/database/schema";
+import { db } from "@locnative/api";
 import { and, eq, or, isNull, sql } from "drizzle-orm";
 
 export interface WebhookDeliveryMessage {
@@ -1768,8 +1768,8 @@ async function deliverWebhook(
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
-				"X-Wherabouts-Signature": signature,
-				"X-Wherabouts-Attempt": String(attempt),
+				"X-Locnative-Signature": signature,
+				"X-Locnative-Attempt": String(attempt),
 			},
 			body,
 			signal: AbortSignal.timeout(10_000),
@@ -1812,7 +1812,7 @@ export async function processWebhookDeliveryMessage(
 
 	for (const sub of subs) {
 		// Decrypt secret
-		const { decryptApiKey } = await import("@wherabouts.com/api/api-key-auth");
+		const { decryptApiKey } = await import("@locnative/api/api-key-auth");
 		const secret = await decryptApiKey(sub.secretEnc);
 
 		let delivered = false;
@@ -2080,7 +2080,7 @@ git commit -m "feat(sdk): add types for zones, geocoding, devices, and webhooks"
 
 ## Done
 
-All 4 phases complete. The Wherabouts API now has:
+All 4 phases complete. The Locnative API now has:
 - `GET /api/v1/addresses/geocode` — forward geocoding
 - `POST/GET /api/v1/geocode/batch` — async batch geocoding via CF Queue + R2
 - `POST/GET/PUT/DELETE /api/v1/zones` — developer zone management

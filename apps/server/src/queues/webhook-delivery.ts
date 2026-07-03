@@ -1,8 +1,8 @@
-import { db, decryptSecret, validateWebhookUrl } from "@wherabouts.com/api";
+import { db, decryptSecret, validateWebhookUrl } from "@locnative/api";
 import {
 	webhookDeliveryAttempts,
 	webhookSubscriptions,
-} from "@wherabouts.com/database/schema";
+} from "@locnative/database/schema";
 import { and, eq, isNull, or, sql } from "drizzle-orm";
 import { hmacSign } from "./hmac.ts";
 
@@ -32,8 +32,8 @@ async function deliverOnce(
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
-				"X-Wherabouts-Signature": signature,
-				"X-Wherabouts-Attempt": String(attempt),
+				"X-Locnative-Signature": signature,
+				"X-Locnative-Attempt": String(attempt),
 			},
 			body,
 			signal: AbortSignal.timeout(DELIVERY_TIMEOUT_MS),

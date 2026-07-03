@@ -1,4 +1,4 @@
-import { WheraboutsApiError } from "@wherabouts/sdk";
+import { LocnativeApiError } from "@locnative/sdk";
 import { describe, expect, it } from "vitest";
 import { ok, toToolError } from "./errors.ts";
 import type { ToolResult } from "./types.ts";
@@ -22,7 +22,7 @@ describe("ok", () => {
 
 describe("toToolError", () => {
 	const make = (status: number, message: string) =>
-		new WheraboutsApiError({ message, status });
+		new LocnativeApiError({ message, status });
 
 	it("maps 429 to a rate-limit message", () => {
 		const r = toToolError(make(429, "slow down"));

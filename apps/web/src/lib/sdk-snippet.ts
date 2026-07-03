@@ -51,10 +51,10 @@ export function buildSdkSnippet(
 	const call = sdkCallForEndpoint(endpointId);
 	const arg = renderArg(paramValues, body, comments);
 	return [
-		'import { createWheraboutsClient } from "@wherabouts/sdk";',
+		'import { createLocnativeClient } from "@locnative/sdk";',
 		"",
-		"const client = createWheraboutsClient({",
-		"  apiKey: process.env.WHERABOUTS_API_KEY!,",
+		"const client = createLocnativeClient({",
+		"  apiKey: process.env.LOCNATIVE_API_KEY!,",
 		"});",
 		"",
 		`const result = await ${call}(${arg});`,

@@ -55,7 +55,7 @@ export interface Region extends LngLat {
 }
 
 /**
- * Real Wherabouts coverage anchors. `live` = full G-NAF/US coverage today;
+ * Real Locnative coverage anchors. `live` = full G-NAF/US coverage today;
  * `beta` = international rollout. Keeping these truthful matters for an API
  * company — the arcs below only connect points that actually exist here.
  */

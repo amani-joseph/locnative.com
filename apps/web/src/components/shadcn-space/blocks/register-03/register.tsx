@@ -1,9 +1,9 @@
 "use client";
 
 import { Icon } from "@iconify/react";
+import { Label } from "@locnative/ui/components/label";
+import { PasswordInput } from "@locnative/ui/components/password-input";
 import { Link, useNavigate, useRouter } from "@tanstack/react-router";
-import { Label } from "@wherabouts.com/ui/components/label";
-import { PasswordInput } from "@wherabouts.com/ui/components/password-input";
 import { type FormEvent, useState } from "react";
 import { ShaderAnimation } from "@/components/shadcn-space/animations/shader-lines";
 import { Button } from "@/components/ui/button";
@@ -85,7 +85,7 @@ const RegisterForm = () => {
 							<div className="flex items-center gap-1.5">
 								<span className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />
 								<p className="font-normal text-base text-muted-foreground">
-									Welcome to Wherabouts
+									Welcome to Locnative
 								</p>
 							</div>
 							<p className="font-semibold text-5xl text-foreground md:text-6xl lg:text-7xl">
@@ -137,7 +137,7 @@ const RegisterForm = () => {
 													disabled={isSubmitting || socialProvider !== null}
 													id="email"
 													name="email"
-													placeholder="you@wherabouts.com"
+													placeholder="you@locnative.com"
 													required
 													type="email"
 												/>

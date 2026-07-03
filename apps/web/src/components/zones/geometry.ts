@@ -1,4 +1,4 @@
-import type { GeoJsonPolygon } from "@wherabouts.com/api/routers/public/zones-schema";
+import type { GeoJsonPolygon } from "@locnative/api/routers/public/zones-schema";
 
 export interface DrawFeature {
 	geometry: {
@@ -15,7 +15,7 @@ export function closeRing(ring: [number, number][]): [number, number][] {
 		return ring;
 	}
 	const first = ring[0];
-	const last = ring[ring.length - 1];
+	const last = ring.at(-1);
 	if (first[0] === last[0] && first[1] === last[1]) {
 		return ring;
 	}

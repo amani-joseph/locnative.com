@@ -1,25 +1,33 @@
-import { defineConfig } from "vite";
+import { resolve } from "node:path";
 import vue from "@vitejs/plugin-vue";
-import { resolve } from "path";
+import { defineConfig } from "vite";
+import dts from "vite-plugin-dts";
 
 export default defineConfig({
-  plugins: [vue()],
-  build: {
-    lib: {
-      entry: resolve(__dirname, "src/index.ts"),
-      name: "WheraboutsVueUI",
-      fileName: (format) => `index.${format === "es" ? "js" : "cjs"}`,
-    },
-    rollupOptions: {
-      external: ["vue", "@wherabouts/sdk"],
-      output: {
-        globals: {
-          vue: "Vue",
-          "@wherabouts/sdk": "WheraboutsSDK",
-        },
-      },
-    },
-    target: "es2020",
-    sourcemap: true,
-  },
+	plugins: [
+		vue(),
+		dts({
+			tsconfigPath: "./tsconfig.build.json",
+			rollupTypes: true,
+			exclude: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+		}),
+	],
+	build: {
+		lib: {
+			entry: resolve(import.meta.dirname, "src/index.ts"),
+			name: "LocnativeVueUI",
+			fileName: (format) => `index.${format === "es" ? "js" : "cjs"}`,
+		},
+		rollupOptions: {
+			external: ["vue", "@locnative/sdk"],
+			output: {
+				globals: {
+					vue: "Vue",
+					"@locnative/sdk": "LocnativeSDK",
+				},
+			},
+		},
+		target: "es2020",
+		sourcemap: true,
+	},
 });

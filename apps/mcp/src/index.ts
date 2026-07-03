@@ -5,19 +5,19 @@ import { buildClient } from "./client.ts";
 import { registerTools } from "./register.ts";
 import type { Env, Props } from "./types.ts";
 
-export class WheraboutsMcp extends McpAgent<Env, unknown, Props> {
-	server = new McpServer({ name: "wherabouts", version: "0.1.0" });
+export class LocnativeMcp extends McpAgent<Env, unknown, Props> {
+	server = new McpServer({ name: "locnative", version: "0.1.0" });
 
 	// biome-ignore lint/suspicious/useAwait: McpAgent.init is an async lifecycle hook the framework awaits; this implementation wires tools synchronously but the signature must stay async to match the base class.
 	async init() {
 		registerTools(this.server, () =>
 			// biome-ignore lint/style/noNonNullAssertion: this.props is set per request by the Durable Object — fetch() below writes ctx.props and updateProps() refreshes this.props before init/handlers run.
-			buildClient(this.props!.apiKey, this.env.WHERABOUTS_API_BASE_URL)
+			buildClient(this.props!.apiKey, this.env.LOCNATIVE_API_BASE_URL)
 		);
 	}
 }
 
-const mcpHandler = WheraboutsMcp.serve("/mcp", { binding: "MCP_OBJECT" });
+const mcpHandler = LocnativeMcp.serve("/mcp", { binding: "MCP_OBJECT" });
 
 export default {
 	async fetch(

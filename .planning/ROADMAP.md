@@ -1,4 +1,4 @@
-# Roadmap: Wherabouts.com — BetterAuth Migration
+# Roadmap: Locnative.com — BetterAuth Migration
 
 ## Overview
 
@@ -138,7 +138,7 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. `packages/auth/` exists with structure matching mydeffo 1:1 (file names, export shape, dependency set scoped to auth)
   2. `packages/api/src/auth.ts` no longer contains BetterAuth config (removed or thin re-export)
-  3. `apps/web` and `apps/server` import auth from `@wherabouts.com/auth` — no direct imports from `packages/api`
+  3. `apps/web` and `apps/server` import auth from `@locnative/auth` — no direct imports from `packages/api`
   4. `pnpm install` + `pnpm build` succeed at repo root; `pnpm dlx ultracite check` clean on touched files
   5. Dev sign-in flow (GitHub OAuth) still works end-to-end — no regression
 **Plans:** 3 plans
@@ -178,28 +178,28 @@ first. P2/P3/P4 are server-side, buildable on the existing OSRM + PostGIS + oRPC
 follow in priority order. **P1 (client/mobile SDKs)** is multi-quarter native work and is
 tracked as its own future milestone (below), not a phase here.
 
-- [ ] **Phase 9: Publish the TypeScript SDK to npm** (P0) — the built/hardened `@wherabouts/sdk` becomes installable
-- [x] **Phase 10: Advanced routing** (P2) — matrix, multi-profile, isochrones, map-matching, optimisation on existing OSRM (code+tests complete on feat/routing-multiprofile; OSRM 3-profile car/bike/foot **deployed & verified** 2026-06-14 on wherabouts-osrm.fly.dev; remaining: API-key end-to-end smokes + SDK publish via Phase 9)
+- [ ] **Phase 9: Publish the TypeScript SDK to npm** (P0) — the built/hardened `@locnative/sdk` becomes installable
+- [x] **Phase 10: Advanced routing** (P2) — matrix, multi-profile, isochrones, map-matching, optimisation on existing OSRM (code+tests complete on feat/routing-multiprofile; OSRM 3-profile car/bike/foot **deployed & verified** 2026-06-14 on locnative-osrm.fly.dev; remaining: API-key end-to-end smokes + SDK publish via Phase 9)
 - [ ] **Phase 11: Server-side DX completion** (P3) — error envelope, rate-limit headers, idempotency enforcement + Python SDK
 - [ ] **Phase 12: Places/POI + address validation** (P4) — AU POI search + G-NAF-canonical address validation
 
 ## Phase Details
 
 ### Phase 9: Publish the TypeScript SDK to npm
-**Goal:** The already-built, hardened `@wherabouts/sdk` is installable from npm — moving the SDK from "shipped as code" to "on the registry" so its value reaches buyers
+**Goal:** The already-built, hardened `@locnative/sdk` is installable from npm — moving the SDK from "shipped as code" to "on the registry" so its value reaches buyers
 **Depends on:** Nothing (independent of Milestone 1; the SDK package already exists)
 **Requirements**: SDK-PUB-01..05 (added to REQUIREMENTS.md when this phase is finalised)
 **Decisions (locked 2026-06-11):** proprietary/custom license (published publicly, restricted terms via `license: "SEE LICENSE IN LICENSE"` + LICENSE file — NOT `private:true`); manual first publish via `prepublishOnly` gate, CI/changesets deferred to a follow-up
 **Success Criteria** (what must be TRUE):
   1. `packages/sdk/LICENSE` exists with the proprietary terms and `package.json` `license` is `SEE LICENSE IN LICENSE` (no longer `UNLICENSED`)
-  2. `pnpm -F @wherabouts/sdk build && pnpm -F @wherabouts/sdk lint:pkg && pnpm -F @wherabouts/sdk smoke` all pass (dist builds, `publint` + `attw` clean, smoke imports resolve)
+  2. `pnpm -F @locnative/sdk build && pnpm -F @locnative/sdk lint:pkg && pnpm -F @locnative/sdk smoke` all pass (dist builds, `publint` + `attw` clean, smoke imports resolve)
   3. `npm publish --dry-run` (or `pnpm publish --dry-run`) shows the correct file set (dist + README + LICENSE + CHANGELOG) and the scoped public access config
-  4. `@wherabouts/sdk@0.2.0` is live on npm and `npm install @wherabouts/sdk` resolves in a clean external project
+  4. `@locnative/sdk@0.2.0` is live on npm and `npm install @locnative/sdk` resolves in a clean external project
   5. README install/quickstart verified against the published artifact (not the workspace source)
 **Plans:** 1 plan
 
 Plans:
-- [ ] 09-01-PLAN.md — License + publish-readiness gate + manual first publish of @wherabouts/sdk@0.2.0
+- [ ] 09-01-PLAN.md — License + publish-readiness gate + manual first publish of @locnative/sdk@0.2.0
 
 ### Phase 10: Advanced routing (matrix · multi-profile · isochrones · map-matching · optimisation)
 **Goal:** Routing reaches Mappify/Mapbox parity beyond point-to-point driving directions — N×M matrices, walking/cycling profiles, reachability isochrones, GPS map-matching, and route optimisation, all on the existing self-hosted OSRM + PostGIS
@@ -239,7 +239,7 @@ Plans:
 - [ ] 11-04-PLAN.md — Python SDK mirroring the TS surface (httpx + hatchling) + manual PyPI publish
 
 ### Phase 12: Places/POI + address validation
-**Goal:** Move beyond addresses — AU POI/category search (Radar Places parity) and a G-NAF-canonical address validation endpoint that Wherabouts can do better than Mapbox/Google for AU
+**Goal:** Move beyond addresses — AU POI/category search (Radar Places parity) and a G-NAF-canonical address validation endpoint that Locnative can do better than Mapbox/Google for AU
 **Depends on:** Phase 5 (tiered search infra is reused for POI ranking)
 **Requirements**: PLACE-*, VALID-* (TBD)
 **Success Criteria** (what must be TRUE):

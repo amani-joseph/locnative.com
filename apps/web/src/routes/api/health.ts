@@ -17,7 +17,7 @@ export const Route = createFileRoute("/api/health")({
 						Response.json(
 							{
 								ok: true,
-								service: "wherabouts-public-api",
+								service: "locnative-public-api",
 								timestamp: new Date().toISOString(),
 								slos: {
 									healthcheckMaxLatencyMs:
@@ -40,7 +40,7 @@ export const Route = createFileRoute("/api/health")({
 						Response.json(
 							{
 								ok: false,
-								service: "wherabouts-public-api",
+								service: "locnative-public-api",
 								timestamp: new Date().toISOString(),
 								error:
 									error instanceof Error

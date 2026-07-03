@@ -59,7 +59,7 @@ Restructure the HeroSection component layout in hero.tsx to make the AddressDemo
 6. **Keep the brand marquee, badge, and CTA buttons** in the same relative order (badge -> h1 -> subtitle -> demo -> CTAs -> marquee), just with the adjusted sizing.
   </action>
   <verify>
-    <automated>cd /Users/mac/Developer/projects/wherabouts.com && pnpm --filter @wherabouts.com/web exec tsc --noEmit 2>&1 | tail -5</automated>
+    <automated>cd /Users/mac/Developer/projects/locnative.com && pnpm --filter @locnative/web exec tsc --noEmit 2>&1 | tail -5</automated>
   </verify>
   <done>Hero section renders with the animated address demo as the clear visual centerpiece. Heading is smaller and supportive. Subtitle is visible. Layout is tighter and more focused. No TypeScript errors.</done>
 </task>

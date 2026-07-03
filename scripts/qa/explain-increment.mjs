@@ -3,12 +3,15 @@
 import { readFileSync } from "node:fs";
 import { neon } from "@neondatabase/serverless";
 
+const DATABASE_URL_REGEX = /^DATABASE_URL=(.*)$/m;
+const SURROUNDING_QUOTES_REGEX = /^["']|["']$/g;
+
 function url() {
 	for (const p of ["apps/server/.env", "apps/web/.env", ".env"]) {
 		try {
-			const m = readFileSync(p, "utf8").match(/^DATABASE_URL=(.*)$/m);
+			const m = readFileSync(p, "utf8").match(DATABASE_URL_REGEX);
 			if (m) {
-				return m[1].trim().replace(/^["']|["']$/g, "");
+				return m[1].trim().replace(SURROUNDING_QUOTES_REGEX, "");
 			}
 		} catch {
 			/* next */

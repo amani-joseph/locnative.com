@@ -1,4 +1,4 @@
-# Wherabouts.com — Competitive Reassessment (Post-SDK-Hardening Update)
+# Locnative.com — Competitive Reassessment (Post-SDK-Hardening Update)
 
 **Date:** 2026-06-08 · **Amended:** 2026-06-10 (Mapbox column added to matrices) · **2026-06-16 (current-state refresh)**
 **Updates:** [`competitive-analysis-2026-06.md`](./competitive-analysis-2026-06.md) (2026-06-07 baseline)
@@ -10,11 +10,11 @@ This re-scores the same feature framework — only the developer-surface dimensi
 moved; the competitor set and capability rows are unchanged.
 
 > **🔄 2026-06-16 current-state refresh.** Several gaps this report listed as open have since
-> shipped. Verified against npm + the live codebase: **(1)** `@wherabouts/sdk@0.4.2` and
-> `@wherabouts/react@0.2.0` are **published to npm (MIT)** — the P0 "publish it" blocker is
+> shipped. Verified against npm + the live codebase: **(1)** `@locnative/sdk@0.4.2` and
+> `@locnative/react@0.2.0` are **published to npm (MIT)** — the P0 "publish it" blocker is
 > closed; **(2)** advanced routing shipped — **distance matrix, isochrones, map-matching, route
 > optimisation, multi-profile** (Phase 10 / PR#14), so those rows flip ❌→✅; **(3)** a **web
-> client SDK** (`@wherabouts/react` — hooks + WAI-ARIA combobox) now exists, so "client SDKs ❌"
+> client SDK** (`@locnative/react` — hooks + WAI-ARIA combobox) now exists, so "client SDKs ❌"
 > becomes ⚠️; **(4)** **international address data is live** (Overture/ODA adapters, multiple
 > countries + US queued), so "AU-only / global ❌" is now ⚠️ and partly obsolete. Cells changed
 > in this refresh are marked 🆕; §6 priorities are updated in place. Full critique + the new
@@ -30,7 +30,7 @@ The prior report's §6 ranked the gaps: **P1 client/mobile SDKs**, **P2 routing*
 
 - **Full endpoint coverage** — the SDK now spans all six resource namespaces
   (`addresses`, `geocode`, `zones`, `devices`, `webhooks`, `regions`), not just addresses.
-- **Publishable package** — renamed to the npm-legal `@wherabouts/sdk`, dual **ESM+CJS**
+- **Publishable package** — renamed to the npm-legal `@locnative/sdk`, dual **ESM+CJS**
   with bundled types, `publint` + `are-the-types-wrong` clean. *(Actual `npm publish`
   still pending an org + token + license — so "shipped as code," not yet "on the registry.")*
 - **Production-grade hardening** — automatic retries with backoff/jitter, `Retry-After`,
@@ -56,12 +56,12 @@ narrowed materially.**
 | Dimension | 2026-06-07 baseline | Now (2026-06-08) |
 |---|---|---|
 | TS server SDK coverage | addresses-only, WIP | **Full (22 methods)** |
-| Packaging / installability | private, raw source | 🆕 **Published — `@wherabouts/sdk@0.4.2` on npm, MIT** |
+| Packaging / installability | private, raw source | 🆕 **Published — `@locnative/sdk@0.4.2` on npm, MIT** |
 | SDK resilience (retries/timeouts) | none | **Built-in** |
 | Idempotent writes | none | **Auto `Idempotency-Key`** |
 | Typed errors w/ correlation id | basic (code+message) | **`requestId`/`docUrl`/`fields`** |
 | Python SDK | none | none (unchanged) |
-| Client / mobile SDKs | none | 🆕 **web client SDK shipped** (`@wherabouts/react` on npm); native mobile still none |
+| Client / mobile SDKs | none | 🆕 **web client SDK shipped** (`@locnative/react` on npm); native mobile still none |
 
 ---
 
@@ -69,7 +69,7 @@ narrowed materially.**
 
 Legend: ✅ strong/native · ⚠️ partial/indirect · ❌ absent · 🔼 improved since baseline
 
-| Capability | Wherabouts | Radar | Mappify | Google | HERE | Geoapify | Mapbox |
+| Capability | Locnative | Radar | Mappify | Google | HERE | Geoapify | Mapbox |
 |---|---|---|---|---|---|---|---|
 | Forward/reverse geocoding | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Autocomplete | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -97,7 +97,7 @@ Legend: ✅ strong/native · ⚠️ partial/indirect · ❌ absent · 🔼 impro
 
 **Changes from baseline:** *Server SDK(s)* ⚠️→✅ (with publish caveat); added an explicit
 **SDK resilience** row — a depth dimension the original presence/absence matrix didn't capture,
-where Wherabouts now matches Radar and *exceeds* the geocoding-only players whose SDKs are thin
+where Locnative now matches Radar and *exceeds* the geocoding-only players whose SDKs are thin
 wrappers. **2026-06-10 (status correction):** *Routing / directions* ❌→**⚠️🔼** — a code
 cross-check confirmed `GET /api/v1/routing/directions` is **live** (point-to-point, **driving
 only**, OSRM `/route`, returns distance + duration + geometry; SDK `routing.directions`). It was
@@ -115,16 +115,16 @@ hardened, so it lands ⚠️ on the resilience row alongside the other geocoders
 The original matrix scored SDK *presence*. Post-hardening, the more honest comparison is
 *quality*, which is where buyers actually feel friction:
 
-| SDK quality trait | Wherabouts | Radar | Google (services-js) | Mapbox (sdk-js) | Mappify/Geoapify |
+| SDK quality trait | Locnative | Radar | Google (services-js) | Mapbox (sdk-js) | Mappify/Geoapify |
 |---|---|---|---|---|---|
 | Resource-namespaced surface | ✅ | ✅ | ⚠️ | ✅ | ⚠️ |
 | Auto-retry + backoff | ✅ | ✅ | ✅ | ⚠️ | ❌ |
 | Idempotent writes | ✅ | n/a | n/a | n/a | ❌ |
 | Typed errors + request id | ✅ | ✅ | ⚠️ | ⚠️ | ❌ |
 | Dual ESM+CJS + shipped types | ✅ | ✅ | ✅ | ✅ | ⚠️ |
-| Installable from npm today | 🆕 ✅ (`@wherabouts/sdk@0.4.2`, MIT) | ✅ | ✅ | ✅ | ✅ |
+| Installable from npm today | 🆕 ✅ (`@locnative/sdk@0.4.2`, MIT) | ✅ | ✅ | ✅ | ✅ |
 
-**Read:** on *server-SDK ergonomics* Wherabouts now sits at parity with Radar and ahead of the
+**Read:** on *server-SDK ergonomics* Locnative now sits at parity with Radar and ahead of the
 AU/open-data geocoders — a credible "Stripe-grade server SDK for AU location data" claim, **once
 it's actually on npm.** The publish step is now the gating item, not the engineering.
 
@@ -135,7 +135,7 @@ it's actually on npm.** The publish step is now the gating item, not the enginee
 The quadrant thesis is unchanged — **AU-authoritative data × full geofencing/real-time
 platform** remains uncontested. What shifted is the *credibility of the developer story within
 that quadrant*: the server-side buyer (data/geocoding/backend integrations) can now adopt a
-typed, resilient SDK rather than hand-rolling fetch calls. That is the segment Wherabouts can
+typed, resilient SDK rather than hand-rolling fetch calls. That is the segment Locnative can
 win **today, without mobile SDKs** — and the baseline report named it as exactly the cheap,
 high-leverage move. It is now largely executed on the engineering side.
 
@@ -146,11 +146,11 @@ consumer-app/mobile-geofencing segment, and remains the single most strategic in
 
 ## 6. Re-prioritised gaps
 
-**~~P0 — actually publish the SDK.~~ ✅ DONE (2026-06-16).** `@wherabouts/sdk@0.4.2` and
-`@wherabouts/react@0.2.0` are live on npm under **MIT**. The Phase 1 value now reaches buyers; this
+**~~P0 — actually publish the SDK.~~ ✅ DONE (2026-06-16).** `@locnative/sdk@0.4.2` and
+`@locnative/react@0.2.0` are live on npm under **MIT**. The Phase 1 value now reaches buyers; this
 was the highest-ROI item and it is closed.
 
-**P1 — Native mobile SDKs (re-scoped 2026-06-16).** A **web client SDK** (`@wherabouts/react` —
+**P1 — Native mobile SDKs (re-scoped 2026-06-16).** A **web client SDK** (`@locnative/react` —
 hooks + WAI-ARIA combobox) has shipped, so the gap is now isolated to **native iOS/Android/RN/
 Flutter** — on-device background geofencing, the actual Radar moat. Still multi-quarter; own
 milestone.
@@ -177,7 +177,7 @@ package is published.
 
 ## 7. Bottom line
 
-The baseline's verdict holds — Wherabouts is the only AU-authoritative + real-time-geofencing
+The baseline's verdict holds — Locnative is the only AU-authoritative + real-time-geofencing
 player — but the **developer surface is no longer a soft spot on the server side.** This cycle
 converted the most-cited "SDK is WIP" gap into a publishable, Radar-grade server SDK. The
 competitive needle now turns on one cheap action (**publish it**) and one expensive one (**client

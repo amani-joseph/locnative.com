@@ -1,16 +1,16 @@
-import type { Input } from "@wherabouts.com/ui/components/input";
+import type { Input } from "@locnative/ui/components/input";
 import {
 	InputGroup,
 	InputGroupAddon,
 	InputGroupButton,
 	InputGroupInput,
-} from "@wherabouts.com/ui/components/input-group";
+} from "@locnative/ui/components/input-group";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
-} from "@wherabouts.com/ui/components/tooltip";
-import { cn } from "@wherabouts.com/ui/lib/utils";
+} from "@locnative/ui/components/tooltip";
+import { cn } from "@locnative/ui/lib/utils";
 import { zxcvbn, zxcvbnOptions } from "@zxcvbn-ts/core";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import {

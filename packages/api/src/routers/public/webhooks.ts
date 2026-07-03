@@ -1,5 +1,5 @@
+import { webhookSubscriptions, zones } from "@locnative/database/schema";
 import { ORPCError } from "@orpc/server";
-import { webhookSubscriptions, zones } from "@wherabouts.com/database/schema";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { o as baseBuilder } from "../../builder.ts";
@@ -16,7 +16,9 @@ import {
 // Helper
 // ---------------------------------------------------------------------------
 
-type AuthContext = { validatedApiKey: ValidatedApiKey };
+interface AuthContext {
+	validatedApiKey: ValidatedApiKey;
+}
 
 function requireProjectId(projectId: string | null): string {
 	if (!projectId) {
@@ -95,8 +97,14 @@ export const createWebhook = baseBuilder
 				createdAt: webhookSubscriptions.createdAt,
 			});
 
+		if (!sub) {
+			throw new ORPCError("INTERNAL_SERVER_ERROR", {
+				message: "Failed to create webhook.",
+			});
+		}
+
 		// Return plaintext secret ONCE — never stored, never retrievable again
-		return { ...sub!, secret };
+		return { ...sub, secret };
 	});
 
 export const listWebhooks = baseBuilder

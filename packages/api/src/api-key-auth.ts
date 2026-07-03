@@ -1,6 +1,6 @@
 import { randomBytes, timingSafeEqual } from "node:crypto";
-import type { Database } from "@wherabouts.com/database";
-import { apiKeys, apiUsageDaily } from "@wherabouts.com/database/schema";
+import type { Database } from "@locnative/database";
+import { apiKeys, apiUsageDaily } from "@locnative/database/schema";
 import { eq, sql } from "drizzle-orm";
 import {
 	billingOwnerFromKey,
@@ -9,9 +9,9 @@ import {
 } from "./billing/account.ts";
 
 export const API_KEY_PREFIX = "wh_" as const;
-export const INTERNAL_API_AUTH_HEADER = "x-wherabouts-internal-auth";
-export const INTERNAL_API_KEY_ID_HEADER = "x-wherabouts-internal-api-key-id";
-export const INTERNAL_REQUEST_SOURCE_HEADER = "x-wherabouts-request-source";
+export const INTERNAL_API_AUTH_HEADER = "x-locnative-internal-auth";
+export const INTERNAL_API_KEY_ID_HEADER = "x-locnative-internal-api-key-id";
+export const INTERNAL_REQUEST_SOURCE_HEADER = "x-locnative-request-source";
 export const REQUEST_SOURCE_PRODUCTION = "production";
 export const REQUEST_SOURCE_EXPLORER_TEST = "explorer_test";
 

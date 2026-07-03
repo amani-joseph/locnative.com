@@ -1,5 +1,3 @@
-// biome-ignore lint/performance/noBarrelFile: public entry point
-
 export {
 	AddressAutocomplete,
 	type AddressAutocompleteProps,

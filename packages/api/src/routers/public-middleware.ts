@@ -1,6 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
+import { serverEnv } from "@locnative/env/server";
 import { ORPCError } from "@orpc/server";
-import { serverEnv } from "@wherabouts.com/env/server";
 import {
 	INTERNAL_API_AUTH_HEADER,
 	INTERNAL_API_KEY_ID_HEADER,

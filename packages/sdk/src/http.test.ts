@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { WheraboutsApiError } from "./errors.ts";
+import { LocnativeApiError } from "./errors.ts";
 import { createRequester } from "./http.ts";
 import type { RequestLogEvent } from "./shared-types.ts";
 
@@ -52,10 +52,10 @@ describe("createRequester", () => {
 		}
 		expect(c.method).toBe("GET");
 		expect(c.url).toBe(
-			"https://api.wherabouts.com/api/v1/addresses/autocomplete?q=123+Main&limit=5"
+			"https://api.locnative.com/api/v1/addresses/autocomplete?q=123+Main&limit=5"
 		);
 		expect(c.headers.authorization).toBe("Bearer wh_test");
-		expect(c.headers["x-wherabouts-sdk"]).toContain("js-ts/");
+		expect(c.headers["x-locnative-sdk"]).toContain("js-ts/");
 		expect(c.body).toBeNull();
 	});
 
@@ -72,7 +72,7 @@ describe("createRequester", () => {
 			throw new Error("No captured request");
 		}
 		expect(c.url).toBe(
-			"https://api.wherabouts.com/api/v1/addresses/nearby?limit=0"
+			"https://api.locnative.com/api/v1/addresses/nearby?limit=0"
 		);
 	});
 
@@ -104,7 +104,9 @@ describe("createRequester", () => {
 		const strictFetch = function (this: unknown) {
 			capturedThis = this;
 			if (this !== globalThis && this !== undefined) {
-				throw new TypeError("Failed to execute 'fetch' on 'Window': Illegal invocation");
+				throw new TypeError(
+					"Failed to execute 'fetch' on 'Window': Illegal invocation"
+				);
 			}
 			return Promise.resolve(
 				new Response(JSON.stringify({ ok: true }), {
@@ -135,7 +137,7 @@ describe("createRequester", () => {
 		expect(result).toBeUndefined();
 	});
 
-	it("throws WheraboutsApiError on a non-2xx body", async () => {
+	it("throws LocnativeApiError on a non-2xx body", async () => {
 		const { fetch } = mockFetch(404, {
 			error: { code: "not_found", message: "Zone not found." },
 		});
@@ -143,13 +145,13 @@ describe("createRequester", () => {
 		await expect(
 			request({ method: "GET", path: "/api/v1/zones/999" })
 		).rejects.toMatchObject({
-			name: "WheraboutsApiError",
+			name: "LocnativeApiError",
 			status: 404,
 			code: "not_found",
 		});
 		await expect(
 			request({ method: "GET", path: "/api/v1/zones/999" })
-		).rejects.toBeInstanceOf(WheraboutsApiError);
+		).rejects.toBeInstanceOf(LocnativeApiError);
 	});
 
 	it("calls logger after each request with method, path, status, and durationMs", async () => {

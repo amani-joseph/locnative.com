@@ -101,20 +101,19 @@ export function Marquee({
 					className
 				)}
 			>
-				{Array(repeat)
-					.fill(0)
-					.map((_, i) => (
-						<div
-							className={cn("flex shrink-0 justify-around gap-(--gap)", {
-								"animate-marquee flex-row": !vertical,
-								"animate-marquee-vertical flex-col": vertical,
-								"animate-reverse": reverse,
-							})}
-							key={i}
-						>
-							{children}
-						</div>
-					))}
+				{Array.from({ length: repeat }, (_, i) => (
+					<div
+						className={cn("flex shrink-0 justify-around gap-(--gap)", {
+							"animate-marquee flex-row": !vertical,
+							"animate-marquee-vertical flex-col": vertical,
+							"animate-reverse": reverse,
+						})}
+						// biome-ignore lint/suspicious/noArrayIndexKey: repeated marquee lanes are static clones
+						key={i}
+					>
+						{children}
+					</div>
+				))}
 			</div>
 		</>
 	);

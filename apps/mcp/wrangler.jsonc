@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "wherabouts-mcp",
+  "name": "locnative-mcp",
   "main": "src/index.ts",
   "compatibility_date": "2026-04-14",
   "compatibility_flags": ["nodejs_compat"],
@@ -12,12 +12,12 @@
   // `turbo dev`. Both the server worker AND the web app's @cloudflare/vite-plugin
   // allocate inspector ports starting at 9229 and incrementing per worker
   // environment, so 9229/9230 are already taken. Park well clear of that range.
-  "dev": { "port": 3005, "inspector_port": 9329 },
-  "routes": [{ "pattern": "mcp.wherabouts.com", "custom_domain": true }],
-  "vars": { "WHERABOUTS_API_BASE_URL": "https://api.wherabouts.com" },
+  "dev": { "ip": "0.0.0.0", "port": 3005, "inspector_port": 9329 },
+  "routes": [{ "pattern": "mcp.locnative.com", "custom_domain": true }],
+  "vars": { "LOCNATIVE_API_BASE_URL": "https://api.locnative.com" },
   "durable_objects": {
-    "bindings": [{ "name": "MCP_OBJECT", "class_name": "WheraboutsMcp" }]
+    "bindings": [{ "name": "MCP_OBJECT", "class_name": "LocnativeMcp" }]
   },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["WheraboutsMcp"] }],
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["LocnativeMcp"] }],
   "observability": { "enabled": true }
 }

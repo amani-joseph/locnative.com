@@ -1,14 +1,14 @@
-# @wherabouts.com/mcp
+# @locnative/mcp
 
-MCP (Model Context Protocol) server at `mcp.wherabouts.com` that exposes the
-Wherabouts location API to AI agents as tools. It's a standalone Cloudflare
+MCP (Model Context Protocol) server at `mcp.locnative.com` that exposes the
+Locnative location API to AI agents as tools. It's a standalone Cloudflare
 Worker (`McpAgent`, Streamable HTTP) whose tools call the deployed
-`api.wherabouts.com` over HTTPS via `@wherabouts/sdk` — so the API's auth, rate
+`api.locnative.com` over HTTPS via `@locnative/sdk` — so the API's auth, rate
 limits, and usage billing stay in one place.
 
 ## Auth
 
-Pass a Wherabouts project API key on the MCP connection as
+Pass a Locnative project API key on the MCP connection as
 `Authorization: Bearer <key>` (or `X-API-Key: <key>`). Requests without a key get
 `401` before any tool runs. The key is used to build a per-session SDK client, so
 each connection acts as its own project.
@@ -51,13 +51,13 @@ Point the MCP Inspector at `http://localhost:3005/mcp` with an
 pnpm deploy       # wrangler deploy (manual — this repo has no CI/CD)
 ```
 
-After the first deploy, confirm the `mcp.wherabouts.com` custom domain is attached
+After the first deploy, confirm the `mcp.locnative.com` custom domain is attached
 in the Cloudflare dashboard.
 
 ## Follow-up (tracked, not in this package yet)
 
 - **DNS-AID discovery:** publish the SVCB/HTTPS record pointing at
-  `mcp.wherabouts.com` and enable DNSSEC once this server is live — see
+  `mcp.locnative.com` and enable DNSSEC once this server is live — see
   `docs/superpowers/specs/2026-06-19-mcp-server-design.md` and the
   `dns-aid-deferred` project memory.
 - **OAuth 2.1 connector auth** (one-click connector UX) — requires standing up an

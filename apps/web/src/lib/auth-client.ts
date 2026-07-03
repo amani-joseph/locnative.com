@@ -11,11 +11,11 @@ const getAuthBaseUrl = (): string => {
 	}
 
 	// Production: point at the API server. Cross-subdomain cookies on
-	// .wherabouts.com share session between web and API.
+	// .locnative.com share session between web and API.
 	return (
 		import.meta.env.VITE_SERVER_URL ??
 		process.env.BETTER_AUTH_URL ??
-		"https://api.wherabouts.com"
+		"https://api.locnative.com"
 	);
 };
 

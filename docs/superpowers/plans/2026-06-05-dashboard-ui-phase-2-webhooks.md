@@ -130,14 +130,14 @@ CREATE INDEX "idx_webhook_attempts_created_at" ON "webhook_delivery_attempts" US
 - [ ] **Step 4: Type-check**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/packages/database && pnpm check-types 2>&1 | grep -i error || echo "no errors"
+cd /Users/mac/Developer/projects/locnative.com/packages/database && pnpm check-types 2>&1 | grep -i error || echo "no errors"
 ```
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add packages/database/src/schema/webhook-attempts.ts packages/database/src/schema/index.ts packages/database/drizzle/0011_webhook_delivery_attempts.sql
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(db): add webhook_delivery_attempts table + migration 0011"
+git -C /Users/mac/Developer/projects/locnative.com add packages/database/src/schema/webhook-attempts.ts packages/database/src/schema/index.ts packages/database/drizzle/0011_webhook_delivery_attempts.sql
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(db): add webhook_delivery_attempts table + migration 0011"
 ```
 
 ---
@@ -152,8 +152,8 @@ git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(db): add web
 - [ ] **Step 1: Create `packages/api/src/shared/webhook-queries.ts`**
 
 ```typescript
-import type { Database } from "@wherabouts.com/database";
-import { webhookSubscriptions } from "@wherabouts.com/database/schema";
+import type { Database } from "@locnative/database";
+import { webhookSubscriptions } from "@locnative/database/schema";
 import { and, eq } from "drizzle-orm";
 
 /** Clear the `failing` flag on a subscription. Returns false if not owned. */
@@ -180,7 +180,7 @@ export async function reactivateWebhook(
 
 In `apps/server/src/queues/webhook-delivery.ts`, import the attempts table and insert a row after each delivery attempt (success or failure). Add to imports:
 ```typescript
-import { webhookDeliveryAttempts, webhookSubscriptions } from "@wherabouts.com/database/schema";
+import { webhookDeliveryAttempts, webhookSubscriptions } from "@locnative/database/schema";
 ```
 Then modify `deliverOnce` to RETURN the status code (not just a boolean), and have the caller log each attempt. Replace `deliverOnce` with:
 ```typescript
@@ -195,8 +195,8 @@ async function deliverOnce(
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
-				"X-Wherabouts-Signature": signature,
-				"X-Wherabouts-Attempt": String(attempt),
+				"X-Locnative-Signature": signature,
+				"X-Locnative-Attempt": String(attempt),
 			},
 			body,
 			signal: AbortSignal.timeout(DELIVERY_TIMEOUT_MS),
@@ -263,15 +263,15 @@ Then find where the public webhooks handlers are registered in `packages/api/src
 - [ ] **Step 4: Type-check both packages**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/packages/api && pnpm check-types 2>&1 | grep -v "api-explorer.ts(204" | grep -i error || echo "no new errors"
-cd /Users/mac/Developer/projects/wherabouts.com/apps/server && pnpm check-types 2>&1 | grep -i error || echo "no errors"
+cd /Users/mac/Developer/projects/locnative.com/packages/api && pnpm check-types 2>&1 | grep -v "api-explorer.ts(204" | grep -i error || echo "no new errors"
+cd /Users/mac/Developer/projects/locnative.com/apps/server && pnpm check-types 2>&1 | grep -i error || echo "no errors"
 ```
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git -C /Users/mac/Developer/projects/wherabouts.com add packages/api/src/shared/webhook-queries.ts apps/server/src/queues/webhook-delivery.ts packages/api/src/routers/public/webhooks.ts packages/api/src/routers/public-http.ts
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(api): log webhook delivery attempts + add reactivate endpoint"
+git -C /Users/mac/Developer/projects/locnative.com add packages/api/src/shared/webhook-queries.ts apps/server/src/queues/webhook-delivery.ts packages/api/src/routers/public/webhooks.ts packages/api/src/routers/public-http.ts
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(api): log webhook delivery attempts + add reactivate endpoint"
 ```
 
 ---
@@ -286,7 +286,7 @@ git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(api): log we
 
 ```typescript
 import { ORPCError } from "@orpc/server";
-import { webhookSubscriptions, webhookDeliveryAttempts, zones } from "@wherabouts.com/database/schema";
+import { webhookSubscriptions, webhookDeliveryAttempts, zones } from "@locnative/database/schema";
 import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { protectedProcedure } from "../../procedures.ts";
@@ -427,9 +427,9 @@ Add `import { webhooksRouter } from "./domains/webhooks.ts";` and `webhooks: web
 - [ ] **Step 3: Type-check + commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/packages/api && pnpm check-types 2>&1 | grep -v "api-explorer.ts(204" | grep -i error || echo "no new errors"
-git -C /Users/mac/Developer/projects/wherabouts.com add packages/api/src/routers/domains/webhooks.ts packages/api/src/routers/index.ts
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(api): add session-authed dashboard webhooks oRPC domain"
+cd /Users/mac/Developer/projects/locnative.com/packages/api && pnpm check-types 2>&1 | grep -v "api-explorer.ts(204" | grep -i error || echo "no new errors"
+git -C /Users/mac/Developer/projects/locnative.com add packages/api/src/routers/domains/webhooks.ts packages/api/src/routers/index.ts
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(api): add session-authed dashboard webhooks oRPC domain"
 ```
 
 ---
@@ -447,7 +447,7 @@ git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(api): add se
 Mirrors the api-keys once-only reveal pattern (read `apps/web/src/routes/_protected/api-keys.tsx` for the copy-to-clipboard idiom).
 
 ```typescript
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Dialog,
 	DialogContent,
@@ -455,7 +455,7 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@wherabouts.com/ui/components/dialog";
+} from "@locnative/ui/components/dialog";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -480,7 +480,7 @@ export function WebhookSecretReveal({ secret, onClose }: WebhookSecretRevealProp
 				<DialogHeader>
 					<DialogTitle>Webhook signing secret</DialogTitle>
 					<DialogDescription>
-						Copy this now — it is shown once and cannot be retrieved later. Use it to verify the X-Wherabouts-Signature HMAC.
+						Copy this now — it is shown once and cannot be retrieved later. Use it to verify the X-Locnative-Signature HMAC.
 					</DialogDescription>
 				</DialogHeader>
 				<div className="flex items-center gap-2 rounded-md border bg-muted p-2 font-mono text-sm">
@@ -501,8 +501,8 @@ export function WebhookSecretReveal({ secret, onClose }: WebhookSecretRevealProp
 - [ ] **Step 2: Create dialog `webhook-create-dialog.tsx`** — url input, entry/exit checkboxes, optional zone select. Zone options are passed in as a prop (the page fetches them via `orpcClient.zones.list` when available; falls back to "all zones").
 
 ```typescript
-import { Button } from "@wherabouts.com/ui/components/button";
-import { Checkbox } from "@wherabouts.com/ui/components/checkbox";
+import { Button } from "@locnative/ui/components/button";
+import { Checkbox } from "@locnative/ui/components/checkbox";
 import {
 	Dialog,
 	DialogContent,
@@ -510,16 +510,16 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@wherabouts.com/ui/components/dialog";
-import { Input } from "@wherabouts.com/ui/components/input";
-import { Label } from "@wherabouts.com/ui/components/label";
+} from "@locnative/ui/components/dialog";
+import { Input } from "@locnative/ui/components/input";
+import { Label } from "@locnative/ui/components/label";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@wherabouts.com/ui/components/select";
+} from "@locnative/ui/components/select";
 import { useEffect, useState } from "react";
 
 export interface WebhookZoneOption {
@@ -571,7 +571,7 @@ export function WebhookCreateDialog({ open, saving, zones, onCancel, onSubmit }:
 				<div className="space-y-3">
 					<div className="space-y-1">
 						<Label htmlFor="wh-url">Endpoint URL</Label>
-						<Input id="wh-url" onChange={(e) => setUrl(e.target.value)} placeholder="https://example.com/webhooks/wherabouts" value={url} />
+						<Input id="wh-url" onChange={(e) => setUrl(e.target.value)} placeholder="https://example.com/webhooks/locnative" value={url} />
 					</div>
 					<div className="space-y-2">
 						<Label>Events</Label>
@@ -616,8 +616,8 @@ export function WebhookCreateDialog({ open, saving, zones, onCancel, onSubmit }:
 - [ ] **Step 3: Webhook list `webhook-list.tsx`** — table with url, events, zone, status badge (Active/Failing), and per-row actions (deliveries, reactivate when failing, delete).
 
 ```typescript
-import { Badge } from "@wherabouts.com/ui/components/badge";
-import { Button } from "@wherabouts.com/ui/components/button";
+import { Badge } from "@locnative/ui/components/badge";
+import { Button } from "@locnative/ui/components/button";
 import {
 	Table,
 	TableBody,
@@ -625,7 +625,7 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@wherabouts.com/ui/components/table";
+} from "@locnative/ui/components/table";
 import { ListIcon, RefreshCwIcon, TrashIcon } from "lucide-react";
 
 export interface WebhookRow {
@@ -699,8 +699,8 @@ export function WebhookList({ webhooks, onDelete, onReactivate, onViewDeliveries
 
 ```typescript
 import { createFileRoute } from "@tanstack/react-router";
-import { Button } from "@wherabouts.com/ui/components/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@wherabouts.com/ui/components/card";
+import { Button } from "@locnative/ui/components/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@locnative/ui/components/card";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ActiveProjectSelector } from "@/components/active-project-selector";
@@ -819,9 +819,9 @@ function RouteComponent() {
 - [ ] **Step 5: Build + commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm build 2>&1 | tail -8
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/src/components/webhooks/ apps/web/src/routes/_protected/webhooks.tsx
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): webhooks page with list, create (once-only secret), delete, reactivate"
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm build 2>&1 | tail -8
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/src/components/webhooks/ apps/web/src/routes/_protected/webhooks.tsx
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(web): webhooks page with list, create (once-only secret), delete, reactivate"
 ```
 
 ---
@@ -841,8 +841,8 @@ import {
 	SheetDescription,
 	SheetHeader,
 	SheetTitle,
-} from "@wherabouts.com/ui/components/sheet";
-import { Badge } from "@wherabouts.com/ui/components/badge";
+} from "@locnative/ui/components/sheet";
+import { Badge } from "@locnative/ui/components/badge";
 
 export interface DeliveryAttemptItem {
 	id: number;
@@ -932,9 +932,9 @@ Replace `onViewDeliveries={() => toast.info(...)}` with `onViewDeliveries={handl
 - [ ] **Step 3: Build + commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/apps/web && pnpm build 2>&1 | tail -8
-git -C /Users/mac/Developer/projects/wherabouts.com add apps/web/src/components/webhooks/delivery-timeline-drawer.tsx apps/web/src/routes/_protected/webhooks.tsx
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(web): add webhook delivery timeline drawer"
+cd /Users/mac/Developer/projects/locnative.com/apps/web && pnpm build 2>&1 | tail -8
+git -C /Users/mac/Developer/projects/locnative.com add apps/web/src/components/webhooks/delivery-timeline-drawer.tsx apps/web/src/routes/_protected/webhooks.tsx
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(web): add webhook delivery timeline drawer"
 ```
 
 ---
@@ -969,9 +969,9 @@ export interface WebhookReactivateResponse {
 - [ ] **Step 2: Type-check + commit**
 
 ```bash
-cd /Users/mac/Developer/projects/wherabouts.com/packages/sdk && pnpm check-types 2>&1 | grep -i error || echo "no errors"
-git -C /Users/mac/Developer/projects/wherabouts.com add packages/sdk/src/types.ts
-git -C /Users/mac/Developer/projects/wherabouts.com commit -m "feat(sdk): add webhook delivery-attempt + reactivate types"
+cd /Users/mac/Developer/projects/locnative.com/packages/sdk && pnpm check-types 2>&1 | grep -i error || echo "no errors"
+git -C /Users/mac/Developer/projects/locnative.com add packages/sdk/src/types.ts
+git -C /Users/mac/Developer/projects/locnative.com commit -m "feat(sdk): add webhook delivery-attempt + reactivate types"
 ```
 
 ---

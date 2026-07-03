@@ -1,8 +1,8 @@
 "use client";
 
+import { DecorIcon } from "@locnative/ui/components/ui/decor-icon";
+import { cn } from "@locnative/ui/lib/utils";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { DecorIcon } from "@wherabouts.com/ui/components/ui/decor-icon";
-import { cn } from "@wherabouts.com/ui/lib/utils";
 import { BellIcon, SendIcon } from "lucide-react";
 import { AppBreadcrumbs } from "@/components/app-breadcrumbs";
 import { navLinks } from "@/components/app-shared";

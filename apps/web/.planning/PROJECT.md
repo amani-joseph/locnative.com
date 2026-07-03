@@ -1,11 +1,11 @@
-# Wherabouts — Projects & API Key Management
+# Locnative — Projects & API Key Management
 
 > Tactical project definition for the current implementation track.
 > For the broader platform direction, see `PLATFORM-ROADMAP.md`.
 
 ## What This Is
 
-Wherabouts is an Australian address geocoding API service. Users sign up, create projects (workspaces representing their apps or environments), and generate API keys scoped to those projects. The API provides address autocomplete and reverse geocoding powered by GNAF data in a Neon PostgreSQL + PostGIS database.
+Locnative is an Australian address geocoding API service. Users sign up, create projects (workspaces representing their apps or environments), and generate API keys scoped to those projects. The API provides address autocomplete and reverse geocoding powered by GNAF data in a Neon PostgreSQL + PostGIS database.
 
 ## Core Value
 
@@ -48,8 +48,8 @@ Users can create projects and generate API keys to access the geocoding API, wit
 ## Context
 
 - **Brownfield project** — existing TanStack Start app with Better Auth, Drizzle ORM, Neon PostgreSQL
-- **Monorepo** at `/Users/mac/Developer/projects/wherabouts.com` with packages for UI, database, backend, env
-- **Database schema** lives in `@wherabouts.com/database` package using Drizzle ORM
+- **Monorepo** at `/Users/mac/Developer/projects/locnative.com` with packages for UI, database, backend, env
+- **Database schema** lives in `@locnative/database` package using Drizzle ORM
 - **API keys** currently exist but are not linked to projects — need to add `project_id` foreign key
 - **Projects route** scaffolded at `src/routes/_protected/projects.tsx` but not implemented
 - **API keys route** exists at `src/routes/_protected/api-keys.tsx` with working generation/listing

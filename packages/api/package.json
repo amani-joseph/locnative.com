@@ -1,5 +1,5 @@
 {
-  "name": "@wherabouts.com/api",
+  "name": "@locnative/api",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,9 +14,9 @@
   "dependencies": {
     "@orpc/openapi": "^1.13.14",
     "@orpc/server": "^1.9.0",
-    "@wherabouts.com/auth": "workspace:*",
-    "@wherabouts.com/database": "workspace:*",
-    "@wherabouts.com/env": "workspace:*",
+    "@locnative/auth": "workspace:*",
+    "@locnative/database": "workspace:*",
+    "@locnative/env": "workspace:*",
     "drizzle-orm": "^0.44.7",
     "hono": "^4.10.4",
     "stripe": "^22.2.0",
@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
-    "@wherabouts.com/config": "workspace:*",
+    "@locnative/config": "workspace:*",
     "typescript": "^5",
     "vitest": "^4.1.4"
   }

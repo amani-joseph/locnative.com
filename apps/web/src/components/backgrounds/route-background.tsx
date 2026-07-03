@@ -1,4 +1,4 @@
-import { cn } from "@wherabouts.com/ui/lib/utils";
+import { cn } from "@locnative/ui/lib/utils";
 import type { ReactNode } from "react";
 
 /**

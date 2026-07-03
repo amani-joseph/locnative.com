@@ -1,4 +1,4 @@
-import { cn } from "@wherabouts.com/ui/lib/utils";
+import { cn } from "@locnative/ui/lib/utils";
 // biome-ignore lint/performance/noNamespaceImport: React namespace import is the conventional shadcn pattern; React is not tree-shaken, so there is no bundle cost.
 import * as React from "react";
 import type { ControllerProps, FieldPath, FieldValues } from "react-hook-form";

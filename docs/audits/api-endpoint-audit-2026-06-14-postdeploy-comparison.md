@@ -1,7 +1,7 @@
 # API Audit — Pre-Deploy vs Post-Deploy Comparison
 
 **Date:** 2026-06-14 (after deploying master, Worker version `243413ec`)
-**Target:** Production — `https://api.wherabouts.com`
+**Target:** Production — `https://api.locnative.com`
 **Methodology:** identical to the pre-deploy run — N=10 warm samples → p50/p95, cold (first call) reported separately; project-scoped key; Sydney CBD `-33.8688,151.2093`; `country=AU`.
 **Baseline:** `api-endpoint-audit-2026-06-14.md` (measured against the *stale* prod deployment, before this deploy).
 

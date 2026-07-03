@@ -6,13 +6,13 @@
 
 **Architecture:** A static curated data module (`coverage.ts`) holds the country list plus two pure, unit-tested helpers (`iso2ToFlag`, `filterCountries`). A TanStack Start file route (`coverage.tsx`) renders a shadcn `Table` driven by client-side search state. A one-line footer link makes it discoverable. No backend, no new endpoint.
 
-**Tech Stack:** TanStack Start / React 19, TypeScript, Tailwind v4, shadcn components from `@wherabouts.com/ui`, Vitest.
+**Tech Stack:** TanStack Start / React 19, TypeScript, Tailwind v4, shadcn components from `@locnative/ui`, Vitest.
 
 ## Global Constraints
 
 - Indent with **tabs**; **double quotes**; self-closing elements (Biome/Ultracite enforced).
 - Named exports only (except React route default-export patterns already in use).
-- Intra-app imports use the `@/` alias (`@/lib/...`); shared UI via `@wherabouts.com/ui/components/*`.
+- Intra-app imports use the `@/` alias (`@/lib/...`); shared UI via `@locnative/ui/components/*`.
 - File names are `kebab-case`; React components `PascalCase`; constants `UPPER_SNAKE_CASE`.
 - Supported set is exactly the 17 ISO-2 codes in `packages/database/src/queries/country-codes.ts`: US, AU, GB, FR, DE, ES, IT, NL, BE, AT, CH, PT, PL, DK, NO, FI, CA.
 - Do NOT run `pnpm dlx ultracite fix` without explicit file paths (it reformats unrelated files). Lint only the files this plan touches.
@@ -230,8 +230,8 @@ Create `apps/web/src/routes/coverage.tsx`:
 ```tsx
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Badge } from "@wherabouts.com/ui/components/badge";
-import { Input } from "@wherabouts.com/ui/components/input";
+import { Badge } from "@locnative/ui/components/badge";
+import { Input } from "@locnative/ui/components/input";
 import {
 	Table,
 	TableBody,
@@ -239,7 +239,7 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@wherabouts.com/ui/components/table";
+} from "@locnative/ui/components/table";
 import {
 	CAPABILITY_LABELS,
 	COVERAGE_COUNTRIES,
@@ -250,9 +250,9 @@ import { buildSeo } from "@/lib/seo";
 import { breadcrumbJsonLd, jsonLdScript } from "@/lib/structured-data";
 
 const COVERAGE_TITLE =
-	"Coverage — Countries with Address Data | Wherabouts";
+	"Coverage — Countries with Address Data | Locnative";
 const COVERAGE_DESCRIPTION =
-	"See which countries the Wherabouts location API supports for geocoding, reverse geocoding, and address autocomplete before you integrate.";
+	"See which countries the Locnative location API supports for geocoding, reverse geocoding, and address autocomplete before you integrate.";
 
 export const Route = createFileRoute("/coverage")({
 	head: () => {
@@ -290,7 +290,7 @@ function RouteComponent() {
 			<header className="mb-8">
 				<h1 className="font-semibold text-3xl tracking-tight">Coverage</h1>
 				<p className="mt-2 text-muted-foreground text-sm">
-					Countries with address data available through the Wherabouts API.
+					Countries with address data available through the Locnative API.
 				</p>
 				<p className="mt-1 text-muted-foreground text-xs">
 					{countries.length === COVERAGE_COUNTRIES.length
@@ -357,7 +357,7 @@ function RouteComponent() {
 				Don’t see your country?{" "}
 				<a
 					className="underline underline-offset-4 hover:text-foreground"
-					href="mailto:hello@wherabouts.com"
+					href="mailto:hello@locnative.com"
 				>
 					Request coverage →
 				</a>

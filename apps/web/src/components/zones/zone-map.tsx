@@ -1,5 +1,5 @@
-import type { GeoJsonPolygon } from "@wherabouts.com/api/routers/public/zones-schema";
-import type { ZoneWithGeometryRow } from "@wherabouts.com/api/shared/zone-queries";
+import type { GeoJsonPolygon } from "@locnative/api/routers/public/zones-schema";
+import type { ZoneWithGeometryRow } from "@locnative/api/shared/zone-queries";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import { useEffect, useRef, useState } from "react";
 import { MapCanvas } from "@/components/map/map-canvas";
@@ -59,7 +59,6 @@ export function ZoneMap({
 		onDrawnChangeRef.current?.(draw.drawnPolygon);
 	}, [draw.drawnPolygon]);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: draw in deps satisfies lint; readyFiredRef guard ensures body runs once only
 	useEffect(() => {
 		if (map && !readyFiredRef.current) {
 			readyFiredRef.current = true;

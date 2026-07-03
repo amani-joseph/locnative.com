@@ -41,7 +41,7 @@ re_verification: false
 | From | To | Via | Status | Details |
 |------|----|-----|--------|---------|
 | `autocomplete.ts` (query) | `addresses.ts` (schema) | Uses `population_score`, `admin_level` in SQL | WIRED | `buildOrderBy()` references `population_score DESC, admin_level ASC` |
-| `autocomplete.ts` (API route) | `autocomplete.ts` (query) | Imports and calls `autocompleteAddresses` with latitude/longitude | WIRED | Line 2: `import { autocompleteAddresses } from "@wherabouts.com/database/queries"`, line 58-64: passes lat/lon in options |
+| `autocomplete.ts` (API route) | `autocomplete.ts` (query) | Imports and calls `autocompleteAddresses` with latitude/longitude | WIRED | Line 2: `import { autocompleteAddresses } from "@locnative/database/queries"`, line 58-64: passes lat/lon in options |
 | `queries/index.ts` | `autocomplete.ts` (query) | Re-exports `autocompleteAddresses` | WIRED | Line 2: `export { autocompleteAddresses } from "./autocomplete.ts"` |
 | `package.json` | `queries/index.ts` | Package exports `./queries` entry | WIRED | Line 9: `"./queries": "./src/queries/index.ts"` |
 

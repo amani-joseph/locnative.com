@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { extractApiKey } from "./auth.ts";
 
 const req = (headers: Record<string, string>) =>
-	new Request("https://mcp.wherabouts.com/mcp", { headers });
+	new Request("https://mcp.locnative.com/mcp", { headers });
 
 describe("extractApiKey", () => {
 	it("reads a Bearer token (case-insensitive scheme)", () => {

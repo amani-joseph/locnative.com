@@ -3,10 +3,10 @@
 "use client";
 
 import MapLibreGL, { type MarkerOptions, type PopupOptions } from "maplibre-gl";
-// NOTE (wherabouts): maplibre CSS is imported globally in packages/ui globals.css
+// NOTE (locnative): maplibre CSS is imported globally in packages/ui globals.css
 // (not here) to avoid an SSR "<link> outside the main document" warning.
 
-import { cn } from "@wherabouts.com/ui/lib/utils";
+import { cn } from "@locnative/ui/lib/utils";
 import { Loader2, Locate, Maximize, Minus, Plus, X } from "lucide-react";
 import {
 	createContext,

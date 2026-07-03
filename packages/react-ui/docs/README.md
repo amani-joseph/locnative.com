@@ -1,4 +1,4 @@
-# @wherabouts/react-ui — Component documentation
+# @locnative/react-ui — Component documentation
 
 Detailed, per-component guides with worked examples, full prop tables,
 accessibility notes, and recipes. For a quick overview and install steps, see
