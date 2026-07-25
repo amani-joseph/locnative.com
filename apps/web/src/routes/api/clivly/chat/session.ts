@@ -22,7 +22,7 @@ type ChatSessionPayload = {
 		email: string;
 		name: string;
 	};
-	visitorToken?: string;
+	visitorToken?: string | null;
 };
 
 const json = (body: unknown, status: number) =>
@@ -50,7 +50,11 @@ const isChatSessionPayload = (value: unknown): value is ChatSessionPayload => {
 		visitor.name.trim().length > 0 &&
 		typeof visitor.email === "string" &&
 		visitor.email.trim().length > 0 &&
+		// The @clivly/chat-widget sends `visitorToken: null` for a first-time
+		// visitor (not `undefined`), so null must be accepted here — otherwise the
+		// real widget payload is rejected with `invalid_payload`.
 		(payload.visitorToken === undefined ||
+			payload.visitorToken === null ||
 			typeof payload.visitorToken === "string")
 	);
 };
