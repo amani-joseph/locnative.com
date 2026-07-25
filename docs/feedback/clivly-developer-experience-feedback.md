@@ -307,3 +307,102 @@ Clivly→host callbacks* — and those don't need to be human-managed at all.
 **Target end-state for a Cloud host app:** one secret (`CLIVLY_API_KEY`) and one
 public slug (`VITE_CLIVLY_WIDGET_ID`). Everything else derived, issued, or
 defaulted.
+
+---
+
+# Round 3 — Open-source packaging & governance standards (2026-07-26)
+
+Clivly is a package that scaffolds itself into other people's apps and handles
+API keys, auth adapters, and token signing. That raises the bar: consumers are
+extending trust to the package and its supply chain, so the OSS hygiene around it
+matters as much as the code. Findings below were checked against the published
+`clivly` tarball and the `clivly.com` repo.
+
+## Already solid (keep it)
+
+- **MIT license**, declared in `package.json` and shipped in the tarball.
+- **`CHANGELOG.md`** that follows Keep a Changelog + SemVer, with per-package
+  notes and lockstep-release rationale — genuinely above average.
+- **`CONTRIBUTING.md`**, a PR template, and CI workflows exist.
+- **Correct dual ESM/CJS** with a real `exports` map, `repository.directory` set
+  for the monorepo, and `bugs`/`homepage` populated.
+- **A `files` allowlist** (not shipping the whole repo) and **near-zero runtime
+  dependencies** (only `jiti`) — a small, auditable supply-chain surface. This is
+  the single best security property the package has; protect it.
+- **Optional peer dependencies** for the provider integrations (fixed in 0.4.1).
+
+## G1. No build provenance / publish attestations — HIGH (supply chain)
+
+`npm view clivly` shows registry **signatures: yes** but **attestations
+(provenance): NONE**. For a package that installs auth/secret-handling code into
+other apps, published **provenance** is now the expected standard.
+
+**Fix:** publish from CI with `npm publish --provenance` (GitHub OIDC → npm),
+add `"publishConfig": { "provenance": true, "access": "public" }`, and require
+2FA/automation-token publishing. Consider generating an SBOM (CycloneDX) per
+release. This lets consumers verify each version was built from the tagged source
+by CI, not a laptop.
+
+## G2. Missing security & community-health files — HIGH
+
+The repo has **no `SECURITY.md`**, **no `CODE_OF_CONDUCT.md`**, **no issue
+templates**, and **no `dependabot.yml`**. For an auth-adjacent package, the
+absence of a **vulnerability-disclosure policy** is the notable gap — a
+researcher who finds a token-signing or origin-allowlist flaw has no documented,
+private way to report it.
+
+**Fix:** add `SECURITY.md` (a security contact + disclosure SLA + supported
+versions), a `CODE_OF_CONDUCT.md`, `.github/ISSUE_TEMPLATE/` (bug/feature), and
+`dependabot.yml` (or Renovate) for automated dependency and GitHub-Actions
+updates. GitHub surfaces all of these in the repo's "Community Standards" checklist.
+
+## G3. `package.json` metadata correctness — MEDIUM
+
+- **`engines.node: ">=18"`** — Node 18 is EOL. Advertise `">=20"` (or `">=22"`)
+  so consumers aren't pointed at an unsupported runtime, and test the matrix in CI.
+- **`sideEffects` is unset** on the `clivly` package (the widget package sets
+  `sideEffects: false`). Declaring it improves downstream tree-shaking for the
+  library subpaths; set it accurately (the CLI entry has side effects, the
+  library exports generally don't — use an array form if needed).
+- **No `funding` field** — add one if relevant; it's low-effort and standard.
+- **No `publishConfig`** — see G1; also pin `access`/`provenance` there.
+- **Advertise types validation.** Run `publint` and `arethetypeswrong` (attw) in
+  CI (the *host* repo already gained attw/publint guards — the source package
+  should too) and consider an npm "types" badge so the dual-format `.d.ts`/`.d.cts`
+  correctness is continuously proven.
+
+## G4. Versioning, stability & bus factor — MEDIUM
+
+- **Pre-1.0 stability contract.** Everything is `0.x`, where SemVer permits
+  breaking changes in any minor. Since real apps are integrating now, publish a
+  short **stability/support policy**: what "stable" means pre-1.0, which subpaths
+  are public vs internal, a **deprecation policy** (how long a removed export
+  stays with a warning), and a path to 1.0.
+- **Lockstep coupling.** Eight packages release in lockstep pinned to identical
+  versions. It keeps things consistent but means one package's patch bumps all —
+  document this explicitly so consumers understand why `@clivly/chat-widget`
+  jumps a version with no changes (as happened at 0.4.1).
+- **Single maintainer / bus factor = 1.** One npm maintainer and one repo owner.
+  Not a blocker, but for a dependency others build on, note the risk and consider
+  a second publisher/org ownership so a lost account doesn't strand the package.
+
+## G5. README & docs discoverability — LOW
+
+The README is content-rich but has **no status badges** (npm version, license,
+CI, types) and leans on links into the `clivly.com` repo for the hard topics — a
+problem if that repo is ever private (already raised as finding #9). Add badges,
+and ensure the deep-linked guides are published to the public docs site so an
+external developer never dead-ends.
+
+## G6. Telemetry / privacy disclosure — VERIFY, then LOW/MEDIUM
+
+There appear to be DX-feedback/diagnostic env vars (e.g. `CLIVLY_DX_FEEDBACK`,
+`CLIVLY_SMOKE`). **If the CLI collects any usage/telemetry data**, OSS standard
+(cf. Next.js) is: disclose it prominently, make it opt-out (ideally opt-in),
+document exactly what's sent, and print a one-time notice. If nothing is
+collected, a line saying so ("Clivly collects no telemetry") is itself a
+trust-builder. Please confirm which case applies.
+
+**Highest-ROI here:** G1 (provenance) and G2 (`SECURITY.md`) — both are small,
+standard, and disproportionately important precisely because Clivly sits in the
+auth/secrets path of the apps that adopt it.
