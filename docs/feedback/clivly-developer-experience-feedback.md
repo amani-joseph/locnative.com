@@ -445,3 +445,78 @@ trust-builder. Please confirm which case applies.
 **Highest-ROI here:** G1 (provenance) and G2 (`SECURITY.md`) — both are small,
 standard, and disproportionately important precisely because Clivly sits in the
 auth/secrets path of the apps that adopt it.
+
+---
+
+# Ready-to-file GitHub issue
+
+Copy-paste the block below into a new issue at
+`https://github.com/amani-joseph/clivly.com/issues/new`. It is a condensed
+version of this document; keep this file as the full write-up and link to it.
+
+---
+
+**Title:** DX/robustness feedback from a production integration (Workers + TanStack Start + BetterAuth)
+
+**Body:**
+
+> Integrated Clivly (CRM sync + chat widget) into a TanStack Start + Cloudflare
+> Workers monorepo and shipped it to production. Two site-wide outages and a
+> chain of setup friction along the way — sharing consolidated, prioritized
+> feedback. Happy to PR any of these.
+>
+> **🔴 Critical / High**
+> 1. **Generated `clivly.config.ts` 500s every route on Workers/edge.** It runs
+>    `dirname(fileURLToPath(import.meta.url))` + `dotenv` at module scope;
+>    `import.meta.url` is `undefined` on workerd, so it throws at import and takes
+>    the whole site down. Please generate an edge-safe config (guard filesystem/env
+>    loading behind a runtime check).
+> 2. **`createChatSessionHandler` is documented but not exported from the installed
+>    `clivly` package**, so every host hand-rolls the session proxy and drifts from
+>    the contract. This caused two separate prod 400s: `origin` must be in the
+>    request *body* (not just the header), and `visitorToken: null` must be accepted
+>    (not only `undefined`/string). Please export the handler and scaffold the route
+>    via `init`.
+> 3. **Secret sprawl.** A host app configures 3 secrets (`API_KEY`,
+>    `SYNC_TRIGGER_SECRET`, `VERIFY_TOKEN`), +2 more self-hosting. The API key
+>    already proves identity; derive or issue the callback secrets from it so the
+>    target is **1 secret** + 1 public slug.
+> 4. **No build provenance/attestations** on an auth-/secrets-handling package —
+>    publish with `npm publish --provenance` from CI.
+> 5. **No `SECURITY.md` / vulnerability-disclosure path** (also missing
+>    CODE_OF_CONDUCT, issue templates, dependabot).
+>
+> **🟠 Medium**
+> 6. Widget provisioning is **raw SQL into `crm_widgets`** — add `clivly widget
+>    create`/`list`.
+> 7. **Be liberal in what you accept** (Postel): read `origin` from header *or*
+>    body; treat `null`/`undefined`/absent `visitorToken` identically.
+> 8. `status`/`doctor` never **mint a test widget session**, so a green setup still
+>    failed 3 ways — add `clivly widget check`.
+> 9. `init` monorepo output uses guessed relative imports + a placeholder
+>    `contacts` mapping to nonexistent tables; add `--db-import`/`--auth-import` and
+>    prefer package imports.
+> 10. `package.json`: `engines.node ">=18"` is EOL; `sideEffects` unset; no
+>     `funding`/`publishConfig`; run `publint`/`attw` in CI.
+> 11. Self-host prereqs (`CLIVLY_WIDGET_TOKEN_SECRET`, `..._WRAPPING_KEY`) are
+>     buried and fail late (503/500 at credential handover) — check them early in
+>     `doctor` and auto-generate where possible.
+> 12. CLI pairing is disabled on the hosted backend while docs position `clivly
+>     login` as the normal path — document the manual/dashboard route.
+>
+> **🟡 Lower**
+> 13. Publish a pre-1.0 stability + deprecation policy; note lockstep coupling;
+>     bus factor = 1.
+> 14. Widget shows opaque "failed with 400" — expose a machine-readable `code` in dev.
+> 15. README lacks badges; deep links into a possibly-private repo dead-end
+>     external devs.
+> 16. Disclose telemetry for `CLIVLY_DX_FEEDBACK`-style vars (or state that none is
+>     collected).
+>
+> **Already solid — thank you:** MIT + shipped LICENSE, a real Keep-a-Changelog
+> `CHANGELOG`, dual ESM/CJS with a proper `exports` map, a `files` allowlist,
+> near-zero runtime deps (`jiti` only), optional peer deps, and the
+> `status`/`doctor` readiness ladder.
+>
+> If it helps, I can share the full write-up (setup logs, exact payloads, and the
+> fixes we applied host-side) behind each of these.
