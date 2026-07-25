@@ -1,6 +1,45 @@
 # Clivly Developer Experience Feedback
 
-Updated: 2026-07-25
+Updated: 2026-07-26
+
+## Executive Summary
+
+Locnative integrated Clivly (CRM sync + embeddable chat widget) into a TanStack
+Start + Cloudflare Workers monorepo and got it working in production. Along the
+way we hit two site-wide outages and a chain of setup friction. The integration
+is now live and smoke-tested; this doc is the consolidated hand-over. Full detail
+follows in the sections below — this table is the triage view.
+
+**Fix-first, ranked by impact × effort:**
+
+| # | Finding | Severity | Effort | Section |
+| --- | --- | --- | --- | --- |
+| 1 | Generated `clivly.config.ts` runs Node-only code at module scope → **500s every route on Workers/edge** (`fileURLToPath(import.meta.url)`) | 🔴 Critical | Low | R2 |
+| 2 | Documented `createChatSessionHandler` **isn't exported from the installed package** → everyone hand-rolls the proxy and drifts from the contract (caused 2 separate prod 400s) | 🔴 High | Low | R1 |
+| 3 | **Secret sprawl** — a host app juggles 3 secrets (+2 self-host) when the API key alone proves identity; derive/issue the rest → target **1 secret** | 🔴 High | Med | Secrets |
+| 4 | No **build provenance / attestations** on an auth-/secrets-handling package | 🔴 High | Low | G1 |
+| 5 | No **`SECURITY.md`** / vuln-disclosure path (also missing CoC, issue templates, dependabot) | 🔴 High | Low | G2 |
+| 6 | Widget provisioning is **raw SQL into prod** (`crm_widgets`) — no UI, no CLI | 🟠 Med | Med | R4 |
+| 7 | Backend validation too strict — `origin` body-only (not header), `visitorToken` `null`≠absent — **apply Postel's law** | 🟠 Med | Low | R3 |
+| 8 | `clivly status`/`doctor` never **mints a test widget session**, so "green" setups still fail 3 ways in prod | 🟠 Med | Med | R5 |
+| 9 | `init` monorepo output: guessed relative imports + placeholder `contacts` mapping to nonexistent tables; needs `--db-import`/`--auth-import` and package-aware imports | 🟠 Med | Med | Friction 1–4 |
+| 10 | `package.json` correctness — `engines.node ">=18"` (EOL), unset `sideEffects`, no `funding`/`publishConfig`, run `publint`/`attw` | 🟠 Med | Low | G3 |
+| 11 | Self-host prereqs (`CLIVLY_WIDGET_TOKEN_SECRET`, `..._WRAPPING_KEY`) are **buried and fail late** (503/500 at credential handover) | 🟠 Med | Low | Friction/Secrets |
+| 12 | CLI pairing disabled on the hosted backend, yet docs position `clivly login` as the normal path → document the manual/dashboard route | 🟠 Med | Low | Friction 5 |
+| 13 | Pre-1.0 stability + deprecation policy undocumented; lockstep coupling; **bus factor = 1** | 🟡 Low | Low | G4 |
+| 14 | Opaque widget errors ("failed with 400") — expose a machine-readable `code` in dev | 🟡 Low | Low | R6 |
+| 15 | README lacks badges; deep links into a possibly-private repo dead-end external devs | 🟡 Low | Low | G5 |
+| 16 | Telemetry/privacy disclosure for `CLIVLY_DX_FEEDBACK`-style vars (verify, then document) | 🟡 Low | Low | G6 |
+
+**If you fix only four:** #1 and #2 remove the two ways a first integration goes
+down in production; #3 removes the biggest ongoing configuration burden; #4/#5
+are small, standard, and matter most precisely because Clivly sits in the
+auth/secrets path of the apps that adopt it.
+
+**Already solid (don't regress):** MIT + shipped LICENSE; a real Keep-a-Changelog
+`CHANGELOG`; dual ESM/CJS with a proper `exports` map; a `files` allowlist;
+near-zero runtime deps (only `jiti`); optional peer deps; and the thoughtful
+`status`/`doctor` readiness ladder.
 
 ## Context
 
