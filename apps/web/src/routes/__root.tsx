@@ -15,6 +15,7 @@ import {
 	useAnnounce,
 } from "@/components/a11y/live-announcer";
 import { SkipLink } from "@/components/a11y/skip-link";
+import { ClivlyChatWidget } from "@/components/clivly/chat-widget";
 import { authClient } from "@/lib/auth-client";
 import { type BetterAuthSession, getSession } from "@/lib/auth-server";
 
@@ -170,6 +171,7 @@ function RootDocument() {
 						<div className="grid h-svh grid-rows-[auto_1fr]">
 							<Outlet />
 						</div>
+						<ClivlyChatWidget />
 						<RouteAnnouncer />
 					</LiveAnnouncerProvider>
 					<Toaster richColors />

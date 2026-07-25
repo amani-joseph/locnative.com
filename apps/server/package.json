@@ -10,12 +10,13 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@orpc/openapi": "^1.13.14",
-    "@orpc/server": "^1.9.0",
     "@locnative/api": "workspace:*",
     "@locnative/auth": "workspace:*",
     "@locnative/database": "workspace:*",
     "@locnative/env": "workspace:*",
+    "@orpc/openapi": "^1.13.14",
+    "@orpc/server": "^1.9.0",
+    "clivly": "^0.4.1",
     "drizzle-orm": "^0.44.0",
     "hono": "^4.10.4",
     "pmtiles": "^4.4.1",
@@ -23,8 +24,8 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260416.2",
-    "@types/node": "^20",
     "@locnative/config": "workspace:*",
+    "@types/node": "^20",
     "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^4.1.4",

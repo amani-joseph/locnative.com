@@ -44,12 +44,15 @@ import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-pa
 import { Route as DotwellKnownApiCatalogRouteImport } from './routes/[.]well-known.api-catalog'
 import { Route as ApiV1SplatRouteImport } from './routes/api/v1/$'
 import { Route as ApiOpenapiJsonRouteImport } from './routes/api/openapi.json'
+import { Route as ApiClivlyTickRouteImport } from './routes/api/clivly/tick'
 import { Route as ApiAuthSignOutRouteImport } from './routes/api/auth/sign-out'
 import { Route as ApiAuthOkRouteImport } from './routes/api/auth/ok'
 import { Route as ApiAuthGetSessionRouteImport } from './routes/api/auth/get-session'
 import { Route as PublicLegalTermsRouteImport } from './routes/_public/legal/terms'
 import { Route as PublicLegalPrivacyRouteImport } from './routes/_public/legal/privacy'
 import { Route as PublicLegalAcceptableUseRouteImport } from './routes/_public/legal/acceptable-use'
+import { Route as ApiClivlyChatSessionRouteImport } from './routes/api/clivly/chat/session'
+import { Route as ApiClivlyAuthVerifyRouteImport } from './routes/api/clivly/auth/verify'
 import { Route as ApiAuthSignUpEmailRouteImport } from './routes/api/auth/sign-up/email'
 import { Route as ApiAuthSignInSocialRouteImport } from './routes/api/auth/sign-in/social'
 import { Route as ApiAuthSignInEmailRouteImport } from './routes/api/auth/sign-in/email'
@@ -228,6 +231,11 @@ const ApiOpenapiJsonRoute = ApiOpenapiJsonRouteImport.update({
   path: '/api/openapi/json',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiClivlyTickRoute = ApiClivlyTickRouteImport.update({
+  id: '/api/clivly/tick',
+  path: '/api/clivly/tick',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSignOutRoute = ApiAuthSignOutRouteImport.update({
   id: '/api/auth/sign-out',
   path: '/api/auth/sign-out',
@@ -259,6 +267,16 @@ const PublicLegalAcceptableUseRoute =
     path: '/legal/acceptable-use',
     getParentRoute: () => PublicRoute,
   } as any)
+const ApiClivlyChatSessionRoute = ApiClivlyChatSessionRouteImport.update({
+  id: '/api/clivly/chat/session',
+  path: '/api/clivly/chat/session',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiClivlyAuthVerifyRoute = ApiClivlyAuthVerifyRouteImport.update({
+  id: '/api/clivly/auth/verify',
+  path: '/api/clivly/auth/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSignUpEmailRoute = ApiAuthSignUpEmailRouteImport.update({
   id: '/api/auth/sign-up/email',
   path: '/api/auth/sign-up/email',
@@ -318,12 +336,15 @@ export interface FileRoutesByFullPath {
   '/api/auth/get-session': typeof ApiAuthGetSessionRoute
   '/api/auth/ok': typeof ApiAuthOkRoute
   '/api/auth/sign-out': typeof ApiAuthSignOutRoute
+  '/api/clivly/tick': typeof ApiClivlyTickRoute
   '/api/openapi/json': typeof ApiOpenapiJsonRoute
   '/api/v1/$': typeof ApiV1SplatRoute
   '/api/auth/callback/$provider': typeof ApiAuthCallbackProviderRoute
   '/api/auth/sign-in/email': typeof ApiAuthSignInEmailRoute
   '/api/auth/sign-in/social': typeof ApiAuthSignInSocialRoute
   '/api/auth/sign-up/email': typeof ApiAuthSignUpEmailRoute
+  '/api/clivly/auth/verify': typeof ApiClivlyAuthVerifyRoute
+  '/api/clivly/chat/session': typeof ApiClivlyChatSessionRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -363,12 +384,15 @@ export interface FileRoutesByTo {
   '/api/auth/get-session': typeof ApiAuthGetSessionRoute
   '/api/auth/ok': typeof ApiAuthOkRoute
   '/api/auth/sign-out': typeof ApiAuthSignOutRoute
+  '/api/clivly/tick': typeof ApiClivlyTickRoute
   '/api/openapi/json': typeof ApiOpenapiJsonRoute
   '/api/v1/$': typeof ApiV1SplatRoute
   '/api/auth/callback/$provider': typeof ApiAuthCallbackProviderRoute
   '/api/auth/sign-in/email': typeof ApiAuthSignInEmailRoute
   '/api/auth/sign-in/social': typeof ApiAuthSignInSocialRoute
   '/api/auth/sign-up/email': typeof ApiAuthSignUpEmailRoute
+  '/api/clivly/auth/verify': typeof ApiClivlyAuthVerifyRoute
+  '/api/clivly/chat/session': typeof ApiClivlyChatSessionRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -411,12 +435,15 @@ export interface FileRoutesById {
   '/api/auth/get-session': typeof ApiAuthGetSessionRoute
   '/api/auth/ok': typeof ApiAuthOkRoute
   '/api/auth/sign-out': typeof ApiAuthSignOutRoute
+  '/api/clivly/tick': typeof ApiClivlyTickRoute
   '/api/openapi/json': typeof ApiOpenapiJsonRoute
   '/api/v1/$': typeof ApiV1SplatRoute
   '/api/auth/callback/$provider': typeof ApiAuthCallbackProviderRoute
   '/api/auth/sign-in/email': typeof ApiAuthSignInEmailRoute
   '/api/auth/sign-in/social': typeof ApiAuthSignInSocialRoute
   '/api/auth/sign-up/email': typeof ApiAuthSignUpEmailRoute
+  '/api/clivly/auth/verify': typeof ApiClivlyAuthVerifyRoute
+  '/api/clivly/chat/session': typeof ApiClivlyChatSessionRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -458,12 +485,15 @@ export interface FileRouteTypes {
     | '/api/auth/get-session'
     | '/api/auth/ok'
     | '/api/auth/sign-out'
+    | '/api/clivly/tick'
     | '/api/openapi/json'
     | '/api/v1/$'
     | '/api/auth/callback/$provider'
     | '/api/auth/sign-in/email'
     | '/api/auth/sign-in/social'
     | '/api/auth/sign-up/email'
+    | '/api/clivly/auth/verify'
+    | '/api/clivly/chat/session'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -503,12 +533,15 @@ export interface FileRouteTypes {
     | '/api/auth/get-session'
     | '/api/auth/ok'
     | '/api/auth/sign-out'
+    | '/api/clivly/tick'
     | '/api/openapi/json'
     | '/api/v1/$'
     | '/api/auth/callback/$provider'
     | '/api/auth/sign-in/email'
     | '/api/auth/sign-in/social'
     | '/api/auth/sign-up/email'
+    | '/api/clivly/auth/verify'
+    | '/api/clivly/chat/session'
   id:
     | '__root__'
     | '/'
@@ -550,12 +583,15 @@ export interface FileRouteTypes {
     | '/api/auth/get-session'
     | '/api/auth/ok'
     | '/api/auth/sign-out'
+    | '/api/clivly/tick'
     | '/api/openapi/json'
     | '/api/v1/$'
     | '/api/auth/callback/$provider'
     | '/api/auth/sign-in/email'
     | '/api/auth/sign-in/social'
     | '/api/auth/sign-up/email'
+    | '/api/clivly/auth/verify'
+    | '/api/clivly/chat/session'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -576,12 +612,15 @@ export interface RootRouteChildren {
   ApiAuthGetSessionRoute: typeof ApiAuthGetSessionRoute
   ApiAuthOkRoute: typeof ApiAuthOkRoute
   ApiAuthSignOutRoute: typeof ApiAuthSignOutRoute
+  ApiClivlyTickRoute: typeof ApiClivlyTickRoute
   ApiOpenapiJsonRoute: typeof ApiOpenapiJsonRoute
   ApiV1SplatRoute: typeof ApiV1SplatRoute
   ApiAuthCallbackProviderRoute: typeof ApiAuthCallbackProviderRoute
   ApiAuthSignInEmailRoute: typeof ApiAuthSignInEmailRoute
   ApiAuthSignInSocialRoute: typeof ApiAuthSignInSocialRoute
   ApiAuthSignUpEmailRoute: typeof ApiAuthSignUpEmailRoute
+  ApiClivlyAuthVerifyRoute: typeof ApiClivlyAuthVerifyRoute
+  ApiClivlyChatSessionRoute: typeof ApiClivlyChatSessionRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -831,6 +870,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiOpenapiJsonRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/clivly/tick': {
+      id: '/api/clivly/tick'
+      path: '/api/clivly/tick'
+      fullPath: '/api/clivly/tick'
+      preLoaderRoute: typeof ApiClivlyTickRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/sign-out': {
       id: '/api/auth/sign-out'
       path: '/api/auth/sign-out'
@@ -872,6 +918,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/legal/acceptable-use'
       preLoaderRoute: typeof PublicLegalAcceptableUseRouteImport
       parentRoute: typeof PublicRoute
+    }
+    '/api/clivly/chat/session': {
+      id: '/api/clivly/chat/session'
+      path: '/api/clivly/chat/session'
+      fullPath: '/api/clivly/chat/session'
+      preLoaderRoute: typeof ApiClivlyChatSessionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/clivly/auth/verify': {
+      id: '/api/clivly/auth/verify'
+      path: '/api/clivly/auth/verify'
+      fullPath: '/api/clivly/auth/verify'
+      preLoaderRoute: typeof ApiClivlyAuthVerifyRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/auth/sign-up/email': {
       id: '/api/auth/sign-up/email'
@@ -985,12 +1045,15 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuthGetSessionRoute: ApiAuthGetSessionRoute,
   ApiAuthOkRoute: ApiAuthOkRoute,
   ApiAuthSignOutRoute: ApiAuthSignOutRoute,
+  ApiClivlyTickRoute: ApiClivlyTickRoute,
   ApiOpenapiJsonRoute: ApiOpenapiJsonRoute,
   ApiV1SplatRoute: ApiV1SplatRoute,
   ApiAuthCallbackProviderRoute: ApiAuthCallbackProviderRoute,
   ApiAuthSignInEmailRoute: ApiAuthSignInEmailRoute,
   ApiAuthSignInSocialRoute: ApiAuthSignInSocialRoute,
   ApiAuthSignUpEmailRoute: ApiAuthSignUpEmailRoute,
+  ApiClivlyAuthVerifyRoute: ApiClivlyAuthVerifyRoute,
+  ApiClivlyChatSessionRoute: ApiClivlyChatSessionRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
