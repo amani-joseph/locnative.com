@@ -4,14 +4,22 @@ import { applyServerTiming } from "../../lib/api-response";
 import { getDb } from "../../lib/db";
 import { PLATFORM_SLOS } from "../../lib/platform-slos";
 
+const shouldCheckDatabase = (request: Request): boolean => {
+	const url = new URL(request.url);
+	return url.searchParams.get("db") === "1";
+};
+
 export const Route = createFileRoute("/api/health")({
 	server: {
 		handlers: {
-			GET: async () => {
+			GET: async ({ request }) => {
 				const startedAt = performance.now();
+				const checkDatabase = shouldCheckDatabase(request);
 
 				try {
-					await getDb().execute(sql`select 1`);
+					if (checkDatabase) {
+						await getDb().execute(sql`select 1`);
+					}
 
 					return applyServerTiming(
 						Response.json(
@@ -19,6 +27,10 @@ export const Route = createFileRoute("/api/health")({
 								ok: true,
 								service: "locnative-public-api",
 								timestamp: new Date().toISOString(),
+								checks: {
+									app: "ok",
+									database: checkDatabase ? "ok" : "skipped",
+								},
 								slos: {
 									healthcheckMaxLatencyMs:
 										PLATFORM_SLOS.healthcheckMaxLatencyMs,
@@ -42,6 +54,10 @@ export const Route = createFileRoute("/api/health")({
 								ok: false,
 								service: "locnative-public-api",
 								timestamp: new Date().toISOString(),
+								checks: {
+									app: "ok",
+									database: checkDatabase ? "failed" : "skipped",
+								},
 								error:
 									error instanceof Error
 										? error.message
