@@ -1,8 +1,9 @@
 import type { Database } from "@locnative/database";
-import { regions } from "@locnative/database/schema";
+import { addresses, regions } from "@locnative/database/schema";
 import { and, inArray, sql } from "drizzle-orm";
 
 export const REGION_LAYERS = [
+	"locality",
 	"state",
 	"sa1",
 	"sa2",
@@ -23,6 +24,8 @@ export interface RegionRow {
 	name: string;
 	state: string | null;
 }
+
+const LOCALITY_SEARCH_RADIUS_METERS = 5000;
 
 const REGION_LAYER_SET = new Set<string>(REGION_LAYERS);
 
@@ -78,5 +81,45 @@ export async function regionsContainingPoint(
 		layers && layers.length > 0
 			? await query.where(and(inArray(regions.layer, layers), covers))
 			: await query.where(covers);
-	return rows;
+	const includeLocality = !layers || layers.includes("locality");
+
+	if (!includeLocality) {
+		return rows;
+	}
+
+	const localityPoint = sql`ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)::geography`;
+	const localityRows = await db
+		.select({
+			locality: addresses.locality,
+			state: addresses.state,
+		})
+		.from(addresses)
+		.where(
+			sql`ST_DWithin(${addresses.geom}::geography, ${localityPoint}, ${LOCALITY_SEARCH_RADIUS_METERS})`
+		)
+		.orderBy(sql`${addresses.geom}::geography <-> ${localityPoint}`)
+		.limit(1);
+
+	if (localityRows.length === 0) {
+		return rows;
+	}
+
+	const locality = localityRows[0];
+	if (!locality) {
+		return rows;
+	}
+	const localityCode = [
+		locality.state ?? "UNK",
+		locality.locality.replaceAll(/\s+/g, "_").toUpperCase(),
+	].join(":");
+
+	return [
+		...rows,
+		{
+			layer: "locality",
+			code: localityCode,
+			name: locality.locality,
+			state: locality.state,
+		},
+	];
 }

@@ -15,7 +15,36 @@ const LEVENSHTEIN_LONG_MAX_DISTANCE = 2;
 const PREFIX_SEARCH_MAX_LEN = 4;
 const WIDE_FUZZY_MIN_LEN = 8;
 const PURE_DIGITS_REGEX = /^\d+$/;
+const DIGIT_REGEX = /\d/;
 const WHITESPACE_REGEX = /\s+/;
+const LOCALITY_QUERY_MAX_TOKENS = 3;
+const LOCALITY_STREET_HINTS = new Set([
+	"AVE",
+	"AVENUE",
+	"BLVD",
+	"CIR",
+	"CIRCLE",
+	"COURT",
+	"CRES",
+	"CRESCENT",
+	"CT",
+	"DR",
+	"DRIVE",
+	"HWY",
+	"LANE",
+	"LN",
+	"PDE",
+	"PLACE",
+	"PL",
+	"PKWY",
+	"RD",
+	"ROAD",
+	"ST",
+	"STREET",
+	"TCE",
+	"TERRACE",
+	"WAY",
+]);
 
 export interface AutocompleteResult {
 	country: string;
@@ -51,6 +80,17 @@ export interface RawAddressRow {
 	street_name: string;
 	street_suffix: string | null;
 	street_type: string | null;
+}
+
+interface LocalityAutocompleteRow {
+	country: string;
+	id: number;
+	latitude: number;
+	locality: string;
+	longitude: number;
+	population_score: number;
+	postcode: string;
+	state: string;
 }
 
 function formatStreetAddress(row: {
@@ -139,6 +179,24 @@ function buildWhereClause(
 ): SQL<unknown> {
 	const allConditions = [searchCondition, ...filterClauses];
 	return sql.join(allConditions, sql` AND `);
+}
+
+function looksLikeLocalityQuery(query: string): boolean {
+	const tokens = query
+		.trim()
+		.toUpperCase()
+		.split(WHITESPACE_REGEX)
+		.filter(Boolean);
+
+	if (tokens.length === 0 || tokens.length > LOCALITY_QUERY_MAX_TOKENS) {
+		return false;
+	}
+
+	if (tokens.some((token) => DIGIT_REGEX.test(token))) {
+		return false;
+	}
+
+	return !tokens.some((token) => LOCALITY_STREET_HINTS.has(token));
 }
 
 function buildOrderBy(
@@ -266,6 +324,17 @@ export async function autocompleteAddresses(
 	const searchBase =
 		freeform.confidence === "high" ? freeform.cleaned : trimmed;
 
+	if (looksLikeLocalityQuery(trimmed)) {
+		const localityResults = await localityAutocomplete(db, trimmed, {
+			country: effectiveCountry,
+			state,
+			limit,
+		});
+		if (localityResults.length > 0) {
+			return { results: localityResults, parsedQuery: null };
+		}
+	}
+
 	const parsed = parseUnitAddress(searchBase);
 	const searchInput = parsed ? parsed.streetQuery : searchBase;
 	const len = searchInput.length;
@@ -334,6 +403,88 @@ export async function autocompleteAddresses(
 	}
 
 	return { results, parsedQuery: parsed };
+}
+
+async function localityAutocomplete(
+	db: Database,
+	query: string,
+	options: { country?: string; state?: string; limit: number }
+): Promise<AutocompleteResult[]> {
+	const localityQuery = query.trim().toUpperCase();
+	const localityPrefix = `${localityQuery}%`;
+	const filters: SQL<unknown>[] = [sql`locality LIKE ${localityPrefix}`];
+
+	if (options.country) {
+		filters.push(sql`country = ${options.country.toUpperCase()}`);
+	}
+
+	if (options.state) {
+		filters.push(sql`state = ${options.state.toUpperCase()}`);
+	}
+
+	const whereClause = sql.join(filters, sql` AND `);
+	const result = await db.execute(sql`
+		WITH locality_matches AS (
+			SELECT DISTINCT ON (locality, state, postcode, country)
+				id,
+				locality,
+				state,
+				postcode,
+				country,
+				longitude,
+				latitude,
+				population_score
+			FROM addresses
+			WHERE ${whereClause}
+			ORDER BY
+				locality,
+				state,
+				postcode,
+				country,
+				population_score DESC,
+				admin_level ASC,
+				id ASC
+		)
+		SELECT
+			id,
+			locality,
+			state,
+			postcode,
+			country,
+			longitude,
+			latitude,
+			population_score
+		FROM locality_matches
+		ORDER BY
+			(locality = ${localityQuery}) DESC,
+			population_score DESC,
+			locality ASC
+		LIMIT ${options.limit}
+	`);
+
+	return (result.rows as unknown as LocalityAutocompleteRow[]).map((row) => {
+		const streetAddress = row.locality;
+
+		return {
+			id: -row.id,
+			formattedAddress: formatAddress(streetAddress, {
+				locality: null,
+				state: row.state,
+				postcode: row.postcode,
+				country: row.country,
+			}),
+			streetAddress,
+			streetName: null,
+			streetNumber: null,
+			streetType: null,
+			locality: row.locality,
+			state: row.state,
+			postcode: row.postcode ?? "",
+			country: row.country,
+			longitude: row.longitude,
+			latitude: row.latitude,
+		};
+	});
 }
 
 async function parsedPathFallback(

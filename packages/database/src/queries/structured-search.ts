@@ -1,6 +1,6 @@
 import { type SQL, sql } from "drizzle-orm";
 import type { Database } from "../client.ts";
-import { directionalVariants } from "./address-abbreviations.ts";
+import { directionalVariants, isDirectional } from "./address-abbreviations.ts";
 import {
 	type AutocompleteResult,
 	mapRowToResult,
@@ -10,6 +10,8 @@ import {
 import type { ParsedFreeformAddress } from "./parse-freeform-address.ts";
 
 const MAX_ANCHOR_VARIANTS = 4;
+const STRUCTURED_STREET_WHITESPACE = /\s+/;
+const STRUCTURED_HOUSE_NUMBER = /^\d+[A-Z]?(?:-\d+[A-Z]?)?$/;
 
 /**
  * Build tiered left-anchored `search_text` prefixes (without the trailing %)
@@ -95,6 +97,58 @@ export async function structuredAutocomplete(
 	return [];
 }
 
+export async function structuredGeocodeSearch(
+	db: Database,
+	input: {
+		street: string;
+		locality: string;
+		state?: string;
+		postcode?: string;
+		country?: string;
+		limit: number;
+	}
+): Promise<AutocompleteResult[]> {
+	const parsedStreet = parseStructuredStreet(input.street);
+	const tiers = buildAnchorPrefixes(parsedStreet);
+	if (tiers.length === 0) {
+		return [];
+	}
+
+	const filtersBase: SQL<unknown>[] = [
+		sql`locality = ${input.locality.trim().toUpperCase()}`,
+	];
+
+	if (input.state) {
+		filtersBase.push(sql`state = ${input.state.trim().toUpperCase()}`);
+	}
+
+	if (input.postcode) {
+		filtersBase.push(sql`postcode = ${input.postcode.trim().toUpperCase()}`);
+	}
+
+	if (input.country) {
+		filtersBase.push(sql`country = ${input.country.trim().toUpperCase()}`);
+	}
+
+	const exactPrefixes = tiers[0];
+	if (!exactPrefixes) {
+		return [];
+	}
+
+	const likeClauses = exactPrefixes.map(
+		(prefix) => sql`search_text LIKE ${`${prefix}%`}`
+	);
+	const filters = [sql`(${sql.join(likeClauses, sql` OR `)})`, ...filtersBase];
+	const result = await db.execute(sql`
+		SELECT ${SELECT_COLUMNS}, 1.0 as similarity_score
+		FROM addresses
+		WHERE ${sql.join(filters, sql` AND `)}
+		ORDER BY population_score DESC, admin_level ASC, id ASC
+		LIMIT ${input.limit}
+	`);
+	return (result.rows as unknown as RawAddressRow[]).map(mapRowToResult);
+}
+
 function buildRerank(parsed: ParsedFreeformAddress): SQL<unknown> {
 	const rerank: SQL<unknown>[] = [];
 	if (parsed.postcode) {
@@ -108,4 +162,75 @@ function buildRerank(parsed: ParsedFreeformAddress): SQL<unknown> {
 	}
 	rerank.push(sql`population_score DESC`);
 	return sql.join(rerank, sql`, `);
+}
+
+function parseStructuredStreet(street: string): ParsedFreeformAddress {
+	const upper = street.trim().toUpperCase();
+	const tokens = upper.split(STRUCTURED_STREET_WHITESPACE).filter(Boolean);
+	if (tokens.length === 0) {
+		return {
+			cleaned: upper,
+			confidence: "low",
+			countryCode: null,
+			directional: null,
+			houseNumber: null,
+			locality: null,
+			postcode: null,
+			region: null,
+			segments: upper ? [upper] : [],
+			streetTokens: [],
+		};
+	}
+
+	const firstToken = tokens[0];
+	const lastToken = tokens.at(-1);
+	if (!(firstToken && lastToken)) {
+		return {
+			cleaned: upper,
+			confidence: "low",
+			countryCode: null,
+			directional: null,
+			houseNumber: null,
+			locality: null,
+			postcode: null,
+			region: null,
+			segments: upper ? [upper] : [],
+			streetTokens: [],
+		};
+	}
+
+	const hasLeadingNumber = STRUCTURED_HOUSE_NUMBER.test(firstToken);
+	const hasTrailingNumber =
+		tokens.length >= 2 && STRUCTURED_HOUSE_NUMBER.test(lastToken);
+
+	let houseNumber: string | null = null;
+	let withoutNumber = tokens;
+
+	if (hasLeadingNumber) {
+		houseNumber = firstToken;
+		withoutNumber = tokens.slice(1);
+	} else if (hasTrailingNumber) {
+		houseNumber = lastToken;
+		withoutNumber = tokens.slice(0, -1);
+	}
+
+	const directional =
+		withoutNumber[0] && isDirectional(withoutNumber[0])
+			? withoutNumber[0]
+			: null;
+	const streetTokens =
+		directional === null ? withoutNumber : withoutNumber.slice(1);
+
+	return {
+		cleaned: upper,
+		confidence: "high",
+		countryCode: null,
+		directional,
+		houseNumber,
+		locality: null,
+		postcode: null,
+		region: null,
+		segments: upper ? [upper] : [],
+		streetTokens,
+	};
 }

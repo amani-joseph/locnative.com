@@ -12,7 +12,7 @@ import {
 import { auth } from "@locnative/auth";
 import { serverEnv } from "@locnative/env/server";
 import { OpenAPIHandler } from "@orpc/openapi/fetch";
-import { ORPCError, onError } from "@orpc/server";
+import { onError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/fetch";
 import { Hono, type Context as HonoContext } from "hono";
 import { cors } from "hono/cors";
@@ -37,6 +37,7 @@ const app = new Hono();
 const TRAILING_SLASH_REGEX = /\/$/;
 const DEPLOYED_WEB_ORIGIN =
 	process.env.DEPLOYED_WEB_ORIGIN ?? "https://locnative.com";
+const OPENAPI_WEB_PATH = "/api/openapi.json";
 
 // Built lazily on first request, NOT at module scope: reading `serverEnv` at
 // global scope would run during Cloudflare's deploy-time startup validation
@@ -54,7 +55,32 @@ const isAllowedOrigin = (origin: string | undefined): boolean => {
 	return typeof origin === "string" && allowedOrigins.has(origin);
 };
 
+const getPublishedWebOrigin = (): string =>
+	serverEnv.WEB_BASE_URL.replace(TRAILING_SLASH_REGEX, "");
+
+const redirectToOpenApiSpec = (): Response =>
+	Response.redirect(`${getPublishedWebOrigin()}${OPENAPI_WEB_PATH}`, 307);
+
 app.use(logger());
+
+const restrictedCors = cors({
+	origin: (origin) => {
+		if (isAllowedOrigin(origin)) {
+			return origin;
+		}
+		return undefined;
+	},
+	allowHeaders: [
+		"Authorization",
+		"Content-Type",
+		"X-API-Key",
+		"x-locnative-internal-auth",
+		"x-locnative-internal-api-key-id",
+		"x-locnative-request-source",
+	],
+	allowMethods: ["GET", "POST", "OPTIONS"],
+	credentials: true,
+});
 
 // Public API routes use X-API-Key (not cookies) — allow any origin so
 // third-party apps can call the API directly from the browser.
@@ -78,28 +104,23 @@ app.use(
 	})
 );
 
-// All other routes (auth, RPC, dashboard) stay restricted to known origins.
 app.use(
-	"/*",
+	"/tiles/v1/*",
 	cors({
-		origin: (origin) => {
-			if (isAllowedOrigin(origin)) {
-				return origin;
-			}
-			return undefined;
-		},
-		allowHeaders: [
-			"Authorization",
-			"Content-Type",
-			"X-API-Key",
-			"x-locnative-internal-auth",
-			"x-locnative-internal-api-key-id",
-			"x-locnative-request-source",
-		],
-		allowMethods: ["GET", "POST", "OPTIONS"],
-		credentials: true,
+		origin: "*",
+		allowMethods: ["GET", "OPTIONS"],
+		credentials: false,
 	})
 );
+
+// All other routes (auth, RPC, dashboard) stay restricted to known origins.
+app.use("/*", (context, next) => {
+	const path = context.req.path;
+	if (path.startsWith("/api/v1/") || path.startsWith("/tiles/v1/")) {
+		return next();
+	}
+	return restrictedCors(context, next);
+});
 
 app.on(["GET", "POST"], "/api/auth/*", async (context) => {
 	try {
@@ -145,6 +166,10 @@ app.post("/api/stripe/webhook", async (context) => {
 	return context.json({ received: true });
 });
 
+app.get("/api/openapi.json", () => redirectToOpenApiSpec());
+app.get("/api/openapi/json", () => redirectToOpenApiSpec());
+app.get("/api/v1/openapi.json", () => redirectToOpenApiSpec());
+
 // ---------------------------------------------------------------------------
 // Map ORPCError codes to our API error codes (Fix #2: complete mapping)
 // ---------------------------------------------------------------------------
@@ -172,12 +197,49 @@ const ORPC_TO_API_ERROR: Record<string, { status: number; code: string }> = {
 	GATEWAY_TIMEOUT: { status: 504, code: "internal_error" },
 };
 
+interface ORPCErrorLike {
+	code: string;
+	message: string;
+	status: number;
+}
+
+const isORPCErrorLike = (value: unknown): value is ORPCErrorLike => {
+	if (!value || typeof value !== "object") {
+		return false;
+	}
+
+	const record = value as Record<string, unknown>;
+	return (
+		typeof record.code === "string" &&
+		typeof record.status === "number" &&
+		typeof record.message === "string"
+	);
+};
+
+const buildCompatErrorResponse = (
+	error: Pick<ORPCErrorLike, "code" | "status" | "message">
+): Response => {
+	const mapped = ORPC_TO_API_ERROR[error.code];
+	const errorCode = mapped?.code ?? "internal_error";
+	const status = mapped?.status ?? error.status;
+	const message =
+		error.message.length > 0 ? error.message : "An unexpected error occurred.";
+
+	return Response.json(
+		{ error: { code: errorCode, message } },
+		{ status, headers: { "cache-control": "no-store" } }
+	);
+};
+
 /**
  * Reformat an OpenAPIHandler error response into the
  * `{ error: { code, message } }` shape for strict compat.
  * Also ensures cache-control: no-store on error responses.
  */
-async function reformatErrorResponse(response: Response): Promise<Response> {
+async function reformatErrorResponse(
+	response: Response,
+	fallbackError?: ORPCErrorLike
+): Promise<Response> {
 	if (response.ok) {
 		return response;
 	}
@@ -193,18 +255,25 @@ async function reformatErrorResponse(response: Response): Promise<Response> {
 		// shape: { code: "BAD_REQUEST", status: 400, message: "..." }
 		// Zod validation messages appear in the `message` field directly.
 		if (record && "code" in record) {
-			const mapped = ORPC_TO_API_ERROR[record.code as string];
-			const errorCode = mapped?.code ?? "internal_error";
-			const status = mapped?.status ?? response.status;
-			const message =
-				typeof record.message === "string" && record.message.length > 0
-					? record.message
-					: "An unexpected error occurred.";
+			const errorFromBody = {
+				code: String(record.code),
+				status:
+					typeof record.status === "number" ? record.status : response.status,
+				message:
+					typeof record.message === "string"
+						? record.message
+						: "An unexpected error occurred.",
+			};
 
-			return Response.json(
-				{ error: { code: errorCode, message } },
-				{ status, headers: { "cache-control": "no-store" } }
-			);
+			if (
+				fallbackError &&
+				errorFromBody.code === "INTERNAL_SERVER_ERROR" &&
+				fallbackError.code !== "INTERNAL_SERVER_ERROR"
+			) {
+				return buildCompatErrorResponse(fallbackError);
+			}
+
+			return buildCompatErrorResponse(errorFromBody);
 		}
 
 		// Fallback: wrap unknown error body
@@ -213,11 +282,18 @@ async function reformatErrorResponse(response: Response): Promise<Response> {
 				? record.message
 				: "An unexpected error occurred.";
 
+		if (fallbackError) {
+			return buildCompatErrorResponse(fallbackError);
+		}
+
 		return Response.json(
 			{ error: { code: "internal_error", message: fallbackMessage } },
 			{ status: response.status, headers: { "cache-control": "no-store" } }
 		);
 	} catch {
+		if (fallbackError) {
+			return buildCompatErrorResponse(fallbackError);
+		}
 		return response;
 	}
 }
@@ -225,16 +301,6 @@ async function reformatErrorResponse(response: Response): Promise<Response> {
 // ---------------------------------------------------------------------------
 // OpenAPI handler for public /api/v1/* endpoints
 // ---------------------------------------------------------------------------
-
-const openApiHandler = new OpenAPIHandler(publicHttpRouter, {
-	interceptors: [
-		onError((err: unknown) => {
-			if (!(err instanceof ORPCError)) {
-				console.error("[openapi]", err);
-			}
-		}),
-	],
-});
 
 // Path patterns for endpoint metric names — hoisted so they aren't recompiled
 // on every request.
@@ -305,6 +371,7 @@ function getWaitUntil(context: HonoContext): WaitUntil | undefined {
 
 app.use("/api/v1/*", async (context) => {
 	const startedAt = performance.now();
+	let openApiError: ORPCErrorLike | undefined;
 	// Thread CF bindings (queues, R2) into the public context — without this the
 	// device-location webhook enqueue and batch submit/results bindings are
 	// undefined and silently no-op.
@@ -325,6 +392,18 @@ app.use("/api/v1/*", async (context) => {
 		// calling it later as a bare function does not throw "Illegal invocation".
 		waitUntil: getWaitUntil(context),
 	});
+	const openApiHandler = new OpenAPIHandler(publicHttpRouter, {
+		interceptors: [
+			onError((err: unknown) => {
+				if (isORPCErrorLike(err)) {
+					openApiError = err;
+					return;
+				}
+
+				console.error("[openapi]", err);
+			}),
+		],
+	});
 	const result = await openApiHandler.handle(context.req.raw, {
 		prefix: "/" as `/${string}`,
 		context: rpcContext,
@@ -338,7 +417,7 @@ app.use("/api/v1/*", async (context) => {
 	}
 
 	// Reformat error responses for strict compat
-	const response = await reformatErrorResponse(result.response);
+	const response = await reformatErrorResponse(result.response, openApiError);
 
 	// Fix #1: Ensure cache-control on ALL responses (success + error)
 	if (!response.headers.has("cache-control")) {

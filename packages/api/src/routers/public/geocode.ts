@@ -1,15 +1,21 @@
-import { autocompleteAddresses } from "@locnative/database/queries";
+import {
+	autocompleteAddresses,
+	structuredGeocodeSearch,
+} from "@locnative/database/queries";
 import { ORPCError } from "@orpc/server";
 import { z } from "zod";
 import type { ValidatedApiKey } from "../../api-key-auth.ts";
-import { o as baseBuilder } from "../../builder.ts";
 import {
 	createBatchGeocodeJob,
 	getBatchGeocodeJob,
 	getBatchGeocodeResults,
 	MAX_BATCH_ADDRESSES,
 } from "../../shared/batch-geocode.ts";
-import { apiKeyAuth, usageMiddleware } from "../public-middleware.ts";
+import {
+	apiKeyAuth,
+	publicApiProcedure,
+	usageMiddleware,
+} from "../public-middleware.ts";
 // buildGeocodeQuery lives in the env-free geocode-query.ts module so it stays
 // unit-testable without loading serverEnv.
 import { buildGeocodeQuery } from "./geocode-query.ts";
@@ -59,7 +65,7 @@ const geocodeInput = z.preprocess(
 // Handler
 // ---------------------------------------------------------------------------
 
-export const forwardGeocode = baseBuilder
+export const forwardGeocode = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("addresses.geocode"))
 	.route({
@@ -72,29 +78,52 @@ export const forwardGeocode = baseBuilder
 	.handler(async ({ input, context }) => {
 		const isStructured = input.structured === "true";
 
-		// Build the query string
-		let query: string;
-		let country: string | undefined;
-		let state: string | undefined;
-
 		if (isStructured) {
-			query = buildGeocodeQuery({
-				structured: "true",
+			const results = await structuredGeocodeSearch(context.db, {
 				street: input.street,
 				locality: input.locality,
 				state: input.state,
+				postcode: input.postcode,
+				country: input.country,
+				limit: 1,
 			});
-			country = input.country;
-			state = input.state;
-		} else {
-			query = buildGeocodeQuery({ structured: "false", q: input.q });
-			country = input.country;
-			state = input.state;
+
+			if (results.length === 0) {
+				throw new ORPCError("NOT_FOUND", {
+					message: "No address found matching the structured query.",
+				});
+			}
+
+			const result = results[0];
+			if (!result) {
+				throw new Error(
+					"Structured geocode returned no result after non-empty guard."
+				);
+			}
+
+			return {
+				address: {
+					id: result.id,
+					formattedAddress: result.formattedAddress,
+					streetAddress: result.streetAddress,
+					streetName: result.streetName ?? null,
+					streetNumber: result.streetNumber ?? null,
+					streetType: result.streetType ?? null,
+					locality: result.locality,
+					state: result.state,
+					postcode: result.postcode,
+					country: result.country,
+					latitude: result.latitude,
+					longitude: result.longitude,
+				},
+				matchType: "structured" as const,
+			};
 		}
 
+		const query = buildGeocodeQuery({ structured: "false", q: input.q });
 		const { results } = await autocompleteAddresses(context.db, query, {
-			country,
-			state,
+			country: input.country,
+			state: input.state,
 			limit: 1,
 			// Skip the levenshtein/dmetaphone last-resort fallbacks: they drive the
 			// cold-cache cost on unmatched queries and rarely yield a correct
@@ -126,7 +155,7 @@ export const forwardGeocode = baseBuilder
 				latitude: result.latitude,
 				longitude: result.longitude,
 			},
-			matchType: isStructured ? ("structured" as const) : ("fuzzy" as const),
+			matchType: "fuzzy" as const,
 		};
 	});
 
@@ -134,7 +163,7 @@ export const forwardGeocode = baseBuilder
 // Batch geocoding handlers
 // ---------------------------------------------------------------------------
 
-export const batchGeocodeSubmit = baseBuilder
+export const batchGeocodeSubmit = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("addresses.batch"))
 	.route({
@@ -172,7 +201,7 @@ export const batchGeocodeSubmit = baseBuilder
 		});
 	});
 
-export const batchGeocodePoll = baseBuilder
+export const batchGeocodePoll = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("addresses.batch.poll"))
 	.route({
@@ -208,7 +237,7 @@ export const batchGeocodePoll = baseBuilder
 		};
 	});
 
-export const batchGeocodeResults = baseBuilder
+export const batchGeocodeResults = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("addresses.batch.results"))
 	.route({
