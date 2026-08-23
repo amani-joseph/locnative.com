@@ -59,7 +59,7 @@ export const getOpenApiDocument = () =>
 							required: true,
 							schema: { type: "string", minLength: 2 },
 							description:
-								"Free-form address query. When `q` is nothing but a postcode and `country` is supplied, the response is the list of localities in that postcode (one row per suburb) rather than street addresses.",
+								"Free-form address query. When `q` is nothing but a postcode, or nothing but a suburb name, and `country` is supplied, the response is the matching localities (one row per suburb, deduplicated by suburb and state) rather than street addresses.",
 						},
 						{
 							name: "country",
@@ -67,7 +67,7 @@ export const getOpenApiDocument = () =>
 							required: false,
 							schema: { type: "string" },
 							description:
-								"Optional country filter such as `AU`. Required for postcode-only queries: without it a bare number is treated as a street number, since postcode formats are country-specific.",
+								"Optional country filter such as `AU`. Required for postcode-only and suburb-name lookups: without it a bare number is treated as a street number, and a name is matched only against street text.",
 						},
 						{
 							name: "state",

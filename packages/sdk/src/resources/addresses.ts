@@ -123,11 +123,12 @@ export interface AddressesResource {
 	/**
 	 * Search for matching addresses as a user types.
 	 *
-	 * When `q` is nothing but a postcode and `country` is set, the response is
-	 * the localities in that postcode (one entry per suburb) rather than street
-	 * addresses. `country` is required for that behaviour, because postcode
-	 * formats are country-specific — without it a bare number is treated as a
-	 * street number.
+	 * When `q` is nothing but a postcode, or nothing but a suburb name, and
+	 * `country` is set, the response is the matching localities (one entry per
+	 * suburb, deduplicated by suburb and state) rather than street addresses.
+	 * `country` is required for both: postcode formats are country-specific, so
+	 * without it a bare number is treated as a street number and a name is
+	 * matched only against street text.
 	 */
 	autocomplete(
 		params: AutocompleteParams,

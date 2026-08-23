@@ -1,6 +1,7 @@
 import { type SQL, sql } from "drizzle-orm";
 import type { Database } from "../client.ts";
 import { formatAddress } from "./format-address.ts";
+import { localityQuery, prefixUpperBound } from "./locality-query.ts";
 import { parseFreeformAddress } from "./parse-freeform-address.ts";
 import {
 	type ParsedUnitAddress,
@@ -214,6 +215,70 @@ export function mapRowToResult(row: RawAddressRow): AutocompleteResult {
 	};
 }
 
+/**
+ * Guarded entry to postcodeSearch: returns [] unless the query is a bare
+ * postcode for a known country. Extracted so autocompleteAddresses stays within
+ * its cognitive-complexity budget.
+ */
+async function tryPostcodeSearch(
+	db: Database,
+	searchInput: string,
+	opts: {
+		country?: string;
+		limit: number;
+		state?: string;
+		latitude?: number;
+		longitude?: number;
+	}
+): Promise<AutocompleteResult[]> {
+	const { country, limit, state, latitude, longitude } = opts;
+	if (!country) {
+		return [];
+	}
+	const postcode = barePostcode(searchInput, country);
+	if (!postcode) {
+		return [];
+	}
+	return await postcodeSearch(db, postcode, country, {
+		limit,
+		state,
+		latitude,
+		longitude,
+	});
+}
+
+/**
+ * Guarded entry to localitySearch: returns [] unless the query actually looks
+ * like a suburb name for a known country. Extracted so autocompleteAddresses
+ * stays within its cognitive-complexity budget.
+ */
+async function tryLocalitySearch(
+	db: Database,
+	searchInput: string,
+	opts: {
+		country?: string;
+		limit: number;
+		state?: string;
+		latitude?: number;
+		longitude?: number;
+	}
+): Promise<AutocompleteResult[]> {
+	const { country, limit, state, latitude, longitude } = opts;
+	if (!country) {
+		return [];
+	}
+	const prefix = localityQuery(searchInput, country);
+	if (!prefix) {
+		return [];
+	}
+	return await localitySearch(db, prefix, prefixUpperBound(prefix), country, {
+		limit,
+		state,
+		latitude,
+		longitude,
+	});
+}
+
 export async function autocompleteAddresses(
 	db: Database,
 	query: string,
@@ -273,8 +338,19 @@ export async function autocompleteAddresses(
 
 	// Too short -- only guard when parser did not strip unit/street numbers;
 	// when parsed, the strict unit + street_number filters narrow results enough.
+	// A 2-char locality prefix is exempt: the endpoint accepts q at 2 characters,
+	// and the locality skip-scan below is bounded by the number of suburbs it
+	// returns rather than the rows it passes over, so it stays cheap on a short
+	// prefix where the free-text tiers would not.
 	if (!parsed && len < 3) {
-		return { results: [], parsedQuery: null };
+		const shortLocality = await tryLocalitySearch(db, searchInput, {
+			country: effectiveCountry,
+			limit,
+			state,
+			latitude,
+			longitude,
+		});
+		return { results: shortLocality, parsedQuery: null };
 	}
 
 	const filterClauses = buildFilterClauses(effectiveCountry, state, parsed);
@@ -300,19 +376,31 @@ export async function autocompleteAddresses(
 	// on those wrong rows. Country-gated — without a country a bare number is
 	// still treated as a street number, as before. Falls through on no match so
 	// genuine numeric street queries keep working.
-	const postcode = effectiveCountry
-		? barePostcode(searchInput, effectiveCountry)
-		: null;
-	if (postcode && effectiveCountry) {
-		const postcodeResults = await postcodeSearch(
-			db,
-			postcode,
-			effectiveCountry,
-			{ limit, state, latitude, longitude }
-		);
-		if (postcodeResults.length > 0) {
-			return { results: postcodeResults, parsedQuery: parsed };
-		}
+	const postcodeResults = await tryPostcodeSearch(db, searchInput, {
+		country: effectiveCountry,
+		limit,
+		state,
+		latitude,
+		longitude,
+	});
+	if (postcodeResults.length > 0) {
+		return { results: postcodeResults, parsedQuery: parsed };
+	}
+
+	// Locality-name path: same defect as the postcode case one field over. The
+	// locality sits mid-string in search_text, so prefixSearch can only find a
+	// suburb when a street shares its name, and it returns early on those wrong
+	// rows. Runs before prefixSearch for that reason, and falls through on no
+	// match so street queries are unaffected.
+	const localityResults = await tryLocalitySearch(db, searchInput, {
+		country: effectiveCountry,
+		limit,
+		state,
+		latitude,
+		longitude,
+	});
+	if (localityResults.length > 0) {
+		return { results: localityResults, parsedQuery: parsed };
 	}
 
 	// Always try fast prefix search first (uses B-tree index, works without extensions).
@@ -603,6 +691,91 @@ async function postcodeSearch(
 			ORDER BY locality, state, id
 		) AS localities
 		ORDER BY ${buildOrderBy(latitude, longitude)}
+		LIMIT ${limit}
+	`);
+
+	return (result.rows as unknown as RawAddressRow[]).map(mapRowToResult);
+}
+
+/**
+ * Suburb lookup for a query that looks like a locality name.
+ *
+ * Same shape of defect as the bare-postcode case: `locality` sits mid-string in
+ * the number-first `search_text`, so a prefix match can only find a suburb when
+ * a street or building happens to share its name ("MANLY WHARF" matches, plain
+ * "sunnybank" does not). This branch matches the locality column directly.
+ *
+ * The dedupe is the hard part. `DISTINCT ON (locality, state)` has to sort every
+ * matching address row first, which is fine for a rare suburb but collapses on a
+ * short prefix — measured 3.0s for 'B%' and 7.0s for 'S%', exactly the prefixes a
+ * typeahead sends on the first keystrokes.
+ *
+ * So this walks distinct keys directly with a recursive "loose index scan" (skip
+ * scan) over idx_addresses_street, which leads with `locality`. Each step seeks
+ * the next key greater than the last rather than reading the duplicates in
+ * between, so cost tracks the number of DISTINCT suburbs returned, not the
+ * number of address rows scanned. Measured ~30-100ms on the same broad prefixes.
+ * A half-open range (>= prefix, < upperBound) is used instead of LIKE because
+ * only a range bound can drive that seek.
+ *
+ * One representative address per suburb is then joined on for the postcode and
+ * coordinates.
+ */
+async function localitySearch(
+	db: Database,
+	prefix: string,
+	upperBound: string,
+	country: string,
+	opts: {
+		limit: number;
+		state?: string;
+		latitude?: number;
+		longitude?: number;
+	}
+): Promise<AutocompleteResult[]> {
+	const { limit, state, latitude, longitude } = opts;
+	const countryUpper = country.toUpperCase();
+	const stateUpper = state?.toUpperCase();
+	const stateFilter = stateUpper ? sql`AND a.state = ${stateUpper}` : sql``;
+	const seedStateFilter = stateUpper ? sql`AND state = ${stateUpper}` : sql``;
+
+	const result = await db.execute(sql`
+		WITH RECURSIVE keys AS (
+			(
+				SELECT locality, state
+				FROM addresses
+				WHERE locality >= ${prefix} AND locality < ${upperBound}
+					AND country = ${countryUpper} ${seedStateFilter}
+				ORDER BY locality, state
+				LIMIT 1
+			)
+			UNION ALL
+			(
+				SELECT next_key.locality, next_key.state
+				FROM keys k
+				CROSS JOIN LATERAL (
+					SELECT a.locality, a.state
+					FROM addresses a
+					WHERE a.country = ${countryUpper}
+						AND a.locality < ${upperBound}
+						AND (a.locality, a.state) > (k.locality, k.state)
+						${stateFilter}
+					ORDER BY a.locality, a.state
+					LIMIT 1
+				) AS next_key
+			)
+		)
+		SELECT rep.*, 1.0 as similarity_score
+		FROM keys k
+		CROSS JOIN LATERAL (
+			SELECT ${SELECT_COLUMNS}
+			FROM addresses a
+			WHERE a.country = ${countryUpper}
+				AND a.locality = k.locality
+				AND a.state = k.state
+			ORDER BY ${buildOrderBy(latitude, longitude)}
+			LIMIT 1
+		) AS rep
 		LIMIT ${limit}
 	`);
 
