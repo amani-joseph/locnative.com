@@ -396,11 +396,16 @@ async function tieredSearch(
 	const { limit, latitude, longitude, phoneticFallback = true } = opts;
 	const orderBy = buildOrderBy(latitude, longitude, "similarity_score");
 
-	// Tier 1 (3-4 chars): Prefix search only (uses B-tree text_pattern_ops index)
+	// Tier 1 (3-4 chars): Prefix search only.
+	// Case-sensitive LIKE on the uppercased pattern — idx_addresses_search_text_btree
+	// is declared text_pattern_ops, a case-sensitive opclass that cannot serve ILIKE.
+	// An ILIKE here bypasses the btree and degrades to a GIN trigram bitmap scan with
+	// heap recheck over the full table, which is what made short prefix queries hang.
+	// search_text is stored uppercase, so uppercasing keeps the match semantics.
 	if (len <= PREFIX_SEARCH_MAX_LEN) {
-		const prefixPattern = `${trimmed}%`;
+		const prefixPattern = `${trimmed}%`.toUpperCase();
 		const whereClause = buildWhereClause(
-			sql`search_text ILIKE ${prefixPattern}`,
+			sql`search_text LIKE ${prefixPattern}`,
 			filterClauses
 		);
 
@@ -688,14 +693,19 @@ async function ilikeFallback(
 	const { limit } = opts;
 	const tokens = trimmed.split(WHITESPACE_REGEX).filter(Boolean);
 
-	// First token uses prefix match (can use B-tree index)
-	const firstTokenCondition = sql`search_text ILIKE ${`${tokens[0]}%`}`;
+	// First token uses prefix match so it can use idx_addresses_search_text_btree.
+	// That index is text_pattern_ops (case-sensitive), so this must be LIKE against
+	// an uppercased pattern — ILIKE cannot use it and falls back to a full-table
+	// trigram bitmap scan. search_text is stored uppercase.
+	const firstTokenCondition = sql`search_text LIKE ${`${tokens[0]}%`.toUpperCase()}`;
 
 	// Additional tokens use substring match but operate on the
-	// already-narrowed result set from the first token's index scan
+	// already-narrowed result set from the first token's index scan.
+	// Substring patterns cannot use a prefix btree regardless; they are uppercased
+	// only so they match the uppercase column.
 	const additionalConditions = tokens
 		.slice(1)
-		.map((token) => sql`search_text ILIKE ${`%${token}%`}`);
+		.map((token) => sql`search_text LIKE ${`%${token}%`.toUpperCase()}`);
 
 	const allConditions = [firstTokenCondition, ...additionalConditions];
 	const searchCondition =
