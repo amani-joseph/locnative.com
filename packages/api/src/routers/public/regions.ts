@@ -1,13 +1,16 @@
 import { z } from "zod";
-import { o as baseBuilder } from "../../builder.ts";
 import {
 	groupRegionsByLayer,
 	parseLayers,
 	regionsContainingPoint,
 } from "../../shared/region-queries.ts";
-import { apiKeyAuth, usageMiddleware } from "../public-middleware.ts";
+import {
+	apiKeyAuth,
+	publicApiProcedure,
+	usageMiddleware,
+} from "../public-middleware.ts";
 
-export const regionsClassify = baseBuilder
+export const regionsClassify = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("regions.classify"))
 	.route({

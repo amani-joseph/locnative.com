@@ -1,4 +1,4 @@
-// Dependency-free geo convenience helpers. Wherabouts records expose flat
+// Dependency-free geo convenience helpers. Locnative records expose flat
 // `latitude`/`longitude`; map UIs and GeoJSON want different shapes. These save
 // consumers from reshaping by hand (mirrors use-places-autocomplete's
 // getLatLng/getZipCode utilities).

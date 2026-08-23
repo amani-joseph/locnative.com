@@ -9,9 +9,9 @@ import { createRegions, type RegionsResource } from "./resources/regions.ts";
 import { createRouting, type RoutingResource } from "./resources/routing.ts";
 import { createWebhooks, type WebhooksResource } from "./resources/webhooks.ts";
 import { createZones, type ZonesResource } from "./resources/zones.ts";
-import type { WheraboutsClientConfig } from "./shared-types.ts";
+import type { LocnativeClientConfig } from "./shared-types.ts";
 
-export interface WheraboutsClient {
+export interface LocnativeClient {
 	addresses: AddressesResource;
 	devices: DevicesResource;
 	geocode: GeocodeResource;
@@ -21,9 +21,9 @@ export interface WheraboutsClient {
 	zones: ZonesResource;
 }
 
-export const createWheraboutsClient = (
-	config: WheraboutsClientConfig
-): WheraboutsClient => {
+export const createLocnativeClient = (
+	config: LocnativeClientConfig
+): LocnativeClient => {
 	const request = createRequester(config);
 	return {
 		addresses: createAddresses(request),
@@ -35,6 +35,3 @@ export const createWheraboutsClient = (
 		routing: createRouting(request),
 	};
 };
-
-export type LocnativeClient = WheraboutsClient;
-export const createLocnativeClient = createWheraboutsClient;

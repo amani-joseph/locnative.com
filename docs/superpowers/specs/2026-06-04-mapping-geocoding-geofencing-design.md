@@ -8,7 +8,7 @@
 
 ## Goal
 
-Extend the Wherabouts API platform with three interconnected capability clusters that share a single PostGIS polygon data model:
+Extend the Locnative API platform with three interconnected capability clusters that share a single PostGIS polygon data model:
 
 1. **Forward geocoding + batch** — complete the geocoding surface (address text → coordinates, async bulk jobs)
 2. **Developer-defined geofencing** — CRUD polygon zones, point-in-polygon, addresses-within-zone, entry/exit webhooks
@@ -198,7 +198,7 @@ Queue consumer (webhook delivery):
   1. Lookup matching webhook_subscriptions (zone_id match OR zone_id IS NULL)
   2. POST to subscription.url with body:
      { event: "entry"|"exit", zone: {id, name}, device: {id, lat, lng}, timestamp }
-     Header: X-Wherabouts-Signature: hmac-sha256=<sig>
+     Header: X-Locnative-Signature: hmac-sha256=<sig>
   3. On 5xx or timeout: retry up to 3× with exponential backoff
   4. After 3 failures: UPDATE webhook_subscriptions SET failing=true (subscription stays active)
 ```

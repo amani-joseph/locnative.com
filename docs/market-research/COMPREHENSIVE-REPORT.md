@@ -1,4 +1,4 @@
-# Wherabouts.com — Target User & Market Research Report
+# Locnative.com — Target User & Market Research Report
 
 **Prepared:** June 2026
 **Scope:** ANZ-first (Australia/New Zealand) with global expansion roadmap
@@ -7,7 +7,7 @@
 
 ---
 
-## 1. What Wherabouts.com Actually Is
+## 1. What Locnative.com Actually Is
 
 The repo is framed internally as a "BetterAuth migration," but the implemented product is far larger: **a developer-facing location-intelligence API platform**, ANZ-native, built on Cloudflare Workers + Neon Postgres/PostGIS + R2.
 
@@ -25,7 +25,7 @@ The repo is framed internally as a "BetterAuth migration," but the implemented p
 | **Developer platform** | projects, API keys (hashed+encrypted), teams/invitations, usage metering (`apiUsageDaily`), API explorer, docs, billing, analytics, integrations | Working |
 | **Auth** | BetterAuth, Google/GitHub OAuth, email/password | Migration in progress |
 
-**One-line positioning:** *Wherabouts is what Radar.io is to the US — a unified geocoding + geofencing + device-tracking + webhooks API — but ANZ-native, billed in AUD, and built on the open G-NAF address file.*
+**One-line positioning:** *Locnative is what Radar.io is to the US — a unified geocoding + geofencing + device-tracking + webhooks API — but ANZ-native, billed in AUD, and built on the open G-NAF address file.*
 
 ---
 
@@ -56,13 +56,13 @@ The repo is framed internally as a "BetterAuth migration," but the implemented p
 
 ### 3.1 Global API platforms
 
-| Competitor | Strength | Wherabouts angle |
+| Competitor | Strength | Locnative angle |
 |---|---|---|
 | **Google Maps Platform** | Ubiquity, coverage, brand | **Price** — Google charges ~US$5/1k geocodes; "bill shock" since 2025 pricing changes is the #1 switching trigger. Also data residency. |
-| **Radar.io** | The model to emulate: unified geocoding + geofencing + tracking; ~US$0.50/1k (≈90% cheaper than Google), free tier 100k/mo | US-centric DNA; Wherabouts wins on **ANZ-native data (G-NAF), AUD billing, AU data residency** |
+| **Radar.io** | The model to emulate: unified geocoding + geofencing + tracking; ~US$0.50/1k (≈90% cheaper than Google), free tier 100k/mo | US-centric DNA; Locnative wins on **ANZ-native data (G-NAF), AUD billing, AU data residency** |
 | **Mapbox / HERE / TomTom / Esri** | Maps, routing, enterprise GIS | Heavier, costlier, not ANZ-address-authoritative |
 | **Geoapify / Geocodio / LocationIQ** | Cheap geocoding | Geocoding only — no geofencing/device/webhook stack; weak ANZ authority |
-| **Loqate / Melissa / Experian** | Address verification at checkout | Verification only; expensive; Wherabouts bundles verification + the live stack |
+| **Loqate / Melissa / Experian** | Address verification at checkout | Verification only; expensive; Locnative bundles verification + the live stack |
 
 ### 3.2 The ANZ incumbents — and the moat question
 

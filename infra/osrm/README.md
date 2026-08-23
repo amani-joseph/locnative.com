@@ -1,4 +1,4 @@
-# OSRM routing engine (Wherabouts)
+# OSRM routing engine (Locnative)
 
 Self-hosted OSRM serving the driving profile over the Australia OSM extract.
 Backs `GET /api/v1/routing/directions` (the Worker proxies to it).

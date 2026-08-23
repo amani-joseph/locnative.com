@@ -13,7 +13,7 @@ authoritative open address data.
 - **Resilient by default**: automatic retries with backoff, per-request timeouts,
   `AbortSignal` support, and idempotent writes.
 
-**[Interactive API Explorer →](https://api.locnative.com/api/v1/openapi.json)**
+**[OpenAPI Spec →](https://api.locnative.com/api/openapi.json)**
 _(Paste the URL into [Swagger UI](https://editor.swagger.io) or [Hoppscotch](https://hoppscotch.io) to explore all endpoints interactively.)_
 
 ## Install

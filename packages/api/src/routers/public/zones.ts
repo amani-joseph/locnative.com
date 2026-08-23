@@ -2,7 +2,6 @@ import { zones } from "@locnative/database/schema";
 import { ORPCError } from "@orpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { o as baseBuilder } from "../../builder.ts";
 import {
 	addressesInZone,
 	countZones,
@@ -17,6 +16,7 @@ import {
 } from "../../shared/zone-queries.ts";
 import {
 	apiKeyAuth,
+	publicApiProcedure,
 	usageMiddleware,
 	type ValidatedApiKey,
 } from "../public-middleware.ts";
@@ -47,7 +47,7 @@ function requireProjectId(projectId: string | null): string {
 // Procedures
 // ---------------------------------------------------------------------------
 
-export const zoneCreate = baseBuilder
+export const zoneCreate = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("zones.create"))
 	.route({
@@ -95,7 +95,7 @@ export const zoneCreate = baseBuilder
 		return row;
 	});
 
-export const zoneList = baseBuilder
+export const zoneList = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("zones.list"))
 	.route({
@@ -120,7 +120,7 @@ export const zoneList = baseBuilder
 		return { zones: rows, count: rows.length, page: input.page };
 	});
 
-export const zoneGet = baseBuilder
+export const zoneGet = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("zones.get"))
 	.route({
@@ -140,7 +140,7 @@ export const zoneGet = baseBuilder
 		return zone;
 	});
 
-export const zoneUpdate = baseBuilder
+export const zoneUpdate = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("zones.update"))
 	.route({
@@ -192,7 +192,7 @@ export const zoneUpdate = baseBuilder
 		return row;
 	});
 
-export const zoneDelete = baseBuilder
+export const zoneDelete = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("zones.delete"))
 	.route({
@@ -214,7 +214,7 @@ export const zoneDelete = baseBuilder
 		return { success: true };
 	});
 
-export const zoneContains = baseBuilder
+export const zoneContains = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("zones.contains"))
 	.route({
@@ -241,7 +241,7 @@ export const zoneContains = baseBuilder
 		return { zones: rows, count: rows.length, query: { lat, lng } };
 	});
 
-export const zoneAddresses = baseBuilder
+export const zoneAddresses = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("zones.addresses"))
 	.route({

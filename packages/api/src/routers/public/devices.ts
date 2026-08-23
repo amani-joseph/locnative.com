@@ -2,9 +2,9 @@ import { deviceZoneState, zones } from "@locnative/database/schema";
 import { ORPCError } from "@orpc/server";
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
-import { o as baseBuilder } from "../../builder.ts";
 import {
 	apiKeyAuth,
+	publicApiProcedure,
 	usageMiddleware,
 	type ValidatedApiKey,
 } from "../public-middleware.ts";
@@ -34,7 +34,7 @@ function requireProjectId(projectId: string | null): string {
 // Procedures
 // ---------------------------------------------------------------------------
 
-export const pushDeviceLocation = baseBuilder
+export const pushDeviceLocation = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("devices.location"))
 	.route({
@@ -161,7 +161,7 @@ export const pushDeviceLocation = baseBuilder
 		return { zones: currentZoneIds, crossings };
 	});
 
-export const getDeviceZones = baseBuilder
+export const getDeviceZones = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("devices.zones"))
 	.route({

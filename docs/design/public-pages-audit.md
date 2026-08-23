@@ -1,4 +1,4 @@
-# Wherabouts.com — Public-Facing Pages Audit & Critique
+# Locnative.com — Public-Facing Pages Audit & Critique
 
 _Senior Product Designer / UX Architect / SaaS Growth / Content Strategy / Frontend Eng review_
 _Scope: Homepage (`/`), Coverage (`/coverage`), Pricing (`/pricing`), shared Navbar + Footer._
@@ -24,7 +24,7 @@ Everything else — nav taxonomy, footer organization, missing pricing detail, n
 
 ## 2. Navigation Audit
 
-**Current nav (`navigation-data.ts`):** Dashboard · Why Wherabouts (`#why`, marked active) · Capabilities (`#capabilities`) · API (`#api`) · Docs (`/docs`) · Coverage (`/coverage`) · Pricing (`/pricing`) — plus Log in / Sign up buttons (desktop) and a mobile dropdown.
+**Current nav (`navigation-data.ts`):** Dashboard · Why Locnative (`#why`, marked active) · Capabilities (`#capabilities`) · API (`#api`) · Docs (`/docs`) · Coverage (`/coverage`) · Pricing (`/pricing`) — plus Log in / Sign up buttons (desktop) and a mobile dropdown.
 
 This is **7 primary items, 3 of which are on-page anchors**, shown identically on three different routes. That's the core problem: anchors are page-scoped but the nav is global.
 
@@ -32,7 +32,7 @@ This is **7 primary items, 3 of which are on-page anchors**, shown identically o
 |---|---|---|
 | **Logo → /** | Keep | Standard, correct. |
 | **Dashboard** (`/dashboard`) | **Remove from public nav** | Surfacing "Dashboard" to logged-out visitors is confusing — it implies they already have an account and reads as a misplaced app link. Show it only when `isAuthenticated` (the navbar already branches on session for the auth buttons; do the same here), or replace the whole right-side cluster with a single contextual "Dashboard" when signed in. |
-| **Why Wherabouts** (`#why`) | **Remove** | On-page anchor; dead on /coverage and /pricing. "Why" belongs in the page scroll, not the nav. |
+| **Why Locnative** (`#why`) | **Remove** | On-page anchor; dead on /coverage and /pricing. "Why" belongs in the page scroll, not the nav. |
 | **Capabilities** (`#capabilities`) | **Convert to route** | High-value content, but as an anchor it's broken off-homepage. Either promote to a real `/capabilities` (or `/products`) route, or drop from nav and keep it as a homepage section only. |
 | **API** (`#api`) | **Convert / rename** | Ambiguous label ("API" = the product, the reference, or a demo?). This anchors to the "API in action" demo. Replace nav slot with **API Reference** (`/docs/api` or `/reference`) once it exists; until then, remove. |
 | **Docs** (`/docs`) | **Keep** | Essential for developer adoption. Arguably the #1 nav item — consider moving it left, ahead of Coverage/Pricing. |
@@ -43,7 +43,7 @@ This is **7 primary items, 3 of which are on-page anchors**, shown identically o
 
 **Issues beyond taxonomy**
 - The desktop nav uses raw `<a href>` (full page reloads) instead of TanStack `<Link>` for internal routes — the auth buttons correctly use `<Link>`, the nav links don't. Inconsistent and slower; convert internal links to `<Link>`.
-- `isActive` is hardcoded to "Why Wherabouts" in data — active state should derive from the current route, not a static flag.
+- `isActive` is hardcoded to "Why Locnative" in data — active state should derive from the current route, not a static flag.
 - Mobile nav renders links at `text-2xl/3xl` — visually heavy and inconsistent with the desktop scale.
 
 **Recommended final nav (current maturity):**
@@ -219,7 +219,7 @@ Coverage           API Status
 Pricing            GitHub
                    Support
 
-[Wherabouts logo]   © 2026 Wherabouts. All rights reserved.   [Status badge] [GitHub] [X/LinkedIn]
+[Locnative logo]   © 2026 Locnative. All rights reserved.   [Status badge] [GitHub] [X/LinkedIn]
 ```
 \* Add Careers/Blog only when staffed/published — never ship empty footer links.
 

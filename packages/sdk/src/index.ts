@@ -1,10 +1,8 @@
 export {
 	createLocnativeClient,
-	createWheraboutsClient,
 	type LocnativeClient,
-	type WheraboutsClient,
 } from "./client.ts";
-export { LocnativeApiError, WheraboutsApiError } from "./errors.ts";
+export { LocnativeApiError } from "./errors.ts";
 export {
 	countryName,
 	distanceMeters,
@@ -16,7 +14,6 @@ export {
 	isClientError,
 	isLocnativeApiError,
 	isRateLimitError,
-	isWheraboutsApiError,
 } from "./guards.ts";
 export * from "./resources/addresses.ts";
 export * from "./resources/devices.ts";
@@ -34,10 +31,4 @@ export {
 	type LocnativeClientConfig,
 	type LocnativeErrorCode,
 	type LocnativeFieldError,
-	WHERABOUTS_API_VERSION,
-	WHERABOUTS_SDK_VERSION,
-	type WheraboutsApiErrorPayload,
-	type WheraboutsClientConfig,
-	type WheraboutsErrorCode,
-	type WheraboutsFieldError,
 } from "./shared-types.ts";

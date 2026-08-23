@@ -2,14 +2,17 @@ import { autocompleteAddresses } from "@locnative/database/queries";
 import { ORPCError } from "@orpc/server";
 import { z } from "zod";
 import type { ValidatedApiKey } from "../../api-key-auth.ts";
-import { o as baseBuilder } from "../../builder.ts";
 import {
 	createBatchGeocodeJob,
 	getBatchGeocodeJob,
 	getBatchGeocodeResults,
 	MAX_BATCH_ADDRESSES,
 } from "../../shared/batch-geocode.ts";
-import { apiKeyAuth, usageMiddleware } from "../public-middleware.ts";
+import {
+	apiKeyAuth,
+	publicApiProcedure,
+	usageMiddleware,
+} from "../public-middleware.ts";
 // buildGeocodeQuery lives in the env-free geocode-query.ts module so it stays
 // unit-testable without loading serverEnv.
 import { buildGeocodeQuery } from "./geocode-query.ts";
@@ -59,7 +62,7 @@ const geocodeInput = z.preprocess(
 // Handler
 // ---------------------------------------------------------------------------
 
-export const forwardGeocode = baseBuilder
+export const forwardGeocode = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("addresses.geocode"))
 	.route({
@@ -134,7 +137,7 @@ export const forwardGeocode = baseBuilder
 // Batch geocoding handlers
 // ---------------------------------------------------------------------------
 
-export const batchGeocodeSubmit = baseBuilder
+export const batchGeocodeSubmit = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("addresses.batch"))
 	.route({
@@ -172,7 +175,7 @@ export const batchGeocodeSubmit = baseBuilder
 		});
 	});
 
-export const batchGeocodePoll = baseBuilder
+export const batchGeocodePoll = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("addresses.batch.poll"))
 	.route({
@@ -208,7 +211,7 @@ export const batchGeocodePoll = baseBuilder
 		};
 	});
 
-export const batchGeocodeResults = baseBuilder
+export const batchGeocodeResults = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("addresses.batch.results"))
 	.route({

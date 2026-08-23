@@ -2,12 +2,12 @@ import { webhookSubscriptions, zones } from "@locnative/database/schema";
 import { ORPCError } from "@orpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { o as baseBuilder } from "../../builder.ts";
 import { encryptSecret, generateWebhookSecret } from "../../secret-crypto.ts";
 import { reactivateWebhook } from "../../shared/webhook-queries.ts";
 import { validateWebhookUrl } from "../../shared/webhook-url.ts";
 import {
 	apiKeyAuth,
+	publicApiProcedure,
 	usageMiddleware,
 	type ValidatedApiKey,
 } from "../public-middleware.ts";
@@ -33,7 +33,7 @@ function requireProjectId(projectId: string | null): string {
 // Procedures
 // ---------------------------------------------------------------------------
 
-export const createWebhook = baseBuilder
+export const createWebhook = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("webhooks.create"))
 	.route({
@@ -107,7 +107,7 @@ export const createWebhook = baseBuilder
 		return { ...sub, secret };
 	});
 
-export const listWebhooks = baseBuilder
+export const listWebhooks = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("webhooks.list"))
 	.route({
@@ -135,7 +135,7 @@ export const listWebhooks = baseBuilder
 		return { results: rows, count: rows.length };
 	});
 
-export const deleteWebhook = baseBuilder
+export const deleteWebhook = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("webhooks.delete"))
 	.route({
@@ -163,7 +163,7 @@ export const deleteWebhook = baseBuilder
 		return { id: input.id, deleted: true };
 	});
 
-export const reactivateWebhookEndpoint = baseBuilder
+export const reactivateWebhookEndpoint = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("webhooks.reactivate"))
 	.route({

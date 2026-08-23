@@ -16,7 +16,7 @@
     "@locnative/env": "workspace:*",
     "@orpc/openapi": "^1.13.14",
     "@orpc/server": "^1.9.0",
-    "clivly": "^0.4.1",
+    "clivly": "^0.10.0",
     "drizzle-orm": "^0.44.0",
     "hono": "^4.10.4",
     "pmtiles": "^4.4.1",

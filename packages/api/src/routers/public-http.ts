@@ -6,7 +6,6 @@ import { addresses } from "@locnative/database/schema";
 import { ORPCError } from "@orpc/server";
 import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
-import { o as baseBuilder } from "../builder.ts";
 import { getDeviceZones, pushDeviceLocation } from "./public/devices.ts";
 import {
 	batchGeocodePoll,
@@ -37,13 +36,17 @@ import {
 	zoneList,
 	zoneUpdate,
 } from "./public/zones.ts";
-import { apiKeyAuth, usageMiddleware } from "./public-middleware.ts";
+import {
+	apiKeyAuth,
+	publicApiProcedure,
+	usageMiddleware,
+} from "./public-middleware.ts";
 
 // ---------------------------------------------------------------------------
 // Procedures
 // ---------------------------------------------------------------------------
 
-const autocomplete = baseBuilder
+const autocomplete = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("addresses.autocomplete"))
 	.route({
@@ -100,7 +103,7 @@ const autocomplete = baseBuilder
 		};
 	});
 
-const nearby = baseBuilder
+const nearby = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("addresses.nearby"))
 	.route({
@@ -166,7 +169,7 @@ const nearby = baseBuilder
 		};
 	});
 
-const reverse = baseBuilder
+const reverse = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("addresses.reverse"))
 	.route({
@@ -257,7 +260,7 @@ const reverse = baseBuilder
 		};
 	});
 
-const byId = baseBuilder
+const byId = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("addresses.byId"))
 	.route({

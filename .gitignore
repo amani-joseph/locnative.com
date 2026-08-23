@@ -83,3 +83,6 @@ Rg4xacSoJdQxVWTQ6Npgo/
 /*.pdf
 /*.docx
 /Locnative.com footer requirement/
+
+# Node module compile cache (machine-local build artifact)
+node-compile-cache/

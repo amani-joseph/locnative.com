@@ -1,28 +1,28 @@
 import { describe, expect, it } from "vitest";
-import { WheraboutsApiError } from "./errors.ts";
+import { LocnativeApiError } from "./errors.ts";
 import {
 	isClientError,
+	isLocnativeApiError,
 	isRateLimitError,
-	isWheraboutsApiError,
 } from "./guards.ts";
 
-const apiError = (status: number, code?: WheraboutsApiError["code"]) =>
-	new WheraboutsApiError({ status, code, message: "x" });
+const apiError = (status: number, code?: LocnativeApiError["code"]) =>
+	new LocnativeApiError({ status, code, message: "x" });
 
-describe("isWheraboutsApiError", () => {
-	it("is true for a WheraboutsApiError", () => {
-		expect(isWheraboutsApiError(apiError(404, "not_found"))).toBe(true);
+describe("isLocnativeApiError", () => {
+	it("is true for a LocnativeApiError", () => {
+		expect(isLocnativeApiError(apiError(404, "not_found"))).toBe(true);
 	});
 
 	it("is false for a plain Error or non-error", () => {
-		expect(isWheraboutsApiError(new Error("nope"))).toBe(false);
-		expect(isWheraboutsApiError(null)).toBe(false);
-		expect(isWheraboutsApiError({ foo: 1 })).toBe(false);
+		expect(isLocnativeApiError(new Error("nope"))).toBe(false);
+		expect(isLocnativeApiError(null)).toBe(false);
+		expect(isLocnativeApiError({ foo: 1 })).toBe(false);
 	});
 
 	it("falls back to name+status duck-typing (duplicate-module safety)", () => {
-		const dup = { name: "WheraboutsApiError", status: 500, message: "x" };
-		expect(isWheraboutsApiError(dup)).toBe(true);
+		const dup = { name: "LocnativeApiError", status: 500, message: "x" };
+		expect(isLocnativeApiError(dup)).toBe(true);
 	});
 });
 

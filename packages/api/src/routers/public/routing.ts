@@ -2,7 +2,6 @@ import type { Database } from "@locnative/database";
 import { serverEnv } from "@locnative/env/server";
 import { ORPCError } from "@orpc/server";
 import { z } from "zod";
-import { o as baseBuilder } from "../../builder.ts";
 import {
 	generateSamplePoints,
 	hullPolygon,
@@ -22,7 +21,11 @@ import {
 	type RoutingProfile,
 	resolveAddressCoords,
 } from "../../shared/routing-queries.ts";
-import { apiKeyAuth, usageMiddleware } from "../public-middleware.ts";
+import {
+	apiKeyAuth,
+	publicApiProcedure,
+	usageMiddleware,
+} from "../public-middleware.ts";
 
 const ROUTING_PAUSED_MESSAGE =
 	"Routing is temporarily paused while we reduce OSRM hosting costs. Geocoding, autocomplete, zones, devices, and webhooks remain available.";
@@ -96,7 +99,7 @@ export async function resolveDirectionsInput(
 	return { from, to };
 }
 
-export const routingDirections = baseBuilder
+export const routingDirections = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("routing.directions"))
 	.route({
@@ -226,7 +229,7 @@ export function parseMatrixSides(
 	return { sourceItems, destItems };
 }
 
-export const routingMatrix = baseBuilder
+export const routingMatrix = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("routing.matrix"))
 	.route({
@@ -305,7 +308,7 @@ const PROFILE_MAX_SPEED_MPS: Record<RoutingProfile, number> = {
 	walking: 2.5,
 };
 
-export const routingIsochrone = baseBuilder
+export const routingIsochrone = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("routing.isochrone"))
 	.route({
@@ -456,7 +459,7 @@ export function buildMatchArrays(coordinates: MatchPoint[]): {
 	return { trace, timestamps, radiuses };
 }
 
-export const routingMatch = baseBuilder
+export const routingMatch = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("routing.match"))
 	.route({
@@ -559,7 +562,7 @@ export async function resolveOptimizeWaypoint(
 	});
 }
 
-export const routingOptimize = baseBuilder
+export const routingOptimize = publicApiProcedure
 	.use(apiKeyAuth)
 	.use(usageMiddleware("routing.optimize"))
 	.route({

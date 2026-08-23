@@ -16,18 +16,18 @@ const failures = [];
 
 // ESM
 const esm = await import(distEsm);
-if (typeof esm.createWheraboutsClient !== "function") {
-	failures.push("ESM: createWheraboutsClient is not a function");
+if (typeof esm.createLocnativeClient !== "function") {
+	failures.push("ESM: createLocnativeClient is not a function");
 }
-if (typeof esm.WheraboutsApiError !== "function") {
-	failures.push("ESM: WheraboutsApiError is not exported");
+if (typeof esm.LocnativeApiError !== "function") {
+	failures.push("ESM: LocnativeApiError is not exported");
 }
-if (esm.WHERABOUTS_SDK_VERSION !== pkg.version) {
+if (esm.LOCNATIVE_SDK_VERSION !== pkg.version) {
 	failures.push(
-		`ESM: version ${esm.WHERABOUTS_SDK_VERSION} != package.json ${pkg.version}`
+		`ESM: version ${esm.LOCNATIVE_SDK_VERSION} != package.json ${pkg.version}`
 	);
 }
-const esmClient = esm.createWheraboutsClient({ apiKey: "wh_smoke" });
+const esmClient = esm.createLocnativeClient({ apiKey: "wh_smoke" });
 for (const ns of [
 	"addresses",
 	"geocode",
@@ -44,10 +44,10 @@ for (const ns of [
 // CJS
 const require = createRequire(import.meta.url);
 const cjs = require(distCjs);
-if (typeof cjs.createWheraboutsClient !== "function") {
-	failures.push("CJS: createWheraboutsClient is not a function");
+if (typeof cjs.createLocnativeClient !== "function") {
+	failures.push("CJS: createLocnativeClient is not a function");
 }
-const cjsClient = cjs.createWheraboutsClient({ apiKey: "wh_smoke" });
+const cjsClient = cjs.createLocnativeClient({ apiKey: "wh_smoke" });
 if (typeof cjsClient.zones.create !== "function") {
 	failures.push("CJS: client.zones.create missing");
 }

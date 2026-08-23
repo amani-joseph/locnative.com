@@ -1,26 +1,26 @@
 import type {
-	WheraboutsApiErrorPayload,
-	WheraboutsErrorCode,
-	WheraboutsFieldError,
+	LocnativeApiErrorPayload,
+	LocnativeErrorCode,
+	LocnativeFieldError,
 } from "./shared-types.ts";
 
-export class WheraboutsApiError extends Error {
-	readonly code: WheraboutsErrorCode | "unknown_error";
-	readonly payload: WheraboutsApiErrorPayload | null;
+export class LocnativeApiError extends Error {
+	readonly code: LocnativeErrorCode | "unknown_error";
+	readonly payload: LocnativeApiErrorPayload | null;
 	readonly status: number;
 	/** Correlation id from the `X-Request-Id` header or error body, if present. */
 	readonly requestId: string | null;
 	/** Documentation link for this error, if the API provided one. */
 	readonly docUrl: string | null;
 	/** Field-level validation detail, if the API provided any. */
-	readonly fields: WheraboutsFieldError[] | null;
+	readonly fields: LocnativeFieldError[] | null;
 
 	constructor(options: {
-		code?: WheraboutsApiError["code"];
+		code?: LocnativeApiError["code"];
 		docUrl?: string | null;
-		fields?: WheraboutsFieldError[] | null;
+		fields?: LocnativeFieldError[] | null;
 		message: string;
-		payload?: WheraboutsApiErrorPayload | null;
+		payload?: LocnativeApiErrorPayload | null;
 		requestId?: string | null;
 		status: number;
 	}) {
@@ -34,5 +34,3 @@ export class WheraboutsApiError extends Error {
 		this.fields = options.fields ?? null;
 	}
 }
-
-export { WheraboutsApiError as LocnativeApiError };

@@ -1,5 +1,5 @@
 /**
- * Extracts the Wherabouts API key from an incoming MCP request.
+ * Extracts the Locnative API key from an incoming MCP request.
  * Accepts `Authorization: Bearer <key>` (case-insensitive scheme) or
  * `X-API-Key: <key>`. Returns null when absent or blank.
  */

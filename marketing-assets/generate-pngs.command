@@ -1,12 +1,12 @@
 #!/bin/bash
-# Wherabouts Marketing PNG Generator
+# Locnative Marketing PNG Generator
 # Double-click this file to generate all 65 PNGs into this folder.
 
 cd "$(dirname "$0")"
 DIR="$(pwd)"
 
 echo "============================================"
-echo "  Wherabouts Marketing Asset PNG Generator"
+echo "  Locnative Marketing Asset PNG Generator"
 echo "============================================"
 echo ""
 

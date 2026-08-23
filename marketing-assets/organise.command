@@ -1,5 +1,5 @@
 #!/bin/bash
-# Organise Wherabouts PNGs into platform subfolders
+# Organise Locnative PNGs into platform subfolders
 cd "$(dirname "$0")"
 
 node - << 'NODEOF'

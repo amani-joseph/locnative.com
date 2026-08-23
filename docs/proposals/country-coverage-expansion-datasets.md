@@ -4,7 +4,7 @@ _Researched 2026-06-23. Sources: Overture Maps addresses guide (release `2026-06
 
 ## How to read this
 
-Wherabouts already ingests addresses via three adapters: `overture` (most of Europe),
+Locnative already ingests addresses via three adapters: `overture` (most of Europe),
 `nad` (US), and `oda` (Canada). G-NAF supplies Australia. **The cheapest expansion is any
 country already in the Overture addresses theme that we haven't loaded yet** — it needs only
 a new entry in `scripts/intl/lib/source-registry.ts` + run-queue, *no new loader code*.

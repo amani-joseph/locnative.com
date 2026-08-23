@@ -26,6 +26,17 @@ import { o as baseBuilder } from "../builder.ts";
 
 export type { ValidatedApiKey } from "../api-key-auth.ts";
 
+export const publicApiProcedure = baseBuilder.errors({
+	BAD_REQUEST: { message: "Bad Request" },
+	FORBIDDEN: { message: "Forbidden" },
+	INTERNAL_SERVER_ERROR: { message: "Internal Server Error" },
+	NOT_FOUND: { message: "Not Found" },
+	PAYMENT_REQUIRED: { message: "Payment Required" },
+	SERVICE_UNAVAILABLE: { message: "Service Unavailable" },
+	UNAUTHORIZED: { message: "Unauthorized" },
+	UNPROCESSABLE_CONTENT: { message: "Unprocessable Content" },
+});
+
 // ---------------------------------------------------------------------------
 // API-key auth middleware
 // ---------------------------------------------------------------------------

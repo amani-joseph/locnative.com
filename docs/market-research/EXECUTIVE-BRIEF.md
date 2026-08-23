@@ -1,4 +1,4 @@
-# Wherabouts.com — Executive Brief & Forecast
+# Locnative.com — Executive Brief & Forecast
 
 **June 2026 · ANZ-first · Read time: ~3 min**
 
@@ -6,7 +6,7 @@
 
 ## The one-liner
 
-**Wherabouts is Radar.io for ANZ** — a single API for geocoding, address autocomplete, geofencing, device tracking and webhooks — built on the open G-NAF address file, billed in AUD, and hosted with AU data residency. It undercuts Google Maps on price and beats US platforms on local-address authority and sovereignty.
+**Locnative is Radar.io for ANZ** — a single API for geocoding, address autocomplete, geofencing, device tracking and webhooks — built on the open G-NAF address file, billed in AUD, and hosted with AU data residency. It undercuts Google Maps on price and beats US platforms on local-address authority and sovereignty.
 
 ## What's already built (de-risked)
 
@@ -58,7 +58,7 @@ The address data is **not** the moat — G-NAF Core is free. The moat is: **(1)*
 1. Finish auth/billing migration → enterprise-ready.
 2. Ship <100ms autocomplete + a one-call **serviceability** endpoint.
 3. Add **dwell-time / richer geofence events** + **webhook replay** → logistics/field-service trust.
-4. Publish **AUD usage pricing + free tier** and a **Google-cost-vs-Wherabouts** calculator (Radar's #1 acquisition asset).
+4. Publish **AUD usage pricing + free tier** and a **Google-cost-vs-Locnative** calculator (Radar's #1 acquisition asset).
 5. Land **2 lighthouse logos** (one logistics, one insurtech/govtech) as proof + accuracy benchmark.
 
 *Figures are third-party analyst estimates; see COMPREHENSIVE-REPORT.md §Sources. Forecast scenarios are directional, not a financial projection.*

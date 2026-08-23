@@ -1,9 +1,9 @@
 <!-- GSD:project-start source:PROJECT.md -->
 ## Project
 
-**Wherabouts.com — BetterAuth Migration**
+**Locnative.com — BetterAuth Migration**
 
-Wherabouts.com is an existing application built on TanStack Start. Authentication uses BetterAuth (self-hosted, open-source), with auth data persisted to **Postgres (Neon) via Drizzle ORM** — see `packages/database/src/schema/auth.ts`. The mydeffo.com-web project serves as architectural inspiration for BetterAuth patterns.
+Locnative.com is an existing application built on TanStack Start. Authentication uses BetterAuth (self-hosted, open-source), with auth data persisted to **Postgres (Neon) via Drizzle ORM** — see `packages/database/src/schema/auth.ts`. The mydeffo.com-web project serves as architectural inspiration for BetterAuth patterns.
 
 > Note: An earlier plan scoped auth storage to Convex. That direction was abandoned due to complexity; there is no `convex/` directory and no Convex dependency in the repo.
 

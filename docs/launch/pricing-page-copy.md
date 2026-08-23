@@ -1,4 +1,4 @@
-# Pricing Page Copy — Wherabouts.com
+# Pricing Page Copy — Locnative.com
 
 **Source of truth:** §6 of `docs/go-to-market-plan-2026-06.md`
 **Date drafted:** 2026-06-11
@@ -134,7 +134,7 @@ We charge a low, transparent rate for commodity geocoding, and meter the **real-
 
 ## Compare
 
-| | Wherabouts | Google Maps Platform | Mappify | Geoapify |
+| | Locnative | Google Maps Platform | Mappify | Geoapify |
 |---|---|---|---|---|
 | Australian-authoritative data (G-NAF/ABS) | ✅ | ❌ | ✅ | ❌ |
 | Hosted geofencing + devices + webhooks | ✅ | ❌ | ❌ | ❌ |

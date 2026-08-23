@@ -9,7 +9,7 @@
 
 ## 0. The unifying idea — "The Living Map"
 
-Don't bolt three unrelated trendy effects onto three pages. A world-class SaaS (Mapbox, Radar, Google Maps Platform) reads as *one* product. We give Wherabouts a single ownable motif and express it at a different "zoom level" per route:
+Don't bolt three unrelated trendy effects onto three pages. A world-class SaaS (Mapbox, Radar, Google Maps Platform) reads as *one* product. We give Locnative a single ownable motif and express it at a different "zoom level" per route:
 
 | Route | Map metaphor | Feeling |
 |---|---|---|

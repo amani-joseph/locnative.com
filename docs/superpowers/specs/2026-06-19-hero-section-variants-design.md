@@ -16,7 +16,7 @@ Fetched and indexed: Radar (radar.com), Mapbox (mapbox.com), HERE Platform (here
 - **HERE**: enterprise/data-platform framing, "3 simple steps" explainer, screenshot tiles per product (Geocoding & Search, Routing, etc.).
 - **Google Maps Platform**: leads with "AI-powered insights", news/blog carousel, broad breadth messaging (250 countries, 100M daily updates).
 
-**Key gap found:** none of the four competitors run a *live, interactive* demo in the hero — they all rely on static screenshots, logo walls, or news carousels. Wherabouts' existing animated address-search demo is a genuine differentiator and should be preserved in at least one variant rather than discarded.
+**Key gap found:** none of the four competitors run a *live, interactive* demo in the hero — they all rely on static screenshots, logo walls, or news carousels. Locnative' existing animated address-search demo is a genuine differentiator and should be preserved in at least one variant rather than discarded.
 
 ## Decision: 3 variants
 

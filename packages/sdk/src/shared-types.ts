@@ -1,14 +1,12 @@
-export const WHERABOUTS_API_VERSION = "v1" as const;
-export const WHERABOUTS_SDK_VERSION = "0.4.3" as const;
-export const LOCNATIVE_API_VERSION = WHERABOUTS_API_VERSION;
-export const LOCNATIVE_SDK_VERSION = WHERABOUTS_SDK_VERSION;
+export const LOCNATIVE_API_VERSION = "v1" as const;
+export const LOCNATIVE_SDK_VERSION = "0.1.0" as const;
 
 /**
  * Error codes the API may return. The server currently emits a subset; the full
  * union is declared for forward-compatibility with the Phase 2 error envelope
  * (see docs/CONTRACT.md §4). Unknown codes fall back to `unknown_error`.
  */
-export type WheraboutsErrorCode =
+export type LocnativeErrorCode =
 	| "bad_request"
 	| "conflict"
 	| "forbidden"
@@ -18,13 +16,11 @@ export type WheraboutsErrorCode =
 	| "timeout"
 	| "unauthorized"
 	| "unprocessable";
-export type LocnativeErrorCode = WheraboutsErrorCode;
 
-export interface WheraboutsFieldError {
+export interface LocnativeFieldError {
 	message: string;
 	path: string;
 }
-export type LocnativeFieldError = WheraboutsFieldError;
 
 export interface RequestLogEvent {
 	durationMs: number;
@@ -34,21 +30,20 @@ export interface RequestLogEvent {
 	status: number;
 }
 
-export interface WheraboutsApiErrorPayload {
+export interface LocnativeApiErrorPayload {
 	error: {
-		code: WheraboutsErrorCode;
+		code: LocnativeErrorCode;
 		message: string;
 		/** Correlation id; also sent as the `X-Request-Id` response header. */
 		request_id?: string;
 		/** Link to documentation for this error code. */
 		doc_url?: string;
 		/** Field-level validation detail (validation errors only). */
-		fields?: WheraboutsFieldError[];
+		fields?: LocnativeFieldError[];
 	};
 }
-export type LocnativeApiErrorPayload = WheraboutsApiErrorPayload;
 
-export interface WheraboutsClientConfig {
+export interface LocnativeClientConfig {
 	/**
 	 * Publishable/secret API key sent as `Authorization: Bearer <apiKey>`.
 	 *
@@ -68,7 +63,6 @@ export interface WheraboutsClientConfig {
 	/** Per-request timeout in milliseconds. Default 30000. */
 	timeoutMs?: number;
 }
-export type LocnativeClientConfig = WheraboutsClientConfig;
 
 /**
  * Per-call overrides. Every resource method accepts an optional trailing

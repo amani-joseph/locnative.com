@@ -7,7 +7,7 @@
 ## Goal
 
 Charge API clients on a **pure pay-as-you-go** basis for the number of API requests
-they make, so Wherabouts can start accepting paying customers. Track requests per
+they make, so Locnative can start accepting paying customers. Track requests per
 user, per project, and per organization (team), and bill the responsible billing
 account through Stripe.
 

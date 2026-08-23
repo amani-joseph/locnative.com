@@ -16,6 +16,7 @@ import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RpcSplatRouteImport } from './routes/rpc/$'
 import { Route as InviteIdRouteImport } from './routes/invite.$id'
+import { Route as ApiOpenapiDotjsonRouteImport } from './routes/api/openapi[.]json'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as PublicPricingRouteImport } from './routes/_public/pricing'
 import { Route as PublicCoverageRouteImport } from './routes/_public/coverage'
@@ -51,6 +52,7 @@ import { Route as ApiAuthGetSessionRouteImport } from './routes/api/auth/get-ses
 import { Route as PublicLegalTermsRouteImport } from './routes/_public/legal/terms'
 import { Route as PublicLegalPrivacyRouteImport } from './routes/_public/legal/privacy'
 import { Route as PublicLegalAcceptableUseRouteImport } from './routes/_public/legal/acceptable-use'
+import { Route as ApiClivlyWidgetSessionRouteImport } from './routes/api/clivly/widget/session'
 import { Route as ApiClivlyChatSessionRouteImport } from './routes/api/clivly/chat/session'
 import { Route as ApiClivlyAuthVerifyRouteImport } from './routes/api/clivly/auth/verify'
 import { Route as ApiAuthSignUpEmailRouteImport } from './routes/api/auth/sign-up/email'
@@ -89,6 +91,11 @@ const RpcSplatRoute = RpcSplatRouteImport.update({
 const InviteIdRoute = InviteIdRouteImport.update({
   id: '/invite/$id',
   path: '/invite/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiOpenapiDotjsonRoute = ApiOpenapiDotjsonRouteImport.update({
+  id: '/api/openapi.json',
+  path: '/api/openapi.json',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiHealthRoute = ApiHealthRouteImport.update({
@@ -267,6 +274,11 @@ const PublicLegalAcceptableUseRoute =
     path: '/legal/acceptable-use',
     getParentRoute: () => PublicRoute,
   } as any)
+const ApiClivlyWidgetSessionRoute = ApiClivlyWidgetSessionRouteImport.update({
+  id: '/api/clivly/widget/session',
+  path: '/api/clivly/widget/session',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiClivlyChatSessionRoute = ApiClivlyChatSessionRouteImport.update({
   id: '/api/clivly/chat/session',
   path: '/api/clivly/chat/session',
@@ -328,6 +340,7 @@ export interface FileRoutesByFullPath {
   '/coverage': typeof PublicCoverageRoute
   '/pricing': typeof PublicPricingRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
   '/invite/$id': typeof InviteIdRoute
   '/rpc/$': typeof RpcSplatRoute
   '/legal/acceptable-use': typeof PublicLegalAcceptableUseRoute
@@ -345,6 +358,7 @@ export interface FileRoutesByFullPath {
   '/api/auth/sign-up/email': typeof ApiAuthSignUpEmailRoute
   '/api/clivly/auth/verify': typeof ApiClivlyAuthVerifyRoute
   '/api/clivly/chat/session': typeof ApiClivlyChatSessionRoute
+  '/api/clivly/widget/session': typeof ApiClivlyWidgetSessionRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -376,6 +390,7 @@ export interface FileRoutesByTo {
   '/coverage': typeof PublicCoverageRoute
   '/pricing': typeof PublicPricingRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
   '/invite/$id': typeof InviteIdRoute
   '/rpc/$': typeof RpcSplatRoute
   '/legal/acceptable-use': typeof PublicLegalAcceptableUseRoute
@@ -393,6 +408,7 @@ export interface FileRoutesByTo {
   '/api/auth/sign-up/email': typeof ApiAuthSignUpEmailRoute
   '/api/clivly/auth/verify': typeof ApiClivlyAuthVerifyRoute
   '/api/clivly/chat/session': typeof ApiClivlyChatSessionRoute
+  '/api/clivly/widget/session': typeof ApiClivlyWidgetSessionRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -427,6 +443,7 @@ export interface FileRoutesById {
   '/_public/coverage': typeof PublicCoverageRoute
   '/_public/pricing': typeof PublicPricingRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/openapi.json': typeof ApiOpenapiDotjsonRoute
   '/invite/$id': typeof InviteIdRoute
   '/rpc/$': typeof RpcSplatRoute
   '/_public/legal/acceptable-use': typeof PublicLegalAcceptableUseRoute
@@ -444,6 +461,7 @@ export interface FileRoutesById {
   '/api/auth/sign-up/email': typeof ApiAuthSignUpEmailRoute
   '/api/clivly/auth/verify': typeof ApiClivlyAuthVerifyRoute
   '/api/clivly/chat/session': typeof ApiClivlyChatSessionRoute
+  '/api/clivly/widget/session': typeof ApiClivlyWidgetSessionRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -477,6 +495,7 @@ export interface FileRouteTypes {
     | '/coverage'
     | '/pricing'
     | '/api/health'
+    | '/api/openapi.json'
     | '/invite/$id'
     | '/rpc/$'
     | '/legal/acceptable-use'
@@ -494,6 +513,7 @@ export interface FileRouteTypes {
     | '/api/auth/sign-up/email'
     | '/api/clivly/auth/verify'
     | '/api/clivly/chat/session'
+    | '/api/clivly/widget/session'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -525,6 +545,7 @@ export interface FileRouteTypes {
     | '/coverage'
     | '/pricing'
     | '/api/health'
+    | '/api/openapi.json'
     | '/invite/$id'
     | '/rpc/$'
     | '/legal/acceptable-use'
@@ -542,6 +563,7 @@ export interface FileRouteTypes {
     | '/api/auth/sign-up/email'
     | '/api/clivly/auth/verify'
     | '/api/clivly/chat/session'
+    | '/api/clivly/widget/session'
   id:
     | '__root__'
     | '/'
@@ -575,6 +597,7 @@ export interface FileRouteTypes {
     | '/_public/coverage'
     | '/_public/pricing'
     | '/api/health'
+    | '/api/openapi.json'
     | '/invite/$id'
     | '/rpc/$'
     | '/_public/legal/acceptable-use'
@@ -592,6 +615,7 @@ export interface FileRouteTypes {
     | '/api/auth/sign-up/email'
     | '/api/clivly/auth/verify'
     | '/api/clivly/chat/session'
+    | '/api/clivly/widget/session'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -607,6 +631,7 @@ export interface RootRouteChildren {
   AuthSignUpRoute: typeof AuthSignUpRoute
   AuthTwoFactorRoute: typeof AuthTwoFactorRoute
   ApiHealthRoute: typeof ApiHealthRoute
+  ApiOpenapiDotjsonRoute: typeof ApiOpenapiDotjsonRoute
   InviteIdRoute: typeof InviteIdRoute
   RpcSplatRoute: typeof RpcSplatRoute
   ApiAuthGetSessionRoute: typeof ApiAuthGetSessionRoute
@@ -621,6 +646,7 @@ export interface RootRouteChildren {
   ApiAuthSignUpEmailRoute: typeof ApiAuthSignUpEmailRoute
   ApiClivlyAuthVerifyRoute: typeof ApiClivlyAuthVerifyRoute
   ApiClivlyChatSessionRoute: typeof ApiClivlyChatSessionRoute
+  ApiClivlyWidgetSessionRoute: typeof ApiClivlyWidgetSessionRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -672,6 +698,13 @@ declare module '@tanstack/react-router' {
       path: '/invite/$id'
       fullPath: '/invite/$id'
       preLoaderRoute: typeof InviteIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/openapi.json': {
+      id: '/api/openapi.json'
+      path: '/api/openapi.json'
+      fullPath: '/api/openapi.json'
+      preLoaderRoute: typeof ApiOpenapiDotjsonRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/health': {
@@ -919,6 +952,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicLegalAcceptableUseRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/api/clivly/widget/session': {
+      id: '/api/clivly/widget/session'
+      path: '/api/clivly/widget/session'
+      fullPath: '/api/clivly/widget/session'
+      preLoaderRoute: typeof ApiClivlyWidgetSessionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/clivly/chat/session': {
       id: '/api/clivly/chat/session'
       path: '/api/clivly/chat/session'
@@ -1040,6 +1080,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthSignUpRoute: AuthSignUpRoute,
   AuthTwoFactorRoute: AuthTwoFactorRoute,
   ApiHealthRoute: ApiHealthRoute,
+  ApiOpenapiDotjsonRoute: ApiOpenapiDotjsonRoute,
   InviteIdRoute: InviteIdRoute,
   RpcSplatRoute: RpcSplatRoute,
   ApiAuthGetSessionRoute: ApiAuthGetSessionRoute,
@@ -1054,6 +1095,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuthSignUpEmailRoute: ApiAuthSignUpEmailRoute,
   ApiClivlyAuthVerifyRoute: ApiClivlyAuthVerifyRoute,
   ApiClivlyChatSessionRoute: ApiClivlyChatSessionRoute,
+  ApiClivlyWidgetSessionRoute: ApiClivlyWidgetSessionRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

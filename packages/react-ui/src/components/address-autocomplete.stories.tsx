@@ -13,7 +13,7 @@ const meta = {
 			description: {
 				// NOTE: keep identical to the Summary + guidance in docs/address-autocomplete.md
 				component:
-					"Accessible (WAI-ARIA combobox), debounced address search with keyboard navigation, proximity bias, session tokens, i18n strings, and customizable render slots. Provide a `client` created with `createWheraboutsClient`.",
+					"Accessible (WAI-ARIA combobox), debounced address search with keyboard navigation, proximity bias, session tokens, i18n strings, and customizable render slots. Provide a `client` created with `createLocnativeClient`.",
 			},
 		},
 	},

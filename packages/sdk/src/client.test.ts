@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createWheraboutsClient } from "./client.ts";
+import { createLocnativeClient } from "./client.ts";
 
 const EXPECTED_PATHS = [
 	["GET", "/api/v1/addresses/autocomplete"],
@@ -40,7 +40,7 @@ describe("client coverage", () => {
 				})
 			);
 		}) as typeof fetch;
-		const c = createWheraboutsClient({ apiKey: "wh_test", fetch: fetchImpl });
+		const c = createLocnativeClient({ apiKey: "wh_test", fetch: fetchImpl });
 
 		await c.addresses.autocomplete({ q: "x" });
 		await c.addresses.reverse({ lat: 0, lng: 0 });

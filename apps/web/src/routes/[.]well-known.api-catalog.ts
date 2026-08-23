@@ -16,7 +16,7 @@ export const Route = createFileRoute("/.well-known/api-catalog")({
 						anchor: `${origin}/api/v1`,
 						"service-desc": [
 							{
-								href: `${origin}/api/openapi/json`,
+								href: `${origin}/api/openapi.json`,
 								type: "application/json",
 								title: "Locnative geocoding API — OpenAPI description",
 							},

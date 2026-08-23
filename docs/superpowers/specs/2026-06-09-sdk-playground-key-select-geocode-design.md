@@ -159,7 +159,7 @@ autocomplete: protectedProcedure
   keep the existing generic input. Detection: endpoint id `routing.directions`
   and param name in `{ "from", "to" }`.
 - The SDK snippet (`buildSdkSnippet`) continues to use
-  `process.env.WHERABOUTS_API_KEY` for the key, and renders the resolved
+  `process.env.LOCNATIVE_API_KEY` for the key, and renders the resolved
   coordinate for `from`/`to` with a trailing `// <resolved label>` comment when a
   label is available.
 
