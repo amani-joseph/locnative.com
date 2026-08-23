@@ -397,11 +397,14 @@ async function tieredSearch(
 	const orderBy = buildOrderBy(latitude, longitude, "similarity_score");
 
 	// Tier 1 (3-4 chars): Prefix search only.
-	// Case-sensitive LIKE on the uppercased pattern — idx_addresses_search_text_btree
-	// is declared text_pattern_ops, a case-sensitive opclass that cannot serve ILIKE.
-	// An ILIKE here bypasses the btree and degrades to a GIN trigram bitmap scan with
-	// heap recheck over the full table, which is what made short prefix queries hang.
+	// Case-sensitive LIKE on the uppercased pattern. idx_addresses_search_text_btree
+	// is text_pattern_ops (case-sensitive): for an ALPHABETIC prefix an ILIKE cannot
+	// use it at all and degrades to a full-table scan (measured: `ILIKE 'brow%'`
+	// >25s vs `LIKE 'BROW%'` ~11ms cold). For a purely numeric prefix Postgres can
+	// still derive a range from ILIKE, so numbers happened to stay fast — which is
+	// why this defect went unnoticed. Uppercased LIKE is correct for both.
 	// search_text is stored uppercase, so uppercasing keeps the match semantics.
+	// Guarded by scripts/verify-prefix-index.mjs.
 	if (len <= PREFIX_SEARCH_MAX_LEN) {
 		const prefixPattern = `${trimmed}%`.toUpperCase();
 		const whereClause = buildWhereClause(
@@ -695,8 +698,8 @@ async function ilikeFallback(
 
 	// First token uses prefix match so it can use idx_addresses_search_text_btree.
 	// That index is text_pattern_ops (case-sensitive), so this must be LIKE against
-	// an uppercased pattern — ILIKE cannot use it and falls back to a full-table
-	// trigram bitmap scan. search_text is stored uppercase.
+	// an uppercased pattern: for an alpha prefix ILIKE cannot use the index and
+	// degrades to a full-table scan. search_text is stored uppercase.
 	const firstTokenCondition = sql`search_text LIKE ${`${tokens[0]}%`.toUpperCase()}`;
 
 	// Additional tokens use substring match but operate on the

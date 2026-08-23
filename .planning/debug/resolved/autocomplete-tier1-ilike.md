@@ -1,8 +1,8 @@
 ---
-status: awaiting_human_verify
+status: resolved
 trigger: "GET /api/v1/addresses/autocomplete intermittently times out at 8000ms on short prefix queries (407, 411)"
 created: 2026-08-24T00:00:00Z
-updated: 2026-08-24T00:00:00Z
+updated: 2026-08-24T09:00:00Z
 ---
 
 ## Current Focus
@@ -72,13 +72,24 @@ started: Reported externally 2026-08-23
 ## Resolution
 
 root_cause: |
-  idx_addresses_search_text_btree uses the text_pattern_ops operator class,
-  which is case-sensitive and cannot serve ILIKE. Three search_text ILIKE
-  sites survived the A2 latency work — tieredSearch Tier 1 (line 403) and both
-  ilikeFallback predicates (692, 698) — so those paths bypass the btree and
-  degrade to a GIN trigram bitmap scan with heap recheck over 173M rows.
-  Tier 1 is on the short-prefix path (len <= 4), which is exactly what a user
-  types first, and it only executes after prefixSearch already returned empty.
+  CORRECTED after measuring against production — the initial statement that
+  "ILIKE can never use the btree" was too broad.
+
+  idx_addresses_search_text_btree uses text_pattern_ops (case-sensitive). Its
+  usability from ILIKE depends on the PREFIX:
+
+    - ALPHABETIC prefix: ILIKE cannot use the index. Measured:
+      `ILIKE 'brow%'` and `ILIKE 'BROW%'` both exceed 25s (statement timeout);
+      `LIKE 'BROW%'` returns in ~11ms cold / 0.2ms warm.
+    - NUMERIC prefix: Postgres DOES derive a range condition from ILIKE
+      (~>=~ '407' AND ~<~ '408') because digits are case-invariant, applying
+      ~~* as a recheck filter only. Measured ~0.24ms, plan identical to LIKE.
+
+  So the three ILIKE sites were a real defect, but the slow path was alpha
+  prefixes (and ilikeFallback's `%tok%` substring predicates, which no prefix
+  btree can serve), not the numeric prefixes originally suspected. The
+  reporter's numeric timeouts are therefore NOT fully explained by this
+  defect — see the open question below.
 fix: |
   Replace `search_text ILIKE <pattern>` with `search_text LIKE <UPPERCASED
   pattern>` at all three sites, matching the established pattern in
@@ -88,16 +99,28 @@ fix: |
   matches (they cannot use a prefix btree by nature) but are now uppercased
   for correctness against the uppercase column.
 verification: |
-  Static verification only — the root cause is definitional (text_pattern_ops
-  is case-sensitive and cannot serve ILIKE), so it does not depend on runtime
-  measurement. But the latency improvement itself is UNVERIFIED here:
-    - packages/database: 8 files, 56 tests passed
-    - packages/api: 22 files, 158 tests passed
-    - tsc --noEmit clean; ultracite check clean
-  The test suite has no DB fixture, so no query in this file is exercised
-  against real data. Before closing, run EXPLAIN (ANALYZE) on the Tier 1
-  predicate in production and confirm an index scan, plus a timing check on
-  the reporter's 40/41/407/411/4118 sequence.
+  Verified against production via scripts/verify-prefix-index.mjs — all checks
+  pass:
+    - idx_addresses_search_text_btree confirmed text_pattern_ops
+    - LIKE '407%' / '411%' / '4118%' / 'BROWNS%' all use the btree, 0.06-0.27ms
+    - alpha ILIKE confirmed unable to use the btree (the regression guard)
+    - LIKE and ILIKE return identical row sets for numeric prefixes
+  Postcode behaviour also verified end-to-end against production data:
+    4118 -> BROWNS PLAINS / FORESTDALE / HERITAGE PARK / HILLCREST / REGENTS PARK
+    4077 -> DOOLANDELLA / DURACK / INALA / RICHLANDS
+    2026 -> BONDI / BONDI BEACH / NORTH BONDI / TAMARAMA
+    3053 -> CARLTON
+  Plan is a bitmap index scan on idx_addresses_postcode, 33ms warm.
+  Suites: database 56 tests, api 158 tests. tsc clean. ultracite clean.
+
+open_question: |
+  The postcode query measured 6.3s on a COLD cache (8,848 shared buffers paged
+  in), dropping to 0.5-1.3s warm and 33ms fully warm. A cold hit could still
+  approach the reporter's 8s client timeout. Their reported numeric-prefix
+  timeouts are not fully explained by the ILIKE defect (numeric prefixes were
+  already indexed), so a second contributing factor — cold cache, Neon compute
+  cold-start, or connection-level queuing — is likely still present. Worth a
+  follow-up session before promising the timeouts are gone.
 commit: 3ec943f
 files_changed:
   - packages/database/src/queries/autocomplete.ts
