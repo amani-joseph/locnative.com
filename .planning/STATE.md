@@ -99,6 +99,7 @@ None yet.
 | 260415-hwm | Fix hero section mobile responsiveness and viewport fitting | 2026-04-15 | 9444085 | [260415-hwm-fix-hero-section-responsiveness-and-view](./quick/260415-hwm-fix-hero-section-responsiveness-and-view/) |
 | 260416-qlh | Check and configure Better Auth GitHub social provider | 2026-04-16 | 7e6f6d4 | [260416-qlh-check-and-configure-better-auth-github-s](./quick/260416-qlh-check-and-configure-better-auth-github-s/) |
 | 260419-lml | Fix critical audit issues C1 (wrangler NODE_ENV) and C2 (CLAUDE.md Convex→Postgres) | 2026-04-19 | 7b0e382, 5b3ce0b | [260419-lml-fix-critical-audit-issues-c1-and-c2-remo](./quick/260419-lml-fix-critical-audit-issues-c1-and-c2-remo/) |
+| 260823-pcq | Fix bare AU postcode queries in /addresses/autocomplete | 2026-08-23 | 2c771db | [260823-pcq-fix-bare-au-postcode-autocomplete](./quick/260823-pcq-fix-bare-au-postcode-autocomplete/) |
 
 ## Session Continuity
 
