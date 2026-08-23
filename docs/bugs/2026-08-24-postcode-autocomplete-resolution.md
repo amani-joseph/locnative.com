@@ -113,11 +113,25 @@ The alphabetic case above is dramatic. But your reported timeouts were on
 those specifically, they were *already* fast — around 0.24ms — because
 Postgres can derive a safe index range from digits even under `ILIKE`.
 
-**So this fix likely does not, on its own, fully explain your timeouts.**
-Something else is contributing. Our leading candidate is cold-cache latency:
-the postcode query above took 6.3s on a completely cold cache before
-settling to 0.5–1.3s, and 33ms once warm. A cold hit could plausibly reach
-your 8s client timeout. We are investigating this separately.
+**So this fix does not, on its own, explain your timeouts — and measuring
+the deployed endpoint confirms the problem is still there.**
+
+Against production after deploying, postcode lookups behave like this:
+
+| Call | Time |
+|---|---|
+| `4118` first (cold) | **~20s** |
+| `4118` repeated (warm) | 268–645ms |
+| `5000`, `6000` (cold) | 1.5–1.9s |
+| `7000` (cold) | **~21s** |
+
+So a cold request can exceed 20 seconds — comfortably past your 8s timeout.
+Warm requests are fine. This is a cold-cache/cold-start effect on our side,
+not a rate limit, and it is the most likely explanation for what you saw.
+
+**We are treating this as an open production issue, not a closed one.** The
+postcode results are now correct, but until this is addressed you may still
+see timeouts on the first request for a given postcode.
 
 Two things that would help us pin it down:
 
@@ -143,8 +157,11 @@ not match — is no longer necessary for postcode queries and can be removed.
 With `country=AU` set, the rows you get back are the localities in that
 postcode, so filtering them is redundant.
 
-Keep a client-side timeout, but consider raising it above 8s or retrying
-once on timeout, at least until we close out the cold-start question above.
+Given the cold-request measurements above, we would suggest raising your
+client timeout well above 8s (20–25s) and retrying once on timeout, until we
+have the cold-start problem fixed. A retry will usually land warm and return
+in well under a second. We are sorry this is still rough — we would rather
+tell you than let you discover it.
 
 ---
 
@@ -155,7 +172,7 @@ once on timeout, at least until we close out the cold-start question above.
 | Postcode-only queries return unrelated addresses | **Fixed and verified** |
 | Wrong results suppressing correct ones | **Fixed** (early-return removed for this path) |
 | Alphabetic prefix queries hitting an unindexed scan | **Fixed and verified** |
-| Your specific numeric-prefix timeouts | **Partly addressed — investigation open** |
+| Your specific numeric-prefix timeouts | **Not fixed — open production issue, cold requests can exceed 20s** |
 | Locality/postcode endpoint | Not built; still on the roadmap |
 
 Happy to keep the thread open on the timeout question — request IDs would
