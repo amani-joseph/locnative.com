@@ -374,7 +374,7 @@ app.get("/tiles/v1/*", async (context) => {
 		return context.text("Tiles not configured", 503);
 	}
 	const url = new URL(context.req.url);
-	const res = await handleTileRequest(url.pathname, bucket);
+	const res = await handleTileRequest(url.pathname, bucket, url.origin);
 	return res ?? context.notFound();
 });
 

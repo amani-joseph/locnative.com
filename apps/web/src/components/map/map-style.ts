@@ -12,7 +12,7 @@ export interface MapStyleSpec {
 	// biome-ignore lint/suspicious/noExplicitAny: maplibre LayerSpecification array
 	layers: any[];
 	sources: Record<string, unknown> & {
-		protomaps: { type: "vector"; tiles: string[]; maxzoom: number };
+		protomaps: { type: "vector"; url: string };
 	};
 	sprite: string;
 	version: 8;
@@ -27,7 +27,6 @@ export const OPENFREEMAP_LIGHT =
 	"https://tiles.openfreemap.org/styles/positron";
 
 const SOURCE_NAME = "protomaps";
-const MAX_ZOOM = 15;
 const TRAILING_SLASH_REGEX = /\/$/;
 
 export function buildMapStyle(tilesBaseUrl?: string): MapStyle {
@@ -40,10 +39,13 @@ export function buildMapStyle(tilesBaseUrl?: string): MapStyle {
 		glyphs: `${base}/tiles/v1/fonts/{fontstack}/{range}.pbf`,
 		sprite: `${base}/tiles/v1/sprite/dark`,
 		sources: {
+			// Referenced by TileJSON rather than an inline `tiles` array so the
+			// source inherits `bounds`, `minzoom` and `maxzoom` from the archive
+			// that is actually deployed. With bounds advertised, MapLibre skips
+			// requesting tiles outside the coverage footprint entirely.
 			[SOURCE_NAME]: {
 				type: "vector",
-				tiles: [`${base}/tiles/v1/{z}/{x}/{y}.mvt`],
-				maxzoom: MAX_ZOOM,
+				url: `${base}/tiles/v1/tiles.json`,
 			},
 		},
 		// `lang` is required for protomaps-themes-base v4 to emit the label

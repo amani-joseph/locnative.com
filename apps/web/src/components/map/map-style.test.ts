@@ -10,9 +10,12 @@ describe("buildMapStyle", () => {
 		const style = buildMapStyle("https://api.locnative.com");
 		expect(typeof style).not.toBe("string");
 		const s = style as Exclude<ReturnType<typeof buildMapStyle>, string>;
+		// TileJSON reference (not an inline `tiles` array) so bounds/zoom range
+		// come from the deployed archive and MapLibre can skip out-of-coverage
+		// tile requests.
 		expect(s.sources.protomaps).toMatchObject({
 			type: "vector",
-			tiles: ["https://api.locnative.com/tiles/v1/{z}/{x}/{y}.mvt"],
+			url: "https://api.locnative.com/tiles/v1/tiles.json",
 		});
 		expect(s.glyphs).toBe(
 			"https://api.locnative.com/tiles/v1/fonts/{fontstack}/{range}.pbf"
