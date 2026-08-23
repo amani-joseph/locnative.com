@@ -231,13 +231,15 @@ const endpointDocs: EndpointDoc[] = [
 				name: "q",
 				type: "string",
 				required: true,
-				description: "Free-form address input. Must be at least 2 characters.",
+				description:
+					"Free-form address input. Must be at least 2 characters. A postcode on its own returns the localities in that postcode when `country` is set.",
 			},
 			{
 				name: "country",
 				type: "string",
 				required: false,
-				description: "Optional country filter such as `US`, `GB`, or `AU`.",
+				description:
+					"Optional country filter such as `US`, `GB`, or `AU`. Required for postcode-only lookups — postcode formats are country-specific, so without it a bare number is read as a street number.",
 			},
 			{
 				name: "state",
@@ -257,6 +259,7 @@ const endpointDocs: EndpointDoc[] = [
 		notes: [
 			"Requests with a query shorter than 2 characters return `400`.",
 			"Use `country` and `state` filters to keep search results tight for known regions.",
+			"Postcode-only queries (for example `q=4118&country=AU`) return one row per locality in that postcode instead of street addresses — useful when a user identifies their area by postcode rather than suburb name. Supported for countries with all-numeric postcodes; `country` must be supplied.",
 			"Successful `2xx` requests are counted toward usage for the calling API key.",
 		],
 		exampleResponse: `{

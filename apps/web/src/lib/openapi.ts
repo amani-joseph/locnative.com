@@ -58,14 +58,16 @@ export const getOpenApiDocument = () =>
 							in: "query",
 							required: true,
 							schema: { type: "string", minLength: 2 },
-							description: "Free-form address query.",
+							description:
+								"Free-form address query. When `q` is nothing but a postcode and `country` is supplied, the response is the list of localities in that postcode (one row per suburb) rather than street addresses.",
 						},
 						{
 							name: "country",
 							in: "query",
 							required: false,
 							schema: { type: "string" },
-							description: "Optional country filter such as `AU`.",
+							description:
+								"Optional country filter such as `AU`. Required for postcode-only queries: without it a bare number is treated as a street number, since postcode formats are country-specific.",
 						},
 						{
 							name: "state",

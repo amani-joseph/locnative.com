@@ -120,6 +120,15 @@ export interface ReverseResponse {
 }
 
 export interface AddressesResource {
+	/**
+	 * Search for matching addresses as a user types.
+	 *
+	 * When `q` is nothing but a postcode and `country` is set, the response is
+	 * the localities in that postcode (one entry per suburb) rather than street
+	 * addresses. `country` is required for that behaviour, because postcode
+	 * formats are country-specific — without it a bare number is treated as a
+	 * street number.
+	 */
 	autocomplete(
 		params: AutocompleteParams,
 		options?: CallOptions
