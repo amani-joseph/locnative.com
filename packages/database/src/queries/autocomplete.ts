@@ -6,6 +6,7 @@ import {
 	type ParsedUnitAddress,
 	parseUnitAddress,
 } from "./parse-unit-address.ts";
+import { barePostcode } from "./postcode-query.ts";
 import { anchorToken } from "./query-tokens.ts";
 import { structuredAutocomplete } from "./structured-search.ts";
 
@@ -294,6 +295,26 @@ export async function autocompleteAddresses(
 		};
 	}
 
+	// Bare-postcode path: must run before prefixSearch, which would otherwise
+	// match the digits against number_first (a street number) and return early
+	// on those wrong rows. Country-gated — without a country a bare number is
+	// still treated as a street number, as before. Falls through on no match so
+	// genuine numeric street queries keep working.
+	const postcode = effectiveCountry
+		? barePostcode(searchInput, effectiveCountry)
+		: null;
+	if (postcode && effectiveCountry) {
+		const postcodeResults = await postcodeSearch(
+			db,
+			postcode,
+			effectiveCountry,
+			{ limit, state, latitude, longitude }
+		);
+		if (postcodeResults.length > 0) {
+			return { results: postcodeResults, parsedQuery: parsed };
+		}
+	}
+
 	// Always try fast prefix search first (uses B-tree index, works without extensions).
 	// Pass `parsed` so prefixSearch can reconstruct the number-first prefix that matches
 	// how search_text is stored (e.g. "120 Main St%") when the caller typed "5/120 Main St".
@@ -526,6 +547,58 @@ async function tieredSearch(
 	return (phoneticResult.rows as unknown as RawAddressRow[]).map(
 		mapRowToResult
 	);
+}
+
+/**
+ * Locality lookup for a query that is nothing but a postcode.
+ *
+ * `search_text` is a number-first concatenation with the postcode at the tail,
+ * so `prefixSearch` can only match a bare number against `number_first` — it
+ * returns street numbers (4118 Murringo Road) instead of the requested
+ * postcode, and because it returns early on any hit it also suppresses the
+ * fuzzy tiers. This branch matches the `postcode` column directly instead,
+ * using idx_addresses_country_state_postcode.
+ *
+ * `DISTINCT ON (locality, state)` collapses the result to one row per suburb:
+ * a postcode holds thousands of addresses, and ten rows of the same street is
+ * not a useful suggestion list. Postgres requires DISTINCT ON's leading
+ * ORDER BY to match its expressions, so the dedupe runs in a subquery and the
+ * caller's ranking is applied outside it.
+ */
+async function postcodeSearch(
+	db: Database,
+	postcode: string,
+	country: string,
+	opts: {
+		limit: number;
+		state?: string;
+		latitude?: number;
+		longitude?: number;
+	}
+): Promise<AutocompleteResult[]> {
+	const { limit, state, latitude, longitude } = opts;
+
+	const conditions: SQL<unknown>[] = [
+		sql`postcode = ${postcode}`,
+		sql`country = ${country.toUpperCase()}`,
+	];
+	if (state) {
+		conditions.push(sql`state = ${state.toUpperCase()}`);
+	}
+	const whereClause = sql.join(conditions, sql` AND `);
+
+	const result = await db.execute(sql`
+		SELECT * FROM (
+			SELECT DISTINCT ON (locality, state) ${SELECT_COLUMNS}, 1.0 as similarity_score
+			FROM addresses
+			WHERE ${whereClause}
+			ORDER BY locality, state, id
+		) AS localities
+		ORDER BY ${buildOrderBy(latitude, longitude)}
+		LIMIT ${limit}
+	`);
+
+	return (result.rows as unknown as RawAddressRow[]).map(mapRowToResult);
 }
 
 /**
