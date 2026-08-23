@@ -159,6 +159,14 @@ const docsNavGroups: DocsSectionGroup[] = [
 		items: [{ title: "Classify Coordinate", href: "#regions-classify" }],
 	},
 	{
+		label: "Vector Tiles",
+		items: [
+			{ title: "Overview", href: "#tiles-overview" },
+			{ title: "Coverage", href: "#tiles-coverage" },
+			{ title: "Using TileJSON", href: "#tiles-tilejson" },
+		],
+	},
+	{
 		label: "Implementation Notes",
 		items: [
 			{ title: "Errors and Constraints", href: "#errors-and-constraints" },
@@ -1087,6 +1095,23 @@ const endpointDocs: EndpointDoc[] = [
 }`,
 	},
 ];
+
+const tilesStyleCode = `// Reference the source by TileJSON rather than an inline \`tiles\` array.
+// TileJSON advertises bounds and zoom range from the deployed archives, so
+// MapLibre skips requesting tiles outside coverage.
+const map = new maplibregl.Map({
+  container: "map",
+  style: {
+    version: 8,
+    sources: {
+      protomaps: {
+        type: "vector",
+        url: "https://api.locnative.com/tiles/v1/tiles.json",
+      },
+    },
+    layers: [/* your layers, or use /tiles/v1/style.json */],
+  },
+});`;
 
 const docsToc = docsNavGroups.flatMap((group) => group.items);
 
@@ -2023,7 +2048,7 @@ export function DocsPage() {
 										</CardHeader>
 										<CardContent className="space-y-3">
 											<code className="block break-all rounded bg-muted px-3 py-2 font-mono text-sm">
-												https://api.locnative.com/api/openapi.json
+												https://locnative.com/api/openapi.json
 											</code>
 											<p className="text-muted-foreground text-sm leading-6">
 												Use this document for SDK generation, contract reviews,
@@ -2669,6 +2694,164 @@ if (!verifyWebhookSignature(rawBody, sig, process.env.WEBHOOK_SECRET!)) {
 const payload = JSON.parse(rawBody);`}
 												label="Verify HMAC (Node.js)"
 											/>
+										</CardContent>
+									</Card>
+								</div>
+							</section>
+
+							<section className="scroll-mt-24 space-y-6" id="tiles-overview">
+								<SectionHeading
+									description="A self-hosted Protomaps vector basemap, served from our edge. No API key is required and every response is CORS-open, so you can point MapLibre straight at it."
+									eyebrow="Vector Tiles"
+									id="tiles-overview"
+									title="Basemap tiles for your map"
+								/>
+
+								<Card>
+									<CardHeader>
+										<CardTitle className="text-base">Endpoints</CardTitle>
+									</CardHeader>
+									<CardContent className="space-y-3">
+										<div className="rounded-lg border p-4">
+											<p className="font-medium text-sm">Vector tiles</p>
+											<code className="mt-2 block rounded bg-muted px-3 py-2 font-mono text-sm">
+												GET
+												/tiles/v1/&#123;z&#125;/&#123;x&#125;/&#123;y&#125;.mvt
+											</code>
+										</div>
+										<div className="rounded-lg border p-4">
+											<p className="font-medium text-sm">TileJSON and style</p>
+											<code className="mt-2 block rounded bg-muted px-3 py-2 font-mono text-sm">
+												GET /tiles/v1/tiles.json
+											</code>
+											<code className="mt-2 block rounded bg-muted px-3 py-2 font-mono text-sm">
+												GET /tiles/v1/style.json
+											</code>
+										</div>
+										<div className="rounded-lg border p-4">
+											<p className="font-medium text-sm">Glyphs and sprites</p>
+											<code className="mt-2 block rounded bg-muted px-3 py-2 font-mono text-sm">
+												GET
+												/tiles/v1/fonts/&#123;fontstack&#125;/&#123;range&#125;.pbf
+											</code>
+											<code className="mt-2 block rounded bg-muted px-3 py-2 font-mono text-sm">
+												GET /tiles/v1/sprite/dark.&#123;json,png&#125;
+											</code>
+										</div>
+									</CardContent>
+								</Card>
+							</section>
+
+							<section className="scroll-mt-24 space-y-6" id="tiles-coverage">
+								<SectionHeading
+									description="Coverage is not uniform across zoom levels. Read this before assuming a global street-level basemap."
+									eyebrow="Vector Tiles"
+									id="tiles-coverage"
+									title="Coverage footprint"
+								/>
+
+								<div className="grid gap-4 md:grid-cols-2">
+									<Card>
+										<CardHeader>
+											<CardTitle className="text-base">
+												Global at low zoom
+											</CardTitle>
+										</CardHeader>
+										<CardContent className="space-y-3 text-muted-foreground text-sm leading-6">
+											<p>
+												Zoom levels `0` through `6` are served worldwide:
+												coastline, landmass, and major features. This is what
+												makes a zoomed-out map look like a map.
+											</p>
+										</CardContent>
+									</Card>
+
+									<Card>
+										<CardHeader>
+											<CardTitle className="text-base">
+												Australian detail at high zoom
+											</CardTitle>
+										</CardHeader>
+										<CardContent className="space-y-3 text-muted-foreground text-sm leading-6">
+											<p>
+												From zoom `7` to `15`, full street-level detail is
+												available for Australia only.
+											</p>
+											<p>
+												Outside Australia above zoom `6`, tiles return `200`
+												with a zero-length body: a valid MVT containing no
+												features.
+											</p>
+										</CardContent>
+									</Card>
+								</div>
+
+								<Card>
+									<CardHeader>
+										<CardTitle className="text-base">
+											Empty tiles return 200, never 204
+										</CardTitle>
+									</CardHeader>
+									<CardContent className="space-y-3 text-muted-foreground text-sm leading-6">
+										<p>
+											A tile with no features returns `200` with an empty but
+											valid MVT body. It is never a `204`.
+										</p>
+										<p>
+											This matters because a `204` is indistinguishable to a
+											renderer from an intentionally empty tile: MapLibre marks
+											it loaded, paints nothing, and neither retries nor falls
+											back to a parent tile. Do not write client logic that
+											treats `204` as a meaningful signal.
+										</p>
+									</CardContent>
+								</Card>
+							</section>
+
+							<section className="scroll-mt-24 space-y-6" id="tiles-tilejson">
+								<SectionHeading
+									description="Point your source at TileJSON instead of hardcoding a tile URL template, and your client stays correct as coverage changes."
+									eyebrow="Vector Tiles"
+									id="tiles-tilejson"
+									title="Using TileJSON"
+								/>
+
+								<CodeBlock code={tilesStyleCode} label="MapLibre GL JS" />
+
+								<div className="grid gap-4 md:grid-cols-2">
+									<Card>
+										<CardHeader>
+											<CardTitle className="text-base">
+												Why TileJSON rather than a tile URL
+											</CardTitle>
+										</CardHeader>
+										<CardContent className="space-y-3 text-muted-foreground text-sm leading-6">
+											<p>
+												TileJSON advertises `bounds`, `minzoom`, and `maxzoom`
+												derived from the archives actually deployed, so MapLibre
+												avoids requesting tiles outside coverage entirely.
+											</p>
+											<p>
+												It also means your client picks up coverage changes
+												without a redeploy on your side.
+											</p>
+										</CardContent>
+									</Card>
+
+									<Card>
+										<CardHeader>
+											<CardTitle className="text-base">Attribution</CardTitle>
+										</CardHeader>
+										<CardContent className="space-y-3 text-muted-foreground text-sm leading-6">
+											<p>
+												Basemap data is Protomaps and OpenStreetMap
+												contributors. TileJSON carries the required notice in
+												its `attribution` field.
+											</p>
+											<p>
+												Display it on your map. This is an ODbL licence
+												obligation, not a courtesy.
+											</p>
 										</CardContent>
 									</Card>
 								</div>
