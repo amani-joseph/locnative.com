@@ -143,6 +143,20 @@ function buildWhereClause(
 	return sql.join(allConditions, sql` AND `);
 }
 
+/**
+ * Build the ORDER BY clause, including the `ORDER BY` keyword itself, or an
+ * empty fragment when there is nothing to order by.
+ *
+ * Emitting a placeholder here is a trap. `ORDER BY 1` is not a no-op — Postgres
+ * reads it as an ordinal reference to the first select column and performs a
+ * real sort, which forces the plan to consume every matching row before LIMIT
+ * can apply. On a prefix like '318%' that is thousands of rows: measured 11ms
+ * without the clause versus 1511ms with it, and far worse on a cold cache for
+ * broader prefixes. Returning an empty fragment lets LIMIT short-circuit the
+ * index scan after the first N rows.
+ *
+ * Guarded by scripts/verify-prefix-index.mjs.
+ */
 function buildOrderBy(
 	latitude?: number,
 	longitude?: number,
@@ -166,10 +180,10 @@ function buildOrderBy(
 	}
 
 	if (orderParts.length === 0) {
-		orderParts.push(sql`1`);
+		return sql``;
 	}
 
-	return sql.join(orderParts, sql`, `);
+	return sql`ORDER BY ${sql.join(orderParts, sql`, `)}`;
 }
 
 export const SELECT_COLUMNS = sql`
@@ -362,7 +376,7 @@ export async function autocompleteAddresses(
 			SELECT ${SELECT_COLUMNS}, 1.0 as similarity_score
 			FROM addresses
 			WHERE ${whereClause}
-			ORDER BY ${buildOrderBy(latitude, longitude)}
+			${buildOrderBy(latitude, longitude)}
 			LIMIT ${limit}
 		`);
 		return {
@@ -488,7 +502,7 @@ async function tieredSearch(
 			SELECT ${SELECT_COLUMNS}, 1.0 as similarity_score
 			FROM addresses
 			WHERE ${whereClause}
-			ORDER BY ${buildOrderBy(latitude, longitude)}
+			${buildOrderBy(latitude, longitude)}
 			LIMIT ${limit}
 		`);
 
@@ -509,7 +523,7 @@ async function tieredSearch(
 				similarity(search_text, ${trimmed}::text) as similarity_score
 			FROM addresses
 			WHERE ${whereClause}
-			ORDER BY ${orderBy}
+			${orderBy}
 			LIMIT ${limit}
 		`);
 
@@ -535,7 +549,7 @@ async function tieredSearch(
 			SELECT ${SELECT_COLUMNS}, 0.5 as similarity_score
 			FROM addresses
 			WHERE ${levenshteinWhere}
-			ORDER BY ${buildOrderBy(latitude, longitude)}
+			${buildOrderBy(latitude, longitude)}
 			LIMIT ${limit}
 		`);
 
@@ -572,7 +586,7 @@ async function tieredSearch(
 			word_similarity(search_text, ${trimmed}::text) as similarity_score
 		FROM addresses
 		WHERE ${tier3Where}
-		ORDER BY ${orderBy}
+		${orderBy}
 		LIMIT ${limit}
 	`);
 
@@ -600,7 +614,7 @@ async function tieredSearch(
 		SELECT ${SELECT_COLUMNS}, 0.5 as similarity_score
 		FROM addresses
 		WHERE ${levenshteinWhere}
-		ORDER BY ${buildOrderBy(latitude, longitude)}
+		${buildOrderBy(latitude, longitude)}
 		LIMIT ${limit}
 	`);
 
@@ -620,7 +634,7 @@ async function tieredSearch(
 		SELECT ${SELECT_COLUMNS}, 0.3 as similarity_score
 		FROM addresses
 		WHERE ${phoneticWhere}
-		ORDER BY ${buildOrderBy(latitude, longitude)}
+		${buildOrderBy(latitude, longitude)}
 		LIMIT ${limit}
 	`);
 
@@ -674,7 +688,7 @@ async function postcodeSearch(
 			WHERE ${whereClause}
 			ORDER BY locality, state, id
 		) AS localities
-		ORDER BY ${buildOrderBy(latitude, longitude)}
+		${buildOrderBy(latitude, longitude)}
 		LIMIT ${limit}
 	`);
 
@@ -757,7 +771,7 @@ async function localitySearch(
 			WHERE a.country = ${countryUpper}
 				AND a.locality = k.locality
 				AND a.state = k.state
-			ORDER BY ${buildOrderBy(latitude, longitude)}
+			${buildOrderBy(latitude, longitude)}
 			LIMIT 1
 		) AS rep
 		LIMIT ${limit}
@@ -807,7 +821,7 @@ async function prefixSearch(
 			SELECT ${SELECT_COLUMNS}, 1.0 as similarity_score
 			FROM addresses
 			WHERE ${whereClause}
-			ORDER BY ${buildOrderBy(latitude, longitude)}
+			${buildOrderBy(latitude, longitude)}
 			LIMIT ${limit}
 		`);
 		const rows = (result.rows as unknown as RawAddressRow[]).map(
@@ -832,7 +846,7 @@ async function prefixSearch(
 		SELECT ${SELECT_COLUMNS}, 1.0 as similarity_score
 		FROM addresses
 		WHERE ${whereClause}
-		ORDER BY ${buildOrderBy(latitude, longitude)}
+		${buildOrderBy(latitude, longitude)}
 		LIMIT ${limit}
 	`);
 
