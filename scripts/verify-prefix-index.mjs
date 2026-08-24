@@ -146,6 +146,34 @@ try {
 	}
 
 	// ---------------------------------------------------------------------
+	// 3b. `ORDER BY 1` must never reappear as a "no ordering" placeholder.
+	//     It is an ordinal reference to the first select column, so Postgres
+	//     performs a real sort and LIMIT can no longer short-circuit the index
+	//     scan. That is what made 3-digit prefixes (411/318/529) take 6-20s while
+	//     2- and 4-digit ones stayed fast. Assert the sortless form does not sort.
+	// ---------------------------------------------------------------------
+	try {
+		const r = await client.query(
+			"EXPLAIN SELECT id FROM addresses WHERE search_text LIKE $1 AND country = 'AU' LIMIT 10",
+			["318%"]
+		);
+		const plan = r.rows.map((row) => row["QUERY PLAN"]).join("\n");
+		if (/\bSort\b/.test(plan)) {
+			fail(
+				"no placeholder sort",
+				`unordered prefix query plans a Sort:\n${plan}`
+			);
+		} else {
+			pass(
+				"no placeholder sort",
+				"unordered prefix query short-circuits on LIMIT"
+			);
+		}
+	} catch (e) {
+		fail("no placeholder sort", e.message);
+	}
+
+	// ---------------------------------------------------------------------
 	// 4. Correctness, not just speed: because search_text is stored uppercase,
 	//    LIKE on an uppercased pattern must return exactly what ILIKE returned.
 	//    This is what proves the fix was not a behaviour change.
