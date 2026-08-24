@@ -97,4 +97,56 @@ describe("parseFreeformAddress", () => {
 		expect(r.streetTokens).toEqual(["MAI"]);
 		expect(r.confidence).toBe("low");
 	});
+
+	// A leading secondary-unit segment ("L 2, ...", "Unit 5, ...") is not a
+	// street segment. Treating it as one made "UNIT"/"SHOP"/"LEVEL" the street
+	// name and pushed the real street into locality, so the structured search
+	// looked up an address that does not exist and returned confident wrong
+	// results. See .planning/debug/freeform-comma-misroute.md
+	it("skips a leading level segment and parses the real street", () => {
+		const r = parseFreeformAddress("L 2, 5/120 Main St");
+		expect(r.streetTokens).not.toContain("L");
+		expect(r.locality).toBeNull();
+		expect(r.cleaned).not.toBe("2 L 5/120 MAIN ST");
+	});
+
+	it("skips a leading unit segment and parses the real street", () => {
+		const r = parseFreeformAddress("Unit 5, 120 Main St");
+		expect(r.streetTokens).not.toContain("UNIT");
+		expect(r.houseNumber).toBe("120");
+		expect(r.streetTokens).toEqual(["MAIN", "ST"]);
+		expect(r.locality).toBeNull();
+	});
+
+	it("skips other secondary-unit designators", () => {
+		for (const input of [
+			"Shop 1, 12 Smith St",
+			"Level 2, 5/120 Main St",
+			"Suite 4, 12 Smith St",
+			"Apt 7, 12 Smith St",
+		]) {
+			const r = parseFreeformAddress(input);
+			for (const token of ["SHOP", "LEVEL", "SUITE", "APT"]) {
+				expect(r.streetTokens).not.toContain(token);
+			}
+		}
+	});
+
+	it("still parses a normal comma address with a locality", () => {
+		const r = parseFreeformAddress("10 Bourke St, Melbourne VIC 3000");
+		expect(r.houseNumber).toBe("10");
+		expect(r.streetTokens).toEqual(["BOURKE", "ST"]);
+		expect(r.locality).toBe("MELBOURNE");
+		expect(r.region).toBe("VIC");
+		expect(r.postcode).toBe("3000");
+	});
+
+	it("does not mistake a street named after a designator for a unit segment", () => {
+		// "Shop Street" is a real street name; only "<designator> <number>" as a
+		// complete leading segment should be skipped.
+		const r = parseFreeformAddress("12 Shop Street, Rozelle");
+		expect(r.houseNumber).toBe("12");
+		expect(r.streetTokens).toEqual(["SHOP", "STREET"]);
+		expect(r.locality).toBe("ROZELLE");
+	});
 });

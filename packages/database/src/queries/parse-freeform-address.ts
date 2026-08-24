@@ -28,6 +28,16 @@ const CA_OUTWARD = /^[A-Z]\d[A-Z]$/;
 const CA_INWARD = /^\d[A-Z]\d$/;
 const HOUSE_NUMBER = /^\d+[A-Z]?(?:-\d+[A-Z]?)?$/;
 const WHITESPACE = /\s+/;
+
+// A segment that is entirely a secondary-unit designator plus its identifier —
+// "L 2", "Unit 5", "Shop 1A", "Level 2". Such a segment describes a subdivision
+// of the address, not the street, so it must not be read as the street segment.
+// The vocabulary mirrors parse-unit-address.ts so the two parsers agree on what
+// counts as a unit designator. The trailing anchor matters: it keeps a real
+// street whose name begins with one of these words ("12 Shop Street") from
+// being mistaken for a unit segment.
+const SECONDARY_UNIT_SEGMENT =
+	/^(?:APARTMENT|TOWNHOUSE|VILLA|SUITE|LEVEL|UNIT|SHOP|FLAT|APT|STE|LVL|L|U)\.?\s*\d+[A-Z]?(?:\s*-\s*\d+[A-Z]?)?$/;
 // 2-3 letter US state / AU state / CA province codes (rerank only; not exhaustive).
 const REGION_CODES = new Set([
 	"AL",
@@ -169,7 +179,21 @@ function extractStreet(segments: string[]): {
 		};
 	}
 
-	const tokens = (segments[0] as string).split(WHITESPACE).filter(Boolean);
+	// Drop any leading secondary-unit segments ("L 2, 5/120 Main St") so the
+	// street is taken from the segment that actually holds it. Without this the
+	// designator became the street name and the real street was pushed into
+	// locality, producing confident wrong matches rather than an error.
+	let streetIndex = 0;
+	while (
+		streetIndex < segments.length - 1 &&
+		SECONDARY_UNIT_SEGMENT.test(segments[streetIndex] as string)
+	) {
+		streetIndex++;
+	}
+
+	const tokens = (segments[streetIndex] as string)
+		.split(WHITESPACE)
+		.filter(Boolean);
 	let houseNumber: string | null = null;
 	let streetFirst = false;
 
@@ -191,7 +215,7 @@ function extractStreet(segments: string[]): {
 		directional = tokens.shift() as string;
 	}
 
-	const localitySegments = segments.slice(1);
+	const localitySegments = segments.slice(streetIndex + 1);
 	const locality =
 		localitySegments.length > 0 ? localitySegments.join(" ") : null;
 
