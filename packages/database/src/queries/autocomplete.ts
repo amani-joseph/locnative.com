@@ -17,36 +17,7 @@ const LEVENSHTEIN_LONG_MAX_DISTANCE = 2;
 const PREFIX_SEARCH_MAX_LEN = 4;
 const WIDE_FUZZY_MIN_LEN = 8;
 const PURE_DIGITS_REGEX = /^\d+$/;
-const DIGIT_REGEX = /\d/;
 const WHITESPACE_REGEX = /\s+/;
-const LOCALITY_QUERY_MAX_TOKENS = 3;
-const LOCALITY_STREET_HINTS = new Set([
-	"AVE",
-	"AVENUE",
-	"BLVD",
-	"CIR",
-	"CIRCLE",
-	"COURT",
-	"CRES",
-	"CRESCENT",
-	"CT",
-	"DR",
-	"DRIVE",
-	"HWY",
-	"LANE",
-	"LN",
-	"PDE",
-	"PLACE",
-	"PL",
-	"PKWY",
-	"RD",
-	"ROAD",
-	"ST",
-	"STREET",
-	"TCE",
-	"TERRACE",
-	"WAY",
-]);
 
 export interface AutocompleteResult {
 	country: string;
@@ -82,17 +53,6 @@ export interface RawAddressRow {
 	street_name: string;
 	street_suffix: string | null;
 	street_type: string | null;
-}
-
-interface LocalityAutocompleteRow {
-	country: string;
-	id: number;
-	latitude: number;
-	locality: string;
-	longitude: number;
-	population_score: number;
-	postcode: string;
-	state: string;
 }
 
 function formatStreetAddress(row: {
@@ -181,24 +141,6 @@ function buildWhereClause(
 ): SQL<unknown> {
 	const allConditions = [searchCondition, ...filterClauses];
 	return sql.join(allConditions, sql` AND `);
-}
-
-function looksLikeLocalityQuery(query: string): boolean {
-	const tokens = query
-		.trim()
-		.toUpperCase()
-		.split(WHITESPACE_REGEX)
-		.filter(Boolean);
-
-	if (tokens.length === 0 || tokens.length > LOCALITY_QUERY_MAX_TOKENS) {
-		return false;
-	}
-
-	if (tokens.some((token) => DIGIT_REGEX.test(token))) {
-		return false;
-	}
-
-	return !tokens.some((token) => LOCALITY_STREET_HINTS.has(token));
 }
 
 function buildOrderBy(
@@ -390,17 +332,6 @@ export async function autocompleteAddresses(
 	const searchBase =
 		freeform.confidence === "high" ? freeform.cleaned : trimmed;
 
-	if (looksLikeLocalityQuery(trimmed)) {
-		const localityResults = await localityAutocomplete(db, trimmed, {
-			country: effectiveCountry,
-			state,
-			limit,
-		});
-		if (localityResults.length > 0) {
-			return { results: localityResults, parsedQuery: null };
-		}
-	}
-
 	const parsed = parseUnitAddress(searchBase);
 	const searchInput = parsed ? parsed.streetQuery : searchBase;
 	const len = searchInput.length;
@@ -485,6 +416,26 @@ export async function autocompleteAddresses(
 		return { results: prefixResults, parsedQuery: parsed };
 	}
 
+	// Slash-unit queries stop here. prefixSearch has already tried the anchored
+	// "<streetNumber> <streetQuery>%" form against idx_addresses_search_text_btree,
+	// which is the only indexable way to satisfy this shape, so a miss means no
+	// match rather than "try harder".
+	//
+	// The tiers below cannot be reached cheaply from here. Both are unanchored
+	// once buildFilterClauses has wrapped the unit columns in upper(), for which
+	// no functional index exists:
+	//   - tieredSearch's trigram predicate bitmap-scans the GIN index for a
+	//     common street word and applies the unit filters as a post-scan Filter
+	//     (measured >120s for "Main St").
+	//   - parsedPathFallback Parallel Seq Scans all 173M rows (>60s).
+	// End to end a miss took ~7.7 minutes and still returned nothing, so falling
+	// through bought no results at enormous cost.
+	//
+	// Guarded by scripts/verify-unit-query.mjs.
+	if (parsed) {
+		return { results: [], parsedQuery: parsed };
+	}
+
 	// Try tiered fuzzy search (requires pg_trgm + fuzzystrmatch extensions)
 	// Falls back to optimized ILIKE if extensions aren't available
 	let results: AutocompleteResult[];
@@ -499,125 +450,7 @@ export async function autocompleteAddresses(
 		results = await ilikeFallback(db, searchInput, filterClauses, { limit });
 	}
 
-	// Parsed-path fallback: trigram similarity of a short streetQuery against a
-	// long search_text column is often below threshold, even though unit +
-	// street_number already narrow the rows tightly. Retry with a direct
-	// street_name ILIKE when tiered/ilikeFallback returned nothing.
-	if (results.length === 0 && parsed) {
-		results = await parsedPathFallback(db, searchInput, filterClauses, {
-			limit,
-			latitude,
-			longitude,
-		});
-	}
-
 	return { results, parsedQuery: parsed };
-}
-
-async function localityAutocomplete(
-	db: Database,
-	query: string,
-	options: { country?: string; state?: string; limit: number }
-): Promise<AutocompleteResult[]> {
-	const localityQuery = query.trim().toUpperCase();
-	const localityPrefix = `${localityQuery}%`;
-	const filters: SQL<unknown>[] = [sql`locality LIKE ${localityPrefix}`];
-
-	if (options.country) {
-		filters.push(sql`country = ${options.country.toUpperCase()}`);
-	}
-
-	if (options.state) {
-		filters.push(sql`state = ${options.state.toUpperCase()}`);
-	}
-
-	const whereClause = sql.join(filters, sql` AND `);
-	const result = await db.execute(sql`
-		WITH locality_matches AS (
-			SELECT DISTINCT ON (locality, state, postcode, country)
-				id,
-				locality,
-				state,
-				postcode,
-				country,
-				longitude,
-				latitude,
-				population_score
-			FROM addresses
-			WHERE ${whereClause}
-			ORDER BY
-				locality,
-				state,
-				postcode,
-				country,
-				population_score DESC,
-				admin_level ASC,
-				id ASC
-		)
-		SELECT
-			id,
-			locality,
-			state,
-			postcode,
-			country,
-			longitude,
-			latitude,
-			population_score
-		FROM locality_matches
-		ORDER BY
-			(locality = ${localityQuery}) DESC,
-			population_score DESC,
-			locality ASC
-		LIMIT ${options.limit}
-	`);
-
-	return (result.rows as unknown as LocalityAutocompleteRow[]).map((row) => {
-		const streetAddress = row.locality;
-
-		return {
-			id: -row.id,
-			formattedAddress: formatAddress(streetAddress, {
-				locality: null,
-				state: row.state,
-				postcode: row.postcode,
-				country: row.country,
-			}),
-			streetAddress,
-			streetName: null,
-			streetNumber: null,
-			streetType: null,
-			locality: row.locality,
-			state: row.state,
-			postcode: row.postcode ?? "",
-			country: row.country,
-			longitude: row.longitude,
-			latitude: row.latitude,
-		};
-	});
-}
-
-async function parsedPathFallback(
-	db: Database,
-	streetQuery: string,
-	filterClauses: SQL<unknown>[],
-	opts: { limit: number; latitude?: number; longitude?: number }
-): Promise<AutocompleteResult[]> {
-	const { limit, latitude, longitude } = opts;
-	const conditions: SQL<unknown>[] = [...filterClauses];
-	if (streetQuery) {
-		conditions.push(sql`street_name ILIKE ${`${streetQuery}%`}`);
-	}
-	const whereClause = sql.join(conditions, sql` AND `);
-
-	const result = await db.execute(sql`
-		SELECT ${SELECT_COLUMNS}, 1.0 as similarity_score
-		FROM addresses
-		WHERE ${whereClause}
-		ORDER BY ${buildOrderBy(latitude, longitude)}
-		LIMIT ${limit}
-	`);
-
-	return (result.rows as unknown as RawAddressRow[]).map(mapRowToResult);
 }
 
 async function tieredSearch(
@@ -635,11 +468,19 @@ async function tieredSearch(
 	const { limit, latitude, longitude, phoneticFallback = true } = opts;
 	const orderBy = buildOrderBy(latitude, longitude, "similarity_score");
 
-	// Tier 1 (3-4 chars): Prefix search only (uses B-tree text_pattern_ops index)
+	// Tier 1 (3-4 chars): Prefix search only.
+	// Case-sensitive LIKE on the uppercased pattern. idx_addresses_search_text_btree
+	// is text_pattern_ops (case-sensitive): for an ALPHABETIC prefix an ILIKE cannot
+	// use it at all and degrades to a full-table scan (measured: `ILIKE 'brow%'`
+	// >25s vs `LIKE 'BROW%'` ~11ms cold). For a purely numeric prefix Postgres can
+	// still derive a range from ILIKE, so numbers happened to stay fast — which is
+	// why this defect went unnoticed. Uppercased LIKE is correct for both.
+	// search_text is stored uppercase, so uppercasing keeps the match semantics.
+	// Guarded by scripts/verify-prefix-index.mjs.
 	if (len <= PREFIX_SEARCH_MAX_LEN) {
-		const prefixPattern = `${trimmed}%`;
+		const prefixPattern = `${trimmed}%`.toUpperCase();
 		const whereClause = buildWhereClause(
-			sql`search_text ILIKE ${prefixPattern}`,
+			sql`search_text LIKE ${prefixPattern}`,
 			filterClauses
 		);
 
@@ -1012,14 +853,19 @@ async function ilikeFallback(
 	const { limit } = opts;
 	const tokens = trimmed.split(WHITESPACE_REGEX).filter(Boolean);
 
-	// First token uses prefix match (can use B-tree index)
-	const firstTokenCondition = sql`search_text ILIKE ${`${tokens[0]}%`}`;
+	// First token uses prefix match so it can use idx_addresses_search_text_btree.
+	// That index is text_pattern_ops (case-sensitive), so this must be LIKE against
+	// an uppercased pattern: for an alpha prefix ILIKE cannot use the index and
+	// degrades to a full-table scan. search_text is stored uppercase.
+	const firstTokenCondition = sql`search_text LIKE ${`${tokens[0]}%`.toUpperCase()}`;
 
 	// Additional tokens use substring match but operate on the
-	// already-narrowed result set from the first token's index scan
+	// already-narrowed result set from the first token's index scan.
+	// Substring patterns cannot use a prefix btree regardless; they are uppercased
+	// only so they match the uppercase column.
 	const additionalConditions = tokens
 		.slice(1)
-		.map((token) => sql`search_text ILIKE ${`%${token}%`}`);
+		.map((token) => sql`search_text LIKE ${`%${token}%`.toUpperCase()}`);
 
 	const allConditions = [firstTokenCondition, ...additionalConditions];
 	const searchCondition =
