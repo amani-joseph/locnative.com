@@ -416,6 +416,26 @@ export async function autocompleteAddresses(
 		return { results: prefixResults, parsedQuery: parsed };
 	}
 
+	// Slash-unit queries stop here. prefixSearch has already tried the anchored
+	// "<streetNumber> <streetQuery>%" form against idx_addresses_search_text_btree,
+	// which is the only indexable way to satisfy this shape, so a miss means no
+	// match rather than "try harder".
+	//
+	// The tiers below cannot be reached cheaply from here. Both are unanchored
+	// once buildFilterClauses has wrapped the unit columns in upper(), for which
+	// no functional index exists:
+	//   - tieredSearch's trigram predicate bitmap-scans the GIN index for a
+	//     common street word and applies the unit filters as a post-scan Filter
+	//     (measured >120s for "Main St").
+	//   - parsedPathFallback Parallel Seq Scans all 173M rows (>60s).
+	// End to end a miss took ~7.7 minutes and still returned nothing, so falling
+	// through bought no results at enormous cost.
+	//
+	// Guarded by scripts/verify-unit-query.mjs.
+	if (parsed) {
+		return { results: [], parsedQuery: parsed };
+	}
+
 	// Try tiered fuzzy search (requires pg_trgm + fuzzystrmatch extensions)
 	// Falls back to optimized ILIKE if extensions aren't available
 	let results: AutocompleteResult[];
@@ -430,43 +450,7 @@ export async function autocompleteAddresses(
 		results = await ilikeFallback(db, searchInput, filterClauses, { limit });
 	}
 
-	// Parsed-path fallback: trigram similarity of a short streetQuery against a
-	// long search_text column is often below threshold, even though unit +
-	// street_number already narrow the rows tightly. Retry with a direct
-	// street_name ILIKE when tiered/ilikeFallback returned nothing.
-	if (results.length === 0 && parsed) {
-		results = await parsedPathFallback(db, searchInput, filterClauses, {
-			limit,
-			latitude,
-			longitude,
-		});
-	}
-
 	return { results, parsedQuery: parsed };
-}
-
-async function parsedPathFallback(
-	db: Database,
-	streetQuery: string,
-	filterClauses: SQL<unknown>[],
-	opts: { limit: number; latitude?: number; longitude?: number }
-): Promise<AutocompleteResult[]> {
-	const { limit, latitude, longitude } = opts;
-	const conditions: SQL<unknown>[] = [...filterClauses];
-	if (streetQuery) {
-		conditions.push(sql`street_name ILIKE ${`${streetQuery}%`}`);
-	}
-	const whereClause = sql.join(conditions, sql` AND `);
-
-	const result = await db.execute(sql`
-		SELECT ${SELECT_COLUMNS}, 1.0 as similarity_score
-		FROM addresses
-		WHERE ${whereClause}
-		ORDER BY ${buildOrderBy(latitude, longitude)}
-		LIMIT ${limit}
-	`);
-
-	return (result.rows as unknown as RawAddressRow[]).map(mapRowToResult);
 }
 
 async function tieredSearch(
