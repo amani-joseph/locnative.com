@@ -1,8 +1,8 @@
 # Resolved: suburb autocomplete latency
 
 **Re:** careproviders.com latency report, 2026-08-25
-**Status:** Fix identified and applied; index build completing. Please re-run
-your benchmark and tell us what you see.
+**Status:** Fixed, live, and measured in production. Please re-run your
+benchmark and confirm from your side.
 
 Thank you for this report — the measurements made it straightforward, and the
 detail that mattered most was one you flagged almost in passing: that
@@ -65,13 +65,36 @@ irrelevant data each query had to walk.
 Built with `CREATE INDEX CONCURRENTLY`, so there was no downtime and no need to
 pause your traffic. We measured reads at 46 ms during the build.
 
-**One caveat on the numbers above, stated plainly:** they were measured on a
-16.8M-row Australian subset with the new index, not on the production table.
-They establish that the index shape is correct and that cost stops scaling with
-prefix breadth. Production figures will differ — the table is ten times larger,
-and your requests cross a network we do not control. We would rather give you
-the provenance than present validated numbers as if they were production ones.
-Your re-test is what will settle it.
+The figures above came from a 16.8M-row validation subset. Here is what the
+production API actually returns now, measured over the public endpoint using
+your method — 20 regional localities never requested in the session,
+`country=AU`, `limit=8`, cold then immediate repeat:
+
+| | p50 | p90 | max |
+|---|---|---|---|
+| **Cold, before** | 232 ms | 657 ms | 2059 ms |
+| **Cold, after** | **117 ms** | **185 ms** | **1145 ms** |
+| **Warm, after** | 115 ms | 142 ms | 483 ms |
+
+(Our "before" row is our own measurement from our network, not your reported
+480/988/2003 — different vantage point, same direction.)
+
+**Cold and warm have converged.** Cold p50 117 ms against warm 115 ms: the gap
+you reported as 3x is now within noise. That is the real result — not the
+headline number, but the fact that a first-touch query now costs about what a
+repeat one does. Your cold p90 target was ~800 ms; we are at 185 ms.
+
+Your pathological prefixes, same run:
+
+| Prefix | Before (our network) | After |
+|---|---|---|
+| `br` | 976 ms | **107 ms** |
+| `sp` | 684 ms | **112 ms** |
+| `su` | 546 ms | **152 ms** |
+| `ch` | 385 ms | **97 ms** |
+
+Postcode queries, measured separately on ten never-touched postcodes:
+cold p50 566 ms, p90 696 ms, max 696 ms.
 
 ## What we would like from you
 
@@ -81,12 +104,13 @@ Specifically:
 1. **Cold p50 and p90.** Your target was a cold p90 under ~800 ms. We expect to
    be well inside that, but your numbers are measured through the network from
    your infrastructure, and ours are not — yours are the ones that count.
-2. **Whether the multi-second tail is gone.** This is the one we most want
-   confirmed. We believe the tail was the same root cause at its worst, but we
-   never reproduced your specific `sp` >20s observation from our side, so we
-   cannot claim with certainty that it is eliminated — only that its most
-   likely cause is. If you see *any* multi-second response, please send the
-   query and timestamp and we will trace it.
+2. **Whether the multi-second tail is gone.** We did reproduce it before
+   fixing: `q=4127` took **24.8 seconds** on our own first touch, which lines
+   up with the 15.5 s you recorded. After the fix the same query returns in
+   218 ms, and across 30 cold queries in our post-fix runs nothing exceeded
+   1145 ms. We have not seen the tail since — but we saw it rarely enough
+   beforehand that we would rather you confirm than take our word for it. If
+   you see *any* multi-second response, send the query and timestamp.
 3. **Whether you can now drop the debounce**, which you mentioned was the
    practical goal.
 
