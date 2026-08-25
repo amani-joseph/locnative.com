@@ -70,19 +70,31 @@ production API actually returns now, measured over the public endpoint using
 your method — 20 regional localities never requested in the session,
 `country=AU`, `limit=8`, cold then immediate repeat:
 
-| | p50 | p90 | max |
-|---|---|---|---|
-| **Cold, before** | 232 ms | 657 ms | 2059 ms |
-| **Cold, after** | **117 ms** | **185 ms** | **1145 ms** |
-| **Warm, after** | 115 ms | 142 ms | 483 ms |
+| | p50 | p90 | p95 | max |
+|---|---|---|---|---|
+| **Cold, before** (n=20) | 232 ms | 657 ms | — | 2059 ms |
+| **Cold, after** (n=30) | **146 ms** | **320 ms** | 619 ms | 1246 ms |
+| **Warm, after** | 115 ms | 142 ms | — | 483 ms |
+
+One of the 30 cold requests exceeded 800 ms; none exceeded 2.5 s.
 
 (Our "before" row is our own measurement from our network, not your reported
 480/988/2003 — different vantage point, same direction.)
 
-**Cold and warm have converged.** Cold p50 117 ms against warm 115 ms: the gap
-you reported as 3x is now within noise. That is the real result — not the
-headline number, but the fact that a first-touch query now costs about what a
-repeat one does. Your cold p90 target was ~800 ms; we are at 185 ms.
+**Cold and warm have largely converged.** Cold p50 146 ms against warm 115 ms:
+the 3x gap you reported is now roughly 1.3x. That is the real result — not the
+headline number, but the fact that a first-touch query now costs close to what
+a repeat one does. Your cold p90 target was ~800 ms; we measure 320 ms.
+
+Two notes on honesty here. First, a smaller 20-sample run gave us a p90 of
+185 ms; a 30-sample run gave 320 ms. We are quoting the larger, worse sample.
+Second, the residual tail (p95 619 ms, max 1246 ms) is **not** the defect we
+fixed — it is connection setup. We measured a bare `SELECT 1` at 225 ms on a
+cold connection versus 24 ms warm, and a query for a suburb we had never
+requested returned in 120 ms on a warm connection while a repeat of a
+previously-seen suburb took 672 ms after a 20-second idle gap. The cost tracks
+connection idleness, not the query. Removing it means changing how we pool
+connections, which we have scoped but not done.
 
 Your pathological prefixes, same run:
 
