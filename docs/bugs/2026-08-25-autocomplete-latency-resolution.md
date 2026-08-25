@@ -1,7 +1,8 @@
 # Resolved: suburb autocomplete latency
 
 **Re:** careproviders.com latency report, 2026-08-25
-**Status:** Fixed and deployed. Please re-run your benchmark.
+**Status:** Fix identified and applied; index build completing. Please re-run
+your benchmark and tell us what you see.
 
 Thank you for this report — the measurements made it straightforward, and the
 detail that mattered most was one you flagged almost in passing: that
@@ -63,6 +64,14 @@ irrelevant data each query had to walk.
 
 Built with `CREATE INDEX CONCURRENTLY`, so there was no downtime and no need to
 pause your traffic. We measured reads at 46 ms during the build.
+
+**One caveat on the numbers above, stated plainly:** they were measured on a
+16.8M-row Australian subset with the new index, not on the production table.
+They establish that the index shape is correct and that cost stops scaling with
+prefix breadth. Production figures will differ — the table is ten times larger,
+and your requests cross a network we do not control. We would rather give you
+the provenance than present validated numbers as if they were production ones.
+Your re-test is what will settle it.
 
 ## What we would like from you
 
