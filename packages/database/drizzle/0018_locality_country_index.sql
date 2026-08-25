@@ -1,0 +1,24 @@
+-- Locality autocomplete: index the columns the suburb skip-scan actually filters on.
+--
+-- localitySearch walks distinct (locality, state) keys for one country. The only
+-- index that led with `locality` was idx_addresses_street (locality, street_name),
+-- which carries no country column — so an AU lookup walked index entries for every
+-- country and discarded most of them. AU is ~6% of this table (US ~44%), so ~94%
+-- of the pages touched were irrelevant. Measured for a 2-char prefix: 70,445
+-- buffers to return 8 rows, "Rows Removed by Filter: 820" per step, and 3.0s on a
+-- cold cache for prefixes like 'SP' and 'O'.
+--
+-- idx_addresses_locality (country, state, locality) could not serve it either:
+-- `state` sits before `locality`, so a locality range cannot be a scan key.
+--
+-- (country, locality, state) makes the country an equality prefix and the locality
+-- a range key, with state available for the ordering the skip-scan requires.
+-- Validated on a 16.8M-row AU subset: every prefix 23-31ms, flat regardless of how
+-- broad the prefix is.
+--
+-- CONCURRENTLY so the build does not block reads or writes on a 156GB table.
+-- Note: CREATE INDEX CONCURRENTLY cannot run inside a transaction block. If it is
+-- interrupted it leaves an INVALID index behind — drop it and re-run rather than
+-- assuming the index exists.
+CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_addresses_country_locality"
+ON "addresses" USING btree ("country", "locality", "state");

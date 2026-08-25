@@ -61,6 +61,15 @@ export const addresses = pgTable(
 			table.locality
 		),
 		index("idx_addresses_street").on(table.locality, table.streetName),
+		// Suburb autocomplete: country as an equality prefix, locality as the
+		// range key, state for the skip-scan's ordering. idx_addresses_locality
+		// cannot serve this — its `state` column sits before `locality`, so a
+		// locality range cannot be a scan key. See drizzle/0018.
+		index("idx_addresses_country_locality").on(
+			table.country,
+			table.locality,
+			table.state
+		),
 		index("idx_addresses_gnaf_pid").on(table.gnafPid),
 		index("idx_addresses_country_state_postcode").on(
 			table.country,
