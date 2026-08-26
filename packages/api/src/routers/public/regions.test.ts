@@ -28,6 +28,7 @@ describe("parseLayers", () => {
 
 	it("exposes the full set of supported layers", () => {
 		expect(REGION_LAYERS).toEqual([
+			"locality",
 			"state",
 			"sa1",
 			"sa2",

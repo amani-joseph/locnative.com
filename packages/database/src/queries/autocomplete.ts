@@ -2,6 +2,7 @@ import { type SQL, sql } from "drizzle-orm";
 import type { Database } from "../client.ts";
 import { formatAddress } from "./format-address.ts";
 import { fuzzyLocalitySearch } from "./fuzzy-locality.ts";
+import { parseLocalityPostcodeQuery } from "./locality-postcode-query.ts";
 import { localityQuery, prefixUpperBound } from "./locality-query.ts";
 import { parseFreeformAddress } from "./parse-freeform-address.ts";
 import {
@@ -324,6 +325,41 @@ async function tryLocalitySearch(
 }
 
 /**
+ * Guarded entry to locality+postcode search: returns [] unless the query
+ * matches `<locality> <postcode>` for the selected country.
+ */
+async function tryLocalityPostcodeSearch(
+	db: Database,
+	searchInput: string,
+	opts: {
+		country?: string;
+		limit: number;
+		state?: string;
+		latitude?: number;
+		longitude?: number;
+	}
+): Promise<AutocompleteResult[]> {
+	const { country, limit, state, latitude, longitude } = opts;
+	const parsed = parseLocalityPostcodeQuery(searchInput, country);
+	if (!(country && parsed)) {
+		return [];
+	}
+
+	return await localityPostcodeSearch(
+		db,
+		parsed.locality,
+		parsed.postcode,
+		country,
+		{
+			limit,
+			state,
+			latitude,
+			longitude,
+		}
+	);
+}
+
+/**
  * Guarded entry to fuzzyLocalitySearch. Returns [] unless the query is
  * alphabetic — a query containing digits is a street address or postcode, and
  * "correcting" its spelling would be wrong rather than merely unhelpful.
@@ -474,6 +510,24 @@ export async function autocompleteAddresses(
 	});
 	if (postcodeResults.length > 0) {
 		return { results: postcodeResults, parsedQuery: parsed };
+	}
+
+	// `<locality> <postcode>` is still a suburb lookup, not a street prefix
+	// search. Handle it before prefixSearch so "Parramatta 2150" resolves to
+	// PARRAMATTA instead of "PARRAMATTA COURT".
+	const localityPostcodeResults = await tryLocalityPostcodeSearch(
+		db,
+		searchInput,
+		{
+			country: effectiveCountry,
+			limit,
+			state,
+			latitude,
+			longitude,
+		}
+	);
+	if (localityPostcodeResults.length > 0) {
+		return { results: localityPostcodeResults, parsedQuery: parsed };
 	}
 
 	// Locality-name path: same defect as the postcode case one field over. The
@@ -892,6 +946,46 @@ async function localitySearch(
 			${buildOrderBy(latitude, longitude)}
 			LIMIT 1
 		) AS rep
+		LIMIT ${limit}
+	`);
+
+	return (result.rows as unknown as RawAddressRow[]).map(mapRowToResult);
+}
+
+async function localityPostcodeSearch(
+	db: Database,
+	prefix: string,
+	postcode: string,
+	country: string,
+	opts: {
+		limit: number;
+		state?: string;
+		latitude?: number;
+		longitude?: number;
+	}
+): Promise<AutocompleteResult[]> {
+	const { limit, state, latitude, longitude } = opts;
+	const upperBound = prefixUpperBound(prefix);
+	const conditions: SQL<unknown>[] = [
+		sql`country = ${country.toUpperCase()}`,
+		sql`postcode = ${postcode}`,
+		sql`locality >= ${prefix}`,
+		sql`locality < ${upperBound}`,
+	];
+
+	if (state) {
+		conditions.push(sql`state = ${state.toUpperCase()}`);
+	}
+
+	const whereClause = sql.join(conditions, sql` AND `);
+	const result = await db.execute(sql`
+		SELECT * FROM (
+			SELECT DISTINCT ON (locality, state) ${SELECT_COLUMNS}, 1.0 as similarity_score
+			FROM addresses
+			WHERE ${whereClause}
+			ORDER BY locality, state, id
+		) AS localities
+		${buildOrderBy(latitude, longitude)}
 		LIMIT ${limit}
 	`);
 

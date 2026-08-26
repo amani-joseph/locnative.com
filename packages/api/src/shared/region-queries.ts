@@ -26,6 +26,7 @@ export interface RegionRow {
 }
 
 const LOCALITY_SEARCH_RADIUS_METERS = 5000;
+const LOCALITY_FALLBACK_RADIUS_METERS = 25_000;
 
 const REGION_LAYER_SET = new Set<string>(REGION_LAYERS);
 
@@ -88,17 +89,31 @@ export async function regionsContainingPoint(
 	}
 
 	const localityPoint = sql`ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)::geography`;
-	const localityRows = await db
+	let localityRows = await db
 		.select({
 			locality: addresses.locality,
 			state: addresses.state,
 		})
 		.from(addresses)
 		.where(
-			sql`ST_DWithin(${addresses.geom}::geography, ${localityPoint}, ${LOCALITY_SEARCH_RADIUS_METERS})`
+			sql`${addresses.locality} <> '' AND ST_DWithin(${addresses.geom}::geography, ${localityPoint}, ${LOCALITY_SEARCH_RADIUS_METERS})`
 		)
 		.orderBy(sql`${addresses.geom}::geography <-> ${localityPoint}`)
 		.limit(1);
+
+	if (localityRows.length === 0) {
+		localityRows = await db
+			.select({
+				locality: addresses.locality,
+				state: addresses.state,
+			})
+			.from(addresses)
+			.where(
+				sql`${addresses.locality} <> '' AND ST_DWithin(${addresses.geom}::geography, ${localityPoint}, ${LOCALITY_FALLBACK_RADIUS_METERS})`
+			)
+			.orderBy(sql`${addresses.geom}::geography <-> ${localityPoint}`)
+			.limit(1);
+	}
 
 	if (localityRows.length === 0) {
 		return rows;
