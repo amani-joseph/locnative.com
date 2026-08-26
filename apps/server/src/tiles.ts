@@ -15,10 +15,19 @@ import { layers, namedTheme } from "protomaps-themes-base";
  * is what makes a zoomed-out map look like a map instead of one painted patch.
  */
 const DETAIL_PMTILES_KEY = "australia.pmtiles";
+const MID_ZOOM_PMTILES_KEY = "australia-z7-z9.pmtiles";
+const DETAIL_HIGH_PMTILES_KEY = "australia-z10-z15.pmtiles";
 const WORLD_PMTILES_KEY = "world-z0-z6.pmtiles";
 /** Highest zoom served from the global archive; above this, detail is AU-only. */
 const WORLD_MAX_ZOOM = 6;
-const TILE_PREFIX = "/tiles/v1";
+const MID_ZOOM_MAX = 9;
+export const CURRENT_TILE_API_VERSION = "v2";
+export const SUPPORTED_TILE_API_VERSIONS = [
+	CURRENT_TILE_API_VERSION,
+	"v1",
+] as const;
+const TILE_BASE_PREFIX = "/tiles";
+const CURRENT_TILE_PREFIX = `${TILE_BASE_PREFIX}/${CURRENT_TILE_API_VERSION}`;
 const TILE_BROWSER_CACHE_CONTROL =
 	"public, max-age=86400, stale-while-revalidate=604800, immutable";
 const TILE_EDGE_CACHE_CONTROL =
@@ -122,14 +131,16 @@ class R2Source implements Source {
 	}
 }
 
-// Matches /tiles/v1/{z}/{x}/{y}.mvt
-const TILE_RE = /^\/tiles\/v1\/(\d+)\/(\d+)\/(\d+)\.mvt$/;
-// Matches /tiles/v1/fonts/{fontstack}/{range}.pbf
-const FONT_RE = /^\/tiles\/v1\/fonts\/(.+)\/(\d+-\d+)\.pbf$/;
-// Matches /tiles/v1/sprite/dark.{json,png} and retina /dark@2x.{json,png}
-const SPRITE_RE = /^\/tiles\/v1\/sprite\/(dark(?:@2x)?\.(?:json|png))$/;
-const TILEJSON_PATH = "/tiles/v1/tiles.json";
-const STYLE_PATH = "/tiles/v1/style.json";
+// Matches /tiles/{version}/...
+const TILE_PATH_RE = /^\/tiles\/(v\d+)\/(.*)$/;
+// Matches {z}/{x}/{y}.mvt
+const TILE_RE = /^(\d+)\/(\d+)\/(\d+)\.mvt$/;
+// Matches fonts/{fontstack}/{range}.pbf
+const FONT_RE = /^fonts\/(.+)\/(\d+-\d+)\.pbf$/;
+// Matches sprite/dark.{json,png} and retina /dark@2x.{json,png}
+const SPRITE_RE = /^sprite\/(dark(?:@2x)?\.(?:json|png))$/;
+const TILEJSON_SUFFIX = "tiles.json";
+const STYLE_SUFFIX = "style.json";
 const JSON_ENCODER = new TextEncoder();
 const PROTOMAPS_SOURCE_NAME = "protomaps";
 
@@ -168,8 +179,55 @@ export function resetArchiveCache(): void {
  * Below the world archive's ceiling we serve global data; above it, only the
  * Australian extract has detail to offer.
  */
-function archiveKeyForZoom(z: number): string {
-	return z <= WORLD_MAX_ZOOM ? WORLD_PMTILES_KEY : DETAIL_PMTILES_KEY;
+function archiveKeysForZoom(z: number): string[] {
+	if (z <= WORLD_MAX_ZOOM) {
+		return [WORLD_PMTILES_KEY];
+	}
+	if (z <= MID_ZOOM_MAX) {
+		return [MID_ZOOM_PMTILES_KEY, DETAIL_PMTILES_KEY];
+	}
+	return [DETAIL_HIGH_PMTILES_KEY, DETAIL_PMTILES_KEY];
+}
+
+async function getArchiveHeaderWithFallback(
+	bucket: R2Bucket,
+	keys: string[]
+): Promise<{ header: Header; key: string }> {
+	let lastError: unknown;
+	for (const key of keys) {
+		try {
+			const header = await getArchive(bucket, key).getHeader();
+			return { header, key };
+		} catch (error) {
+			lastError = error;
+			if (!isArchiveMissing(error)) {
+				throw error;
+			}
+		}
+	}
+	throw lastError ?? new Error("no archive keys configured");
+}
+
+function isSupportedTileVersion(version: string): boolean {
+	return (SUPPORTED_TILE_API_VERSIONS as readonly string[]).includes(version);
+}
+
+function buildVersionedTilePath(suffix: string): string {
+	return `${CURRENT_TILE_PREFIX}/${suffix}`;
+}
+
+function parseTilePath(
+	pathname: string
+): { version: string; suffix: string } | null {
+	const match = pathname.match(TILE_PATH_RE);
+	if (!match) {
+		return null;
+	}
+	const version = match[1] as string;
+	if (!isSupportedTileVersion(version)) {
+		return null;
+	}
+	return { version, suffix: match[2] as string };
 }
 
 /**
@@ -191,7 +249,7 @@ function buildTileJson(world: Header | null, detail: Header, origin: string) {
 		name: "Locnative Basemap",
 		description: COVERAGE_DESCRIPTION,
 		scheme: "xyz",
-		tiles: [`${origin}${TILE_PREFIX}/{z}/{x}/{y}.mvt`],
+		tiles: [`${origin}${CURRENT_TILE_PREFIX}/{z}/{x}/{y}.mvt`],
 		minzoom,
 		maxzoom: detail.maxZoom,
 		bounds,
@@ -296,12 +354,12 @@ function buildStyleJson(origin: string) {
 	return {
 		version: 8,
 		name: "Locnative Dark",
-		glyphs: `${origin}${TILE_PREFIX}/fonts/{fontstack}/{range}.pbf`,
-		sprite: `${origin}${TILE_PREFIX}/sprite/dark`,
+		glyphs: `${origin}${CURRENT_TILE_PREFIX}/fonts/{fontstack}/{range}.pbf`,
+		sprite: `${origin}${CURRENT_TILE_PREFIX}/sprite/dark`,
 		sources: {
 			[PROTOMAPS_SOURCE_NAME]: {
 				type: "vector",
-				url: `${origin}${TILEJSON_PATH}`,
+				url: `${origin}${buildVersionedTilePath(TILEJSON_SUFFIX)}`,
 				attribution: ATTRIBUTION,
 			},
 		},
@@ -386,7 +444,7 @@ async function r2Passthrough(
 }
 
 /**
- * Handle a /tiles/v1/* request against the MAP_TILES R2 bucket.
+ * Handle a /tiles/{version}/* request against the MAP_TILES R2 bucket.
  * Returns null if the path is not a tiles path (caller continues routing).
  */
 export async function handleTileRequest(
@@ -395,15 +453,20 @@ export async function handleTileRequest(
 	origin: string,
 	requestHeaders: Headers = new Headers()
 ): Promise<Response | null> {
-	if (!pathname.startsWith(TILE_PREFIX)) {
+	const parsedPath = parseTilePath(pathname);
+	if (!parsedPath) {
 		return null;
 	}
 
 	const publicOrigin = toPublicOrigin(origin);
 	const ifNoneMatch = requestHeaders.get("if-none-match");
+	const suffix = parsedPath.suffix;
 
-	if (pathname === STYLE_PATH) {
-		const detail = await getArchive(bucket, DETAIL_PMTILES_KEY).getHeader();
+	if (suffix === STYLE_SUFFIX) {
+		const { header: detail } = await getArchiveHeaderWithFallback(bucket, [
+			DETAIL_HIGH_PMTILES_KEY,
+			DETAIL_PMTILES_KEY,
+		]);
 		const world = await getArchive(bucket, WORLD_PMTILES_KEY)
 			.getHeader()
 			.catch(() => null);
@@ -424,8 +487,11 @@ export async function handleTileRequest(
 		return jsonResponse(buildStyleJson(publicOrigin), etag);
 	}
 
-	if (pathname === TILEJSON_PATH) {
-		const detail = await getArchive(bucket, DETAIL_PMTILES_KEY).getHeader();
+	if (suffix === TILEJSON_SUFFIX) {
+		const { header: detail } = await getArchiveHeaderWithFallback(bucket, [
+			DETAIL_HIGH_PMTILES_KEY,
+			DETAIL_PMTILES_KEY,
+		]);
 		// The world archive is optional: until it is uploaded the service still
 		// works, and TileJSON correctly falls back to advertising AU-only bounds
 		// rather than promising global coverage we cannot serve.
@@ -449,7 +515,7 @@ export async function handleTileRequest(
 		return jsonResponse(buildTileJson(world, detail, publicOrigin), etag);
 	}
 
-	const font = pathname.match(FONT_RE);
+	const font = suffix.match(FONT_RE);
 	if (font) {
 		// MapLibre URL-encodes the fontstack (e.g. "Noto%20Sans%20Regular"); the
 		// R2 keys use the literal (space-containing) names, so decode to match.
@@ -462,7 +528,7 @@ export async function handleTileRequest(
 		);
 	}
 
-	const sprite = pathname.match(SPRITE_RE);
+	const sprite = suffix.match(SPRITE_RE);
 	if (sprite) {
 		// sprite[1] is guaranteed by the regex capture group
 		const filename = sprite[1] as string;
@@ -477,7 +543,7 @@ export async function handleTileRequest(
 		);
 	}
 
-	const tile = pathname.match(TILE_RE);
+	const tile = suffix.match(TILE_RE);
 	if (!tile) {
 		return new Response("Not found", { status: 404 });
 	}
@@ -485,62 +551,67 @@ export async function handleTileRequest(
 	const z = Number(tile[1]);
 	const x = Number(tile[2]);
 	const y = Number(tile[3]);
-	const archiveKey = archiveKeyForZoom(z);
-	const archive = getArchive(bucket, archiveKey);
-	try {
-		const archiveHeader = await archive.getHeader();
-		const etag = createCoordinateEtag(archiveHeader, archiveKey, z, x, y);
-		const notModified = maybeNotModified(
-			ifNoneMatch,
-			etag,
-			TILE_BROWSER_CACHE_CONTROL,
-			TILE_EDGE_CACHE_CONTROL,
-			"application/x-protobuf"
-		);
-		if (notModified) {
-			return notModified;
-		}
-		const result = await archive.getZxy(z, x, y);
-		// A miss means "no features here", which is a normal answer for a tile
-		// outside the data footprint. Answer it with an empty-but-valid MVT and
-		// a 200: a 204 is indistinguishable to MapLibre from an intentionally
-		// empty tile, so it silently paints nothing and never falls back.
-		const body = result ? result.data : EMPTY_TILE;
-		return new Response(body, {
-			headers: withSharedHeaders(
-				{
-					"content-type": "application/x-protobuf",
-					"cache-control": TILE_BROWSER_CACHE_CONTROL,
-					"access-control-allow-origin": "*",
-				},
-				body.byteLength,
+	const archiveKeys = archiveKeysForZoom(z);
+	let lastError: unknown;
+	for (const archiveKey of archiveKeys) {
+		const archive = getArchive(bucket, archiveKey);
+		try {
+			const archiveHeader = await archive.getHeader();
+			const etag = createCoordinateEtag(archiveHeader, archiveKey, z, x, y);
+			const notModified = maybeNotModified(
+				ifNoneMatch,
 				etag,
-				TILE_EDGE_CACHE_CONTROL
-			),
-		});
-	} catch (err) {
-		if (err instanceof EtagMismatch) {
-			// Archive changed mid-read; client will retry.
-			return new Response(null, { status: 503 });
-		}
-		// The world archive is optional and is uploaded separately from this
-		// code. If it is absent, degrade to an empty tile rather than a 500:
-		// the map looks exactly as it did before low-zoom coverage landed,
-		// instead of the deploy breaking every low-zoom request.
-		if (archiveKey === WORLD_PMTILES_KEY && isArchiveMissing(err)) {
-			return new Response(EMPTY_TILE, {
+				TILE_BROWSER_CACHE_CONTROL,
+				TILE_EDGE_CACHE_CONTROL,
+				"application/x-protobuf"
+			);
+			if (notModified) {
+				return notModified;
+			}
+			const result = await archive.getZxy(z, x, y);
+			// A miss means "no features here", which is a normal answer for a tile
+			// outside the data footprint. Answer it with an empty-but-valid MVT and
+			// a 200: a 204 is indistinguishable to MapLibre from an intentionally
+			// empty tile, so it silently paints nothing and never falls back.
+			const body = result ? result.data : EMPTY_TILE;
+			return new Response(body, {
 				headers: withSharedHeaders(
 					{
 						"content-type": "application/x-protobuf",
-						"cache-control": MISSING_ARCHIVE_BROWSER_CACHE_CONTROL,
+						"cache-control": TILE_BROWSER_CACHE_CONTROL,
 						"access-control-allow-origin": "*",
 					},
-					EMPTY_TILE.byteLength,
-					undefined,
-					MISSING_ARCHIVE_EDGE_CACHE_CONTROL
+					body.byteLength,
+					etag,
+					TILE_EDGE_CACHE_CONTROL
 				),
 			});
+		} catch (err) {
+			lastError = err;
+			if (err instanceof EtagMismatch) {
+				// Archive changed mid-read; client will retry.
+				return new Response(null, { status: 503 });
+			}
+			if (isArchiveMissing(err)) {
+				continue;
+			}
+			throw err;
 		}
-		throw err;
 	}
+
+	if (archiveKeys.includes(WORLD_PMTILES_KEY) && isArchiveMissing(lastError)) {
+		return new Response(EMPTY_TILE, {
+			headers: withSharedHeaders(
+				{
+					"content-type": "application/x-protobuf",
+					"cache-control": MISSING_ARCHIVE_BROWSER_CACHE_CONTROL,
+					"access-control-allow-origin": "*",
+				},
+				EMPTY_TILE.byteLength,
+				undefined,
+				MISSING_ARCHIVE_EDGE_CACHE_CONTROL
+			),
+		});
+	}
+	throw lastError;
 }

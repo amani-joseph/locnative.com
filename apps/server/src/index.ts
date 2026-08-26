@@ -26,7 +26,7 @@ import {
 	processWebhookDeliveryMessage,
 	type WebhookDeliveryMessage,
 } from "./queues/webhook-delivery.ts";
-import { handleTileRequest } from "./tiles.ts";
+import { CURRENT_TILE_API_VERSION, handleTileRequest } from "./tiles.ts";
 
 // Durable Object class must be re-exported from the Worker entry so the runtime
 // can construct it for the USAGE_METER binding declared in wrangler.jsonc.
@@ -460,6 +460,7 @@ function withTileCacheOutcome(
 ): Response {
 	const headers = new Headers(response.headers);
 	headers.set("x-locnative-cache", outcome);
+	headers.set("x-locnative-tile-version", CURRENT_TILE_API_VERSION);
 	return new Response(response.body, {
 		status: response.status,
 		statusText: response.statusText,
@@ -467,37 +468,92 @@ function withTileCacheOutcome(
 	});
 }
 
-app.get("/tiles/v1/*", async (context) => {
+function appendServerTiming(
+	response: Response,
+	metrics: Array<{ name: string; durationMs: number; description?: string }>
+): Response {
+	const headers = new Headers(response.headers);
+	const value = metrics
+		.map((metric) => {
+			const parts = [
+				metric.name,
+				`dur=${Math.max(0, Number(metric.durationMs.toFixed(2)))}`,
+			];
+			if (metric.description) {
+				parts.push(`desc="${metric.description}"`);
+			}
+			return parts.join(";");
+		})
+		.join(", ");
+	headers.set("server-timing", value);
+	return new Response(response.body, {
+		status: response.status,
+		statusText: response.statusText,
+		headers,
+	});
+}
+
+app.get("/tiles/*", async (context) => {
 	const bucket = (context.env as { MAP_TILES?: R2Bucket }).MAP_TILES;
 	if (!bucket) {
 		return context.text("Tiles not configured", 503);
 	}
 	const waitUntil = getWaitUntil(context);
+	const startedAt = performance.now();
 	const request = context.req.raw;
 	const cacheKey = new Request(request.url, {
 		method: "GET",
 	});
 	const cache = caches.default;
+	const cacheLookupStartedAt = performance.now();
 	const cached = await cache.match(cacheKey);
+	const cacheLookupDurationMs = performance.now() - cacheLookupStartedAt;
 	if (cached) {
 		if (cachedResponseMatchesEtag(request, cached)) {
-			return withTileCacheOutcome(
-				new Response(null, {
-					status: 304,
-					headers: new Headers(cached.headers),
-				}),
-				"REVALIDATED"
+			return appendServerTiming(
+				withTileCacheOutcome(
+					new Response(null, {
+						status: 304,
+						headers: new Headers(cached.headers),
+					}),
+					"REVALIDATED"
+				),
+				[
+					{
+						name: "tile-cache",
+						durationMs: cacheLookupDurationMs,
+						description: "worker cache lookup",
+					},
+					{
+						name: "tile-total",
+						durationMs: performance.now() - startedAt,
+						description: "total tile request time",
+					},
+				]
 			);
 		}
-		return withTileCacheOutcome(cached, "HIT");
+		return appendServerTiming(withTileCacheOutcome(cached, "HIT"), [
+			{
+				name: "tile-cache",
+				durationMs: cacheLookupDurationMs,
+				description: "worker cache lookup",
+			},
+			{
+				name: "tile-total",
+				durationMs: performance.now() - startedAt,
+				description: "total tile request time",
+			},
+		]);
 	}
 	const url = new URL(request.url);
+	const handlerStartedAt = performance.now();
 	const res = await handleTileRequest(
 		url.pathname,
 		bucket,
 		url.origin,
 		request.headers
 	);
+	const handlerDurationMs = performance.now() - handlerStartedAt;
 	if (!res) {
 		return context.notFound();
 	}
@@ -509,7 +565,24 @@ app.get("/tiles/v1/*", async (context) => {
 			await cacheWrite;
 		}
 	}
-	return withTileCacheOutcome(res, "MISS");
+	const versionedResponse = withTileCacheOutcome(res, "MISS");
+	return appendServerTiming(versionedResponse, [
+		{
+			name: "tile-cache",
+			durationMs: cacheLookupDurationMs,
+			description: "worker cache lookup",
+		},
+		{
+			name: "tile-origin",
+			durationMs: handlerDurationMs,
+			description: "tile handler origin work",
+		},
+		{
+			name: "tile-total",
+			durationMs: performance.now() - startedAt,
+			description: "total tile request time",
+		},
+	]);
 });
 
 app.use("/*", async (context, next) => {

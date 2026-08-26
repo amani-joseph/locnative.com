@@ -64,7 +64,7 @@ describe("tile responses", () => {
 	it("serves a tile that exists", async () => {
 		getZxy.mockResolvedValue({ data: new Uint8Array([1, 2, 3]).buffer });
 		const res = await handleTileRequest(
-			"/tiles/v1/10/941/613.mvt",
+			"/tiles/v2/10/941/613.mvt",
 			fakeBucket(),
 			ORIGIN
 		);
@@ -85,7 +85,7 @@ describe("tile responses", () => {
 		// intentionally empty tile, so it paints nothing and never retries.
 		getZxy.mockResolvedValue(undefined);
 		const res = await handleTileRequest(
-			"/tiles/v1/2/0/0.mvt",
+			"/tiles/v2/2/0/0.mvt",
 			fakeBucket(),
 			ORIGIN
 		);
@@ -101,7 +101,7 @@ describe("tile responses", () => {
 	it("returns 304 for tiles when If-None-Match matches the archive-backed etag", async () => {
 		getZxy.mockResolvedValue({ data: new Uint8Array([1, 2, 3]).buffer });
 		const res = await handleTileRequest(
-			"/tiles/v1/10/941/613.mvt",
+			"/tiles/v2/10/941/613.mvt",
 			fakeBucket(),
 			ORIGIN,
 			new Headers({ "if-none-match": '"au-archive:10:941:613"' })
@@ -116,7 +116,7 @@ describe("tile responses", () => {
 	it("sets CORS on tiles so third-party maps can load them", async () => {
 		getZxy.mockResolvedValue(undefined);
 		const res = await handleTileRequest(
-			"/tiles/v1/2/0/0.mvt",
+			"/tiles/v2/2/0/0.mvt",
 			fakeBucket(),
 			ORIGIN
 		);
@@ -127,7 +127,7 @@ describe("tile responses", () => {
 describe("TileJSON", () => {
 	it("derives bounds and zoom range from the live archive header", async () => {
 		const res = await handleTileRequest(
-			"/tiles/v1/tiles.json",
+			"/tiles/v2/tiles.json",
 			fakeBucket(),
 			ORIGIN
 		);
@@ -139,7 +139,7 @@ describe("TileJSON", () => {
 		expect(body.minzoom).toBe(0);
 		expect(body.maxzoom).toBe(15);
 		expect(body.tiles).toEqual([
-			"https://api.locnative.com/tiles/v1/{z}/{x}/{y}.mvt",
+			"https://api.locnative.com/tiles/v2/{z}/{x}/{y}.mvt",
 		]);
 		expect(body.attribution).toContain("OpenStreetMap");
 		expect(res?.headers.get("cache-control")).toBe(
@@ -161,7 +161,7 @@ describe("TileJSON", () => {
 			)
 		);
 		const res = await handleTileRequest(
-			"/tiles/v1/tiles.json",
+			"/tiles/v2/tiles.json",
 			fakeBucket(),
 			ORIGIN
 		);
@@ -178,7 +178,7 @@ describe("TileJSON", () => {
 				: Promise.resolve(AU_HEADER)
 		);
 		const res = await handleTileRequest(
-			"/tiles/v1/tiles.json",
+			"/tiles/v2/tiles.json",
 			fakeBucket(),
 			ORIGIN
 		);
@@ -193,25 +193,25 @@ describe("origin scheme", () => {
 		// terminated upstream. http tile urls inside TileJSON are blocked by
 		// browsers on an https page, which would blank the map again.
 		const res = await handleTileRequest(
-			"/tiles/v1/tiles.json",
+			"/tiles/v2/tiles.json",
 			fakeBucket(),
 			"http://api.locnative.com"
 		);
 		const body = (await res?.json()) as { tiles: string[] };
 		expect(body.tiles[0]).toBe(
-			"https://api.locnative.com/tiles/v1/{z}/{x}/{y}.mvt"
+			"https://api.locnative.com/tiles/v2/{z}/{x}/{y}.mvt"
 		);
 	});
 
 	it("leaves localhost alone so wrangler dev keeps working", async () => {
 		const res = await handleTileRequest(
-			"/tiles/v1/tiles.json",
+			"/tiles/v2/tiles.json",
 			fakeBucket(),
 			"http://localhost:8787"
 		);
 		const body = (await res?.json()) as { tiles: string[] };
 		expect(body.tiles[0]).toBe(
-			"http://localhost:8787/tiles/v1/{z}/{x}/{y}.mvt"
+			"http://localhost:8787/tiles/v2/{z}/{x}/{y}.mvt"
 		);
 	});
 });
@@ -219,7 +219,7 @@ describe("origin scheme", () => {
 describe("style.json", () => {
 	it("references the source by TileJSON url so it inherits bounds", async () => {
 		const res = await handleTileRequest(
-			"/tiles/v1/style.json",
+			"/tiles/v2/style.json",
 			fakeBucket(),
 			ORIGIN
 		);
@@ -232,9 +232,9 @@ describe("style.json", () => {
 		};
 		expect(body.version).toBe(8);
 		expect(body.sources.protomaps.url).toBe(
-			"https://api.locnative.com/tiles/v1/tiles.json"
+			"https://api.locnative.com/tiles/v2/tiles.json"
 		);
-		expect(body.glyphs).toContain("/tiles/v1/fonts/");
+		expect(body.glyphs).toContain("/tiles/v2/fonts/");
 		expect(body.layers.length).toBeGreaterThan(5);
 	});
 });
@@ -258,7 +258,7 @@ describe("sprite assets", () => {
 		} as unknown as R2Bucket;
 
 		const res = await handleTileRequest(
-			"/tiles/v1/sprite/dark@2x.json",
+			"/tiles/v2/sprite/dark@2x.json",
 			bucket,
 			ORIGIN
 		);
@@ -275,20 +275,31 @@ describe("zoom-based archive routing", () => {
 		// The reported failure: at z2, 15 of 16 tiles were blank because only
 		// the AU archive existed.
 		getZxy.mockResolvedValue({ data: new Uint8Array([9]).buffer });
-		await handleTileRequest("/tiles/v1/2/0/0.mvt", fakeBucket(), ORIGIN);
+		await handleTileRequest("/tiles/v2/2/0/0.mvt", fakeBucket(), ORIGIN);
 		expect(getZxy).toHaveBeenCalledWith("world-z0-z6.pmtiles", 2, 0, 0);
 	});
 
 	it("serves the boundary zoom from the world archive", async () => {
 		getZxy.mockResolvedValue({ data: new Uint8Array([9]).buffer });
-		await handleTileRequest("/tiles/v1/6/1/1.mvt", fakeBucket(), ORIGIN);
+		await handleTileRequest("/tiles/v2/6/1/1.mvt", fakeBucket(), ORIGIN);
 		expect(getZxy).toHaveBeenCalledWith("world-z0-z6.pmtiles", 6, 1, 1);
 	});
 
-	it("serves street zoom from the detail archive", async () => {
+	it("serves z7-z9 from the dedicated mid-zoom archive", async () => {
 		getZxy.mockResolvedValue({ data: new Uint8Array([9]).buffer });
-		await handleTileRequest("/tiles/v1/7/59/74.mvt", fakeBucket(), ORIGIN);
-		expect(getZxy).toHaveBeenCalledWith("australia.pmtiles", 7, 59, 74);
+		await handleTileRequest("/tiles/v2/7/59/74.mvt", fakeBucket(), ORIGIN);
+		expect(getZxy).toHaveBeenCalledWith("australia-z7-z9.pmtiles", 7, 59, 74);
+	});
+
+	it("serves z10+ from the high-detail archive", async () => {
+		getZxy.mockResolvedValue({ data: new Uint8Array([9]).buffer });
+		await handleTileRequest("/tiles/v2/10/941/613.mvt", fakeBucket(), ORIGIN);
+		expect(getZxy).toHaveBeenCalledWith(
+			"australia-z10-z15.pmtiles",
+			10,
+			941,
+			613
+		);
 	});
 
 	it("degrades to an empty tile if the world archive is not uploaded yet", async () => {
@@ -298,7 +309,7 @@ describe("zoom-based archive routing", () => {
 			new Error("pmtiles archive not found in R2: world-z0-z6.pmtiles")
 		);
 		const res = await handleTileRequest(
-			"/tiles/v1/2/0/0.mvt",
+			"/tiles/v2/2/0/0.mvt",
 			fakeBucket(),
 			ORIGIN
 		);
@@ -316,7 +327,7 @@ describe("zoom-based archive routing", () => {
 	it("still surfaces unexpected errors from the detail archive", async () => {
 		getZxy.mockRejectedValue(new Error("r2 exploded"));
 		await expect(
-			handleTileRequest("/tiles/v1/10/941/613.mvt", fakeBucket(), ORIGIN)
+			handleTileRequest("/tiles/v2/10/941/613.mvt", fakeBucket(), ORIGIN)
 		).rejects.toThrow("r2 exploded");
 	});
 });
@@ -329,17 +340,33 @@ describe("routing", () => {
 	});
 
 	it("404s an unrecognised tiles path", async () => {
-		const res = await handleTileRequest("/tiles/v1/nope", fakeBucket(), ORIGIN);
+		const res = await handleTileRequest("/tiles/v2/nope", fakeBucket(), ORIGIN);
 		expect(res?.status).toBe(404);
+	});
+
+	it("keeps /tiles/v1/* working as a compatibility alias", async () => {
+		getZxy.mockResolvedValue({ data: new Uint8Array([9]).buffer });
+		const res = await handleTileRequest(
+			"/tiles/v1/2/0/0.mvt",
+			fakeBucket(),
+			ORIGIN
+		);
+		expect(res?.status).toBe(200);
+		expect(getZxy).toHaveBeenCalledWith("world-z0-z6.pmtiles", 2, 0, 0);
 	});
 
 	it("reuses one archive instance per archive across requests", async () => {
 		// Directory lookups were previously re-fetched from R2 on every tile.
 		getZxy.mockResolvedValue(undefined);
 		const bucket = fakeBucket();
-		await handleTileRequest("/tiles/v1/2/0/0.mvt", bucket, ORIGIN);
-		await handleTileRequest("/tiles/v1/2/0/1.mvt", bucket, ORIGIN);
-		await handleTileRequest("/tiles/v1/10/941/613.mvt", bucket, ORIGIN);
-		expect(openedKeys).toEqual(["world-z0-z6.pmtiles", "australia.pmtiles"]);
+		await handleTileRequest("/tiles/v2/2/0/0.mvt", bucket, ORIGIN);
+		await handleTileRequest("/tiles/v2/2/0/1.mvt", bucket, ORIGIN);
+		await handleTileRequest("/tiles/v2/7/59/74.mvt", bucket, ORIGIN);
+		await handleTileRequest("/tiles/v2/10/941/613.mvt", bucket, ORIGIN);
+		expect(openedKeys).toEqual([
+			"world-z0-z6.pmtiles",
+			"australia-z7-z9.pmtiles",
+			"australia-z10-z15.pmtiles",
+		]);
 	});
 });

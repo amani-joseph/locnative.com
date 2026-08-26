@@ -28,6 +28,7 @@ export const OPENFREEMAP_LIGHT =
 
 const SOURCE_NAME = "protomaps";
 const TRAILING_SLASH_REGEX = /\/$/;
+const TILE_PREFIX = "/tiles/v2";
 
 export function buildMapStyle(tilesBaseUrl?: string): MapStyle {
 	if (!tilesBaseUrl) {
@@ -36,8 +37,8 @@ export function buildMapStyle(tilesBaseUrl?: string): MapStyle {
 	const base = tilesBaseUrl.replace(TRAILING_SLASH_REGEX, "");
 	return {
 		version: 8,
-		glyphs: `${base}/tiles/v1/fonts/{fontstack}/{range}.pbf`,
-		sprite: `${base}/tiles/v1/sprite/dark`,
+		glyphs: `${base}${TILE_PREFIX}/fonts/{fontstack}/{range}.pbf`,
+		sprite: `${base}${TILE_PREFIX}/sprite/dark`,
 		sources: {
 			// Referenced by TileJSON rather than an inline `tiles` array so the
 			// source inherits `bounds`, `minzoom` and `maxzoom` from the archive
@@ -45,7 +46,7 @@ export function buildMapStyle(tilesBaseUrl?: string): MapStyle {
 			// requesting tiles outside the coverage footprint entirely.
 			[SOURCE_NAME]: {
 				type: "vector",
-				url: `${base}/tiles/v1/tiles.json`,
+				url: `${base}${TILE_PREFIX}/tiles.json`,
 			},
 		},
 		// `lang` is required for protomaps-themes-base v4 to emit the label

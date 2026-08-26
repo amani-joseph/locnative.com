@@ -15,10 +15,10 @@ describe("buildMapStyle", () => {
 		// tile requests.
 		expect(s.sources.protomaps).toMatchObject({
 			type: "vector",
-			url: "https://api.locnative.com/tiles/v1/tiles.json",
+			url: "https://api.locnative.com/tiles/v2/tiles.json",
 		});
 		expect(s.glyphs).toBe(
-			"https://api.locnative.com/tiles/v1/fonts/{fontstack}/{range}.pbf"
+			"https://api.locnative.com/tiles/v2/fonts/{fontstack}/{range}.pbf"
 		);
 		expect(Array.isArray(s.layers)).toBe(true);
 		expect(s.layers.length).toBeGreaterThan(5);
