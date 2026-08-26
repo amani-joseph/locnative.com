@@ -261,6 +261,7 @@ const endpointDocs: EndpointDoc[] = [
 			"Use `country` and `state` filters to keep search results tight for known regions.",
 			"Postcode-only queries (for example `q=4118&country=AU`) return one row per locality in that postcode instead of street addresses. Supported for countries with all-numeric postcodes; `country` must be supplied.",
 			"Suburb-name queries (for example `q=sunnybank&country=AU`) return one row per matching locality, deduplicated by suburb and state, so `carlton` returns Carlton VIC, Carlton NSW and Carlton TAS as distinct entries. Requires `country`; queries containing digits are treated as street addresses.",
+			"Misspelled suburb names fall back to fuzzy matching when nothing matches exactly — `sydeny` returns Sydney, `chatswod` returns Chatswood. Requires `country`, needs the first two characters to be correct, and returns locality-level results without a street line.",
 			"Successful `2xx` requests are counted toward usage for the calling API key.",
 		],
 		exampleResponse: `{

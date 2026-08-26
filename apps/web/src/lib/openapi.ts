@@ -59,7 +59,7 @@ export const getOpenApiDocument = () =>
 							required: true,
 							schema: { type: "string", minLength: 2 },
 							description:
-								"Free-form address query. When `q` is nothing but a postcode, or nothing but a suburb name, and `country` is supplied, the response is the matching localities (one row per suburb, deduplicated by suburb and state) rather than street addresses.",
+								"Free-form address query. When `q` is nothing but a postcode, or nothing but a suburb name, and `country` is supplied, the response is the matching localities (one row per suburb, deduplicated by suburb and state) rather than street addresses. A misspelled suburb name falls back to fuzzy matching when nothing matches exactly.",
 						},
 						{
 							name: "country",

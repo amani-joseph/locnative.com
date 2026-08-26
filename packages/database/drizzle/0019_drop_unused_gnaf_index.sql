@@ -1,0 +1,16 @@
+-- Drop idx_addresses_gnaf_pid: 3 GB of index serving no query.
+--
+-- Evidence at the time of this migration:
+--   - pg_stat_user_indexes reported idx_scan = 0 and idx_tup_read = 0, and
+--     pg_stat_database showed stats had never been reset — so that zero covers
+--     the index's entire lifetime, not a recent sampling window.
+--   - gnaf_pid appears in the codebase only in SELECT lists (public-http.ts,
+--     zone-queries.ts, the SDK types). No query filters or joins on it, so
+--     nothing can use a btree over it.
+--
+-- The column itself is unaffected and still returned in API responses; only
+-- the index is removed. If a lookup-by-gnaf_pid endpoint is added later, the
+-- index can be rebuilt with CREATE INDEX CONCURRENTLY in roughly 15 minutes.
+--
+-- CONCURRENTLY so the drop does not take an exclusive lock on a 156 GB table.
+DROP INDEX CONCURRENTLY IF EXISTS "idx_addresses_gnaf_pid";

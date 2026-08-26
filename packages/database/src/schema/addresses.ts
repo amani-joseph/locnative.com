@@ -70,7 +70,10 @@ export const addresses = pgTable(
 			table.locality,
 			table.state
 		),
-		index("idx_addresses_gnaf_pid").on(table.gnafPid),
+		// idx_addresses_gnaf_pid was dropped in drizzle/0019: 3 GB serving no
+		// query. gnaf_pid is returned in API responses but never filtered on,
+		// and the index recorded zero scans over the database's whole lifetime.
+		// Re-add it if a lookup-by-gnaf_pid endpoint is ever introduced.
 		index("idx_addresses_country_state_postcode").on(
 			table.country,
 			table.state,
