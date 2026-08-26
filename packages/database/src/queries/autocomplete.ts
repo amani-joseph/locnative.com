@@ -1,6 +1,7 @@
 import { type SQL, sql } from "drizzle-orm";
 import type { Database } from "../client.ts";
 import { formatAddress } from "./format-address.ts";
+import { fuzzyLocalitySearch } from "./fuzzy-locality.ts";
 import { localityQuery, prefixUpperBound } from "./locality-query.ts";
 import { parseFreeformAddress } from "./parse-freeform-address.ts";
 import {
@@ -141,6 +142,35 @@ function buildWhereClause(
 ): SQL<unknown> {
 	const allConditions = [searchCondition, ...filterClauses];
 	return sql.join(allConditions, sql` AND `);
+}
+
+/**
+ * WHERE clause for a fuzzy predicate — trigram, edit-distance or phonetic —
+ * that is always bounded by a selective prefix anchor.
+ *
+ * This exists because the same defect has now been fixed three times in this
+ * file: an unbounded fuzzy predicate over 173M rows. Trigram operators scan the
+ * whole GIN index when nothing matches; levenshtein and dmetaphone wrap
+ * `search_text` in function calls so no index can serve them at all. In every
+ * case the no-match path is the expensive one, and the no-match path is exactly
+ * the one users hit — a typo, a partial word, a suburb we do not carry.
+ *
+ * Taking the anchor as a required parameter rather than an optional filter is
+ * the point: a caller cannot express an unanchored fuzzy query through this
+ * helper, so a future tier cannot reintroduce the bug by omission. Callers
+ * derive the anchor from `anchorToken()` and must return early when it yields
+ * null — no anchor means no bounded query is possible, and the correct answer
+ * is "no results" rather than a scan.
+ *
+ * Guarded by scripts/verify-fuzzy-tier.mjs.
+ */
+function buildAnchoredFuzzyWhere(
+	fuzzyCondition: SQL<unknown>,
+	anchor: string,
+	filterClauses: SQL<unknown>[]
+): SQL<unknown> {
+	const anchorClause = sql`search_text LIKE ${`${anchor.toUpperCase()}%`}`;
+	return buildWhereClause(fuzzyCondition, [...filterClauses, anchorClause]);
 }
 
 /**
@@ -291,6 +321,51 @@ async function tryLocalitySearch(
 		latitude,
 		longitude,
 	});
+}
+
+/**
+ * Guarded entry to fuzzyLocalitySearch. Returns [] unless the query is
+ * alphabetic — a query containing digits is a street address or postcode, and
+ * "correcting" its spelling would be wrong rather than merely unhelpful.
+ *
+ * Results are mapped to the locality shape callers already receive from the
+ * postcode and locality branches: no street line, since a fuzzy match
+ * identifies a suburb rather than an address within it.
+ */
+async function tryFuzzyLocality(
+	db: Database,
+	searchInput: string,
+	opts: { country: string; limit: number; state?: string }
+): Promise<AutocompleteResult[]> {
+	const { country, limit, state } = opts;
+	if (!localityQuery(searchInput, country)) {
+		return [];
+	}
+
+	const matches = await fuzzyLocalitySearch(db, searchInput, country, {
+		limit,
+		state,
+	});
+
+	return matches.map((m) => ({
+		id: m.id,
+		formattedAddress: formatAddress("", {
+			locality: m.locality,
+			state: m.state,
+			postcode: m.postcode,
+			country: country.toUpperCase(),
+		}),
+		streetAddress: "",
+		streetName: null,
+		streetNumber: null,
+		streetType: null,
+		locality: m.locality,
+		state: m.state,
+		postcode: m.postcode,
+		country: country.toUpperCase(),
+		longitude: m.longitude,
+		latitude: m.latitude,
+	}));
 }
 
 export async function autocompleteAddresses(
@@ -464,6 +539,19 @@ export async function autocompleteAddresses(
 		results = await ilikeFallback(db, searchInput, filterClauses, { limit });
 	}
 
+	// Last resort: the query looks like a misspelled suburb name. Everything
+	// above has returned nothing, which for an alphabetic query usually means a
+	// typo — previously the point at which a user saw an empty dropdown. Bounded
+	// to suburb names via a 2-character anchor, so it cannot become the kind of
+	// unbounded scan the tiers above were fixed for.
+	if (results.length === 0 && effectiveCountry) {
+		results = await tryFuzzyLocality(db, searchInput, {
+			country: effectiveCountry,
+			limit,
+			state,
+		});
+	}
+
 	return { results, parsedQuery: parsed };
 }
 
@@ -536,10 +624,11 @@ async function tieredSearch(
 
 		await db.execute(sql`SELECT set_limit(${TRIGRAM_SIMILARITY_THRESHOLD})`);
 
-		const whereClause = buildWhereClause(sql`search_text % ${trimmed}::text`, [
-			...filterClauses,
-			sql`search_text LIKE ${`${tier2Anchor.toUpperCase()}%`}`,
-		]);
+		const whereClause = buildAnchoredFuzzyWhere(
+			sql`search_text % ${trimmed}::text`,
+			tier2Anchor,
+			filterClauses
+		);
 
 		const result = await db.execute(sql`
 			SELECT ${SELECT_COLUMNS},
@@ -567,12 +656,10 @@ async function tieredSearch(
 		// index can serve it and without a bound it is a full table scan of
 		// 173M rows — reached, by definition, only after the trigram tier above
 		// already found nothing.
-		const levenshteinWhere = buildWhereClause(
+		const levenshteinWhere = buildAnchoredFuzzyWhere(
 			sql`levenshtein(lower(left(search_text, ${len + 2})), lower(${trimmed})) <= ${LEVENSHTEIN_SHORT_MAX_DISTANCE}`,
-			[
-				...filterClauses,
-				sql`search_text LIKE ${`${tier2Anchor.toUpperCase()}%`}`,
-			]
+			tier2Anchor,
+			filterClauses
 		);
 
 		const fallbackResult = await db.execute(sql`
@@ -597,18 +684,17 @@ async function tieredSearch(
 	if (!anchor) {
 		return [];
 	}
-	// search_text is stored uppercase; a case-sensitive LIKE on the uppercased
-	// prefix uses idx_addresses_search_text_btree (text_pattern_ops) as a range
-	// scan (~5ms). ILIKE would fall back to the GIN trigram index → 100K-row
-	// bitmap + heap recheck (~11s cold). See design doc A2.
-	const anchorClause = sql`search_text LIKE ${`${anchor.toUpperCase()}%`}`;
-	const tier3Filters = [...filterClauses, anchorClause];
-
+	// buildAnchoredFuzzyWhere applies the prefix anchor. search_text is stored
+	// uppercase; a case-sensitive LIKE on the uppercased prefix uses
+	// idx_addresses_search_text_btree (text_pattern_ops) as a range scan (~5ms).
+	// ILIKE would fall back to the GIN trigram index → 100K-row bitmap + heap
+	// recheck (~11s cold). See design doc A2.
 	await db.execute(sql`SELECT set_limit(${TRIGRAM_SIMILARITY_THRESHOLD})`);
 
-	const tier3Where = buildWhereClause(
+	const tier3Where = buildAnchoredFuzzyWhere(
 		sql`search_text <% ${trimmed}::text`,
-		tier3Filters
+		anchor,
+		filterClauses
 	);
 
 	const result = await db.execute(sql`
@@ -635,9 +721,10 @@ async function tieredSearch(
 	}
 
 	// Levenshtein fallback (distance <= 2)
-	const levenshteinWhere = buildWhereClause(
+	const levenshteinWhere = buildAnchoredFuzzyWhere(
 		sql`levenshtein(lower(left(search_text, ${len + 2})), lower(${trimmed})) <= ${LEVENSHTEIN_LONG_MAX_DISTANCE}`,
-		tier3Filters
+		anchor,
+		filterClauses
 	);
 
 	const levenshteinResult = await db.execute(sql`
@@ -655,9 +742,10 @@ async function tieredSearch(
 	}
 
 	// Phonetic fallback (dmetaphone)
-	const phoneticWhere = buildWhereClause(
+	const phoneticWhere = buildAnchoredFuzzyWhere(
 		sql`dmetaphone(left(search_text, 20)) = dmetaphone(${trimmed})`,
-		tier3Filters
+		anchor,
+		filterClauses
 	);
 
 	const phoneticResult = await db.execute(sql`

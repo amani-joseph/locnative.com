@@ -61,7 +61,19 @@ export const addresses = pgTable(
 			table.locality
 		),
 		index("idx_addresses_street").on(table.locality, table.streetName),
-		index("idx_addresses_gnaf_pid").on(table.gnafPid),
+		// Suburb autocomplete: country as an equality prefix, locality as the
+		// range key, state for the skip-scan's ordering. idx_addresses_locality
+		// cannot serve this — its `state` column sits before `locality`, so a
+		// locality range cannot be a scan key. See drizzle/0018.
+		index("idx_addresses_country_locality").on(
+			table.country,
+			table.locality,
+			table.state
+		),
+		// idx_addresses_gnaf_pid was dropped in drizzle/0019: 3 GB serving no
+		// query. gnaf_pid is returned in API responses but never filtered on,
+		// and the index recorded zero scans over the database's whole lifetime.
+		// Re-add it if a lookup-by-gnaf_pid endpoint is ever introduced.
 		index("idx_addresses_country_state_postcode").on(
 			table.country,
 			table.state,
