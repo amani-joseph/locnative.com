@@ -74,5 +74,5 @@ echo
 echo "The tile Worker picks this up with no redeploy: it routes z<=${MAX_ZOOM} to"
 echo "${OUTPUT} and serves higher zooms from australia.pmtiles."
 echo "Verify:  curl -s -o /dev/null -w '%{http_code} %{size_download}\\n' \\"
-echo "           https://api.locnative.com/tiles/v1/2/0/0.mvt"
+echo "           https://api.locnative.com/tiles/v2/2/0/0.mvt"
 echo "Expect a 200 with a non-zero body (previously 204, zero bytes)."
