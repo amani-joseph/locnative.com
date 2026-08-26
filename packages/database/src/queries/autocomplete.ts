@@ -509,14 +509,37 @@ async function tieredSearch(
 		return (result.rows as unknown as RawAddressRow[]).map(mapRowToResult);
 	}
 
-	// Tier 2 (5-7 chars): Trigram similarity + levenshtein fallback
+	// Tier 2 (5-7 chars): Trigram similarity + levenshtein fallback.
+	//
+	// Anchored, for the same reason Tier 3 is. `search_text % 'zzzzz'` on its
+	// own has no bound: when nothing matches, it scans the whole GIN trigram
+	// index and never completes — measured >45s, with EXPLAIN ANALYZE itself
+	// timing out. Because Tier 2 is only reached when prefixSearch already
+	// returned empty, the no-match case was the *common* case here, not the
+	// edge one, and it caught every 5-7 character typo ("sydeny", "perht").
+	//
+	// The anchor costs nothing in practice: a 5-7 char query that matches
+	// anything is served by prefixSearch and never reaches this tier at all
+	// (verified: bondi/perth/hobart/cairns/darwin all return in ~40ms there).
+	// What the anchor removes is a path that was spending 20-40s to return
+	// zero rows — the trigram threshold of 0.3 against the long concatenated
+	// search_text never matched a short typo anyway, so no typo tolerance is
+	// lost. Restoring real typo tolerance means matching the locality column,
+	// which is a separate piece of work.
+	//
+	// Guarded by scripts/verify-fuzzy-tier.mjs.
 	if (len < WIDE_FUZZY_MIN_LEN) {
+		const tier2Anchor = anchorToken(trimmed);
+		if (!tier2Anchor) {
+			return [];
+		}
+
 		await db.execute(sql`SELECT set_limit(${TRIGRAM_SIMILARITY_THRESHOLD})`);
 
-		const whereClause = buildWhereClause(
-			sql`search_text % ${trimmed}::text`,
-			filterClauses
-		);
+		const whereClause = buildWhereClause(sql`search_text % ${trimmed}::text`, [
+			...filterClauses,
+			sql`search_text LIKE ${`${tier2Anchor.toUpperCase()}%`}`,
+		]);
 
 		const result = await db.execute(sql`
 			SELECT ${SELECT_COLUMNS},
@@ -539,10 +562,17 @@ async function tieredSearch(
 			return [];
 		}
 
-		// Levenshtein fallback (distance <= 1)
+		// Levenshtein fallback (distance <= 1). Anchored on the same token: the
+		// predicate wraps search_text in levenshtein(lower(left(...))), so no
+		// index can serve it and without a bound it is a full table scan of
+		// 173M rows — reached, by definition, only after the trigram tier above
+		// already found nothing.
 		const levenshteinWhere = buildWhereClause(
 			sql`levenshtein(lower(left(search_text, ${len + 2})), lower(${trimmed})) <= ${LEVENSHTEIN_SHORT_MAX_DISTANCE}`,
-			filterClauses
+			[
+				...filterClauses,
+				sql`search_text LIKE ${`${tier2Anchor.toUpperCase()}%`}`,
+			]
 		);
 
 		const fallbackResult = await db.execute(sql`
