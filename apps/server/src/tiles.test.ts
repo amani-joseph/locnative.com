@@ -32,6 +32,7 @@ const AU_HEADER = {
 	centerLon: 133.2,
 	centerLat: -25.6,
 	centerZoom: 4,
+	etag: "au-archive",
 };
 
 const ORIGIN = "https://api.locnative.com";
@@ -42,6 +43,7 @@ function fakeBucket(): R2Bucket {
 
 const WORLD_HEADER = {
 	...AU_HEADER,
+	etag: "world-archive",
 	maxZoom: 6,
 	minLon: -180,
 	minLat: -85,
@@ -68,6 +70,14 @@ describe("tile responses", () => {
 		);
 		expect(res?.status).toBe(200);
 		expect(res?.headers.get("content-type")).toBe("application/x-protobuf");
+		expect(res?.headers.get("content-length")).toBe("3");
+		expect(res?.headers.get("etag")).toBe('"au-archive:10:941:613"');
+		expect(res?.headers.get("cache-control")).toBe(
+			"public, max-age=86400, stale-while-revalidate=604800, immutable"
+		);
+		expect(res?.headers.get("cdn-cache-control")).toBe(
+			"public, max-age=31536000, stale-while-revalidate=604800, immutable"
+		);
 	});
 
 	it("returns 200 with an empty body, not 204, for a tile outside coverage", async () => {
@@ -81,7 +91,26 @@ describe("tile responses", () => {
 		);
 		expect(res?.status).toBe(200);
 		expect(res?.headers.get("content-type")).toBe("application/x-protobuf");
+		expect(res?.headers.get("content-length")).toBe("0");
+		expect(res?.headers.get("cdn-cache-control")).toBe(
+			"public, max-age=31536000, stale-while-revalidate=604800, immutable"
+		);
 		expect((await res?.arrayBuffer())?.byteLength).toBe(0);
+	});
+
+	it("returns 304 for tiles when If-None-Match matches the archive-backed etag", async () => {
+		getZxy.mockResolvedValue({ data: new Uint8Array([1, 2, 3]).buffer });
+		const res = await handleTileRequest(
+			"/tiles/v1/10/941/613.mvt",
+			fakeBucket(),
+			ORIGIN,
+			new Headers({ "if-none-match": '"au-archive:10:941:613"' })
+		);
+		expect(res?.status).toBe(304);
+		expect(getZxy).not.toHaveBeenCalled();
+		expect(res?.headers.get("cdn-cache-control")).toBe(
+			"public, max-age=31536000, stale-while-revalidate=604800, immutable"
+		);
 	});
 
 	it("sets CORS on tiles so third-party maps can load them", async () => {
@@ -113,6 +142,12 @@ describe("TileJSON", () => {
 			"https://api.locnative.com/tiles/v1/{z}/{x}/{y}.mvt",
 		]);
 		expect(body.attribution).toContain("OpenStreetMap");
+		expect(res?.headers.get("cache-control")).toBe(
+			"public, max-age=3600, stale-while-revalidate=86400"
+		);
+		expect(res?.headers.get("cdn-cache-control")).toBe(
+			"public, max-age=86400, stale-while-revalidate=604800"
+		);
 	});
 
 	it("tracks the archive rather than hardcoding zoom range", async () => {
@@ -193,12 +228,45 @@ describe("style.json", () => {
 			version: number;
 			sources: { protomaps: { url: string } };
 			glyphs: string;
+			layers: unknown[];
 		};
 		expect(body.version).toBe(8);
 		expect(body.sources.protomaps.url).toBe(
 			"https://api.locnative.com/tiles/v1/tiles.json"
 		);
 		expect(body.glyphs).toContain("/tiles/v1/fonts/");
+		expect(body.layers.length).toBeGreaterThan(5);
+	});
+});
+
+describe("sprite assets", () => {
+	it("falls back to the 1x sprite asset when @2x is not uploaded yet", async () => {
+		const bucket = {
+			get: vi.fn(async (key: string) => {
+				if (key === "sprite/dark@2x.json") {
+					return null;
+				}
+				if (key === "sprite/dark.json") {
+					return {
+						etag: "sprite-1x",
+						arrayBuffer: async () =>
+							new TextEncoder().encode('{"marker":{"x":0}}').buffer,
+					};
+				}
+				return null;
+			}),
+		} as unknown as R2Bucket;
+
+		const res = await handleTileRequest(
+			"/tiles/v1/sprite/dark@2x.json",
+			bucket,
+			ORIGIN
+		);
+
+		expect(res?.status).toBe(200);
+		expect(res?.headers.get("content-type")).toBe("application/json");
+		expect(res?.headers.get("etag")).toBe('"sprite-1x"');
+		expect(await res?.text()).toContain("marker");
 	});
 });
 
@@ -237,7 +305,12 @@ describe("zoom-based archive routing", () => {
 		expect(res?.status).toBe(200);
 		expect((await res?.arrayBuffer())?.byteLength).toBe(0);
 		// Short TTL so the tile is not pinned blank once the archive lands.
-		expect(res?.headers.get("cache-control")).toBe("public, max-age=60");
+		expect(res?.headers.get("cache-control")).toBe(
+			"public, max-age=60, stale-while-revalidate=300"
+		);
+		expect(res?.headers.get("cdn-cache-control")).toBe(
+			"public, max-age=300, stale-while-revalidate=600"
+		);
 	});
 
 	it("still surfaces unexpected errors from the detail archive", async () => {

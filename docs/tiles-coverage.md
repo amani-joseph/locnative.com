@@ -9,11 +9,23 @@ against Locnative, read this first — the coverage footprint is not uniform.
 |---|---|
 | `GET /tiles/v1/{z}/{x}/{y}.mvt` | Vector tiles (Mapbox Vector Tile, protobuf) |
 | `GET /tiles/v1/tiles.json` | TileJSON 3.0.0 — bounds, zoom range, attribution |
-| `GET /tiles/v1/style.json` | Minimal MapLibre style referencing the above |
+| `GET /tiles/v1/style.json` | Reference MapLibre dark style using the live TileJSON source |
 | `GET /tiles/v1/fonts/{fontstack}/{range}.pbf` | Glyphs |
 | `GET /tiles/v1/sprite/dark.{json,png}` | Sprite sheet |
+| `GET /tiles/v1/sprite/dark@2x.{json,png}` | Retina sprite sheet |
 
 All responses set `access-control-allow-origin: *`.
+Tiles, fonts, sprites, TileJSON and style responses also set explicit
+`content-length` and `ETag` headers so browsers and the Cloudflare edge can
+cache and revalidate them correctly.
+
+Tile-family responses use split cache headers:
+
+- `cache-control` is tuned for browsers.
+- `cdn-cache-control` is tuned for the Cloudflare edge and is intentionally
+  longer-lived for immutable tile assets.
+- `x-locnative-cache` reports the Worker cache outcome as `HIT`, `MISS`, or
+  `REVALIDATED` to make production verification straightforward.
 
 ## Coverage
 
@@ -49,6 +61,19 @@ sources: {
 TileJSON advertises `bounds`, `minzoom`, and `maxzoom` from the archives that
 are actually deployed, so MapLibre will not request tiles outside coverage, and
 your client picks up coverage changes without a redeploy.
+
+## Reference style
+
+`style.json` is a real dark basemap style, not just a placeholder background.
+It references the live TileJSON endpoint, glyphs, and sprite so a MapLibre
+client can render a complete basemap from a single URL:
+
+```js
+new maplibregl.Map({
+  container: "map",
+  style: "https://api.locnative.com/tiles/v1/style.json",
+});
+```
 
 ## Attribution
 

@@ -433,14 +433,83 @@ const rpcHandler = new RPCHandler(appRouter, {
 	],
 });
 
+function cachedResponseMatchesEtag(
+	request: Request,
+	response: Response
+): boolean {
+	const ifNoneMatch = request.headers.get("if-none-match");
+	const etag = response.headers.get("etag");
+	if (!(ifNoneMatch && etag)) {
+		return false;
+	}
+	if (ifNoneMatch.trim() === "*") {
+		return true;
+	}
+	const normalizedEtag = etag.replace(/^W\//, "");
+	for (const candidate of ifNoneMatch.split(",")) {
+		if (candidate.trim().replace(/^W\//, "") === normalizedEtag) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function withTileCacheOutcome(
+	response: Response,
+	outcome: "HIT" | "MISS" | "REVALIDATED"
+): Response {
+	const headers = new Headers(response.headers);
+	headers.set("x-locnative-cache", outcome);
+	return new Response(response.body, {
+		status: response.status,
+		statusText: response.statusText,
+		headers,
+	});
+}
+
 app.get("/tiles/v1/*", async (context) => {
 	const bucket = (context.env as { MAP_TILES?: R2Bucket }).MAP_TILES;
 	if (!bucket) {
 		return context.text("Tiles not configured", 503);
 	}
-	const url = new URL(context.req.url);
-	const res = await handleTileRequest(url.pathname, bucket, url.origin);
-	return res ?? context.notFound();
+	const waitUntil = getWaitUntil(context);
+	const request = context.req.raw;
+	const cacheKey = new Request(request.url, {
+		method: "GET",
+	});
+	const cache = caches.default;
+	const cached = await cache.match(cacheKey);
+	if (cached) {
+		if (cachedResponseMatchesEtag(request, cached)) {
+			return withTileCacheOutcome(
+				new Response(null, {
+					status: 304,
+					headers: new Headers(cached.headers),
+				}),
+				"REVALIDATED"
+			);
+		}
+		return withTileCacheOutcome(cached, "HIT");
+	}
+	const url = new URL(request.url);
+	const res = await handleTileRequest(
+		url.pathname,
+		bucket,
+		url.origin,
+		request.headers
+	);
+	if (!res) {
+		return context.notFound();
+	}
+	if (res.ok && res.headers.has("cache-control")) {
+		const cacheWrite = cache.put(cacheKey, res.clone());
+		if (waitUntil) {
+			waitUntil(cacheWrite);
+		} else {
+			await cacheWrite;
+		}
+	}
+	return withTileCacheOutcome(res, "MISS");
 });
 
 app.use("/*", async (context, next) => {

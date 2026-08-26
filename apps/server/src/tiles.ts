@@ -6,6 +6,7 @@ import {
 	type RangeResponse,
 	type Source,
 } from "pmtiles";
+import { layers, namedTheme } from "protomaps-themes-base";
 
 /**
  * Two archives, routed by zoom. The detail archive is an Australia-bbox extract
@@ -18,13 +19,19 @@ const WORLD_PMTILES_KEY = "world-z0-z6.pmtiles";
 /** Highest zoom served from the global archive; above this, detail is AU-only. */
 const WORLD_MAX_ZOOM = 6;
 const TILE_PREFIX = "/tiles/v1";
-const TILE_CACHE_CONTROL = "public, max-age=86400, immutable";
+const TILE_BROWSER_CACHE_CONTROL =
+	"public, max-age=86400, stale-while-revalidate=604800, immutable";
+const TILE_EDGE_CACHE_CONTROL =
+	"public, max-age=31536000, stale-while-revalidate=604800, immutable";
 /**
  * Metadata (TileJSON/style) is derived from the archive header, so it must not
  * be pinned as long or as hard as tile bodies — a coverage change should be
  * picked up within the hour rather than a day.
  */
-const META_CACHE_CONTROL = "public, max-age=3600";
+const META_BROWSER_CACHE_CONTROL =
+	"public, max-age=3600, stale-while-revalidate=86400";
+const META_EDGE_CACHE_CONTROL =
+	"public, max-age=86400, stale-while-revalidate=604800";
 
 const ATTRIBUTION =
 	'<a href="https://protomaps.com">Protomaps</a> © <a href="https://openstreetmap.org">OpenStreetMap</a>';
@@ -50,7 +57,10 @@ const EMPTY_TILE = new Uint8Array(0);
  * The long `immutable` TTL would pin those tiles blank in edge and browser
  * caches for a day after the archive lands.
  */
-const MISSING_ARCHIVE_CACHE_CONTROL = "public, max-age=60";
+const MISSING_ARCHIVE_BROWSER_CACHE_CONTROL =
+	"public, max-age=60, stale-while-revalidate=300";
+const MISSING_ARCHIVE_EDGE_CACHE_CONTROL =
+	"public, max-age=300, stale-while-revalidate=600";
 
 function isArchiveMissing(err: unknown): boolean {
 	return err instanceof Error && err.message.includes("not found in R2");
@@ -108,7 +118,7 @@ class R2Source implements Source {
 		}
 		const data = await obj.arrayBuffer();
 		const etag = obj.etag;
-		return { data, etag, cacheControl: TILE_CACHE_CONTROL };
+		return { data, etag, cacheControl: TILE_BROWSER_CACHE_CONTROL };
 	}
 }
 
@@ -116,10 +126,12 @@ class R2Source implements Source {
 const TILE_RE = /^\/tiles\/v1\/(\d+)\/(\d+)\/(\d+)\.mvt$/;
 // Matches /tiles/v1/fonts/{fontstack}/{range}.pbf
 const FONT_RE = /^\/tiles\/v1\/fonts\/(.+)\/(\d+-\d+)\.pbf$/;
-// Matches /tiles/v1/sprite/dark.{json,png}
-const SPRITE_RE = /^\/tiles\/v1\/sprite\/(dark\.(?:json|png))$/;
+// Matches /tiles/v1/sprite/dark.{json,png} and retina /dark@2x.{json,png}
+const SPRITE_RE = /^\/tiles\/v1\/sprite\/(dark(?:@2x)?\.(?:json|png))$/;
 const TILEJSON_PATH = "/tiles/v1/tiles.json";
 const STYLE_PATH = "/tiles/v1/style.json";
+const JSON_ENCODER = new TextEncoder();
+const PROTOMAPS_SOURCE_NAME = "protomaps";
 
 /**
  * One archive instance per isolate. `PMTiles` caches the header and directory
@@ -192,10 +204,93 @@ function buildTileJson(world: Header | null, detail: Header, origin: string) {
 	};
 }
 
+function quoteEtag(value: string): string {
+	return `"${value.replaceAll('"', "")}"`;
+}
+
+function createCoordinateEtag(
+	archiveHeader: Header,
+	archiveKey: string,
+	z: number,
+	x: number,
+	y: number
+): string {
+	return quoteEtag(`${archiveHeader.etag ?? archiveKey}:${z}:${x}:${y}`);
+}
+
+function createMetadataEtag(parts: string[]): string {
+	return quoteEtag(parts.join("|"));
+}
+
+function matchesIfNoneMatch(ifNoneMatch: string | null, etag: string): boolean {
+	if (!ifNoneMatch) {
+		return false;
+	}
+	if (ifNoneMatch.trim() === "*") {
+		return true;
+	}
+	const normalizedEtag = etag.replace(/^W\//, "");
+	for (const candidate of ifNoneMatch.split(",")) {
+		const normalizedCandidate = candidate.trim().replace(/^W\//, "");
+		if (normalizedCandidate === normalizedEtag) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function withSharedHeaders(
+	headers: HeadersInit,
+	contentLength: number,
+	etag?: string,
+	edgeCacheControl?: string
+): Headers {
+	const nextHeaders = new Headers(headers);
+	nextHeaders.set("content-length", String(contentLength));
+	if (etag) {
+		nextHeaders.set("etag", etag);
+	}
+	if (edgeCacheControl) {
+		nextHeaders.set("cdn-cache-control", edgeCacheControl);
+	}
+	return nextHeaders;
+}
+
+function notModifiedResponse(
+	etag: string,
+	cacheControl: string,
+	edgeCacheControl: string,
+	contentType?: string
+): Response {
+	const headers = withSharedHeaders(
+		{
+			"cache-control": cacheControl,
+			"access-control-allow-origin": "*",
+			...(contentType ? { "content-type": contentType } : {}),
+		},
+		0,
+		etag,
+		edgeCacheControl
+	);
+	return new Response(null, { status: 304, headers });
+}
+
+function maybeNotModified(
+	ifNoneMatch: string | null,
+	etag: string,
+	cacheControl: string,
+	edgeCacheControl: string,
+	contentType?: string
+): Response | null {
+	if (!matchesIfNoneMatch(ifNoneMatch, etag)) {
+		return null;
+	}
+	return notModifiedResponse(etag, cacheControl, edgeCacheControl, contentType);
+}
+
 /**
- * A minimal MapLibre style so third parties get a working basemap without
- * hand-authoring one. The vector source is referenced by TileJSON `url` so it
- * inherits bounds and zoom range automatically.
+ * A real MapLibre reference style so integrators can point at one URL and get
+ * a working basemap, labels included, without reverse-engineering the schema.
  */
 function buildStyleJson(origin: string) {
 	return {
@@ -204,19 +299,13 @@ function buildStyleJson(origin: string) {
 		glyphs: `${origin}${TILE_PREFIX}/fonts/{fontstack}/{range}.pbf`,
 		sprite: `${origin}${TILE_PREFIX}/sprite/dark`,
 		sources: {
-			protomaps: {
+			[PROTOMAPS_SOURCE_NAME]: {
 				type: "vector",
 				url: `${origin}${TILEJSON_PATH}`,
 				attribution: ATTRIBUTION,
 			},
 		},
-		layers: [
-			{
-				id: "background",
-				type: "background",
-				paint: { "background-color": "#1a1a1a" },
-			},
-		],
+		layers: layers(PROTOMAPS_SOURCE_NAME, namedTheme("dark"), { lang: "en" }),
 	};
 }
 
@@ -237,32 +326,62 @@ function toPublicOrigin(origin: string): string {
 	return origin.replace(/^http:\/\//, "https://");
 }
 
-function jsonResponse(body: unknown): Response {
-	return new Response(JSON.stringify(body), {
-		headers: {
-			"content-type": "application/json; charset=utf-8",
-			"cache-control": META_CACHE_CONTROL,
-			"access-control-allow-origin": "*",
-		},
+function jsonResponse(body: unknown, etag?: string): Response {
+	const json = JSON.stringify(body);
+	const bytes = JSON_ENCODER.encode(json);
+	return new Response(bytes, {
+		headers: withSharedHeaders(
+			{
+				"content-type": "application/json; charset=utf-8",
+				"cache-control": META_BROWSER_CACHE_CONTROL,
+				"access-control-allow-origin": "*",
+			},
+			bytes.byteLength,
+			etag,
+			META_EDGE_CACHE_CONTROL
+		),
 	});
 }
 
 async function r2Passthrough(
 	bucket: R2Bucket,
 	key: string,
-	contentType: string
+	contentType: string,
+	ifNoneMatch?: string | null,
+	fallbackKey?: string
 ): Promise<Response> {
-	const obj = await withR2Retry(() => bucket.get(key));
+	let effectiveKey = key;
+	let obj = await withR2Retry(() => bucket.get(key));
+	if (!obj && fallbackKey) {
+		effectiveKey = fallbackKey;
+		obj = await withR2Retry(() => bucket.get(fallbackKey));
+	}
 	if (!obj) {
 		return new Response("Not found", { status: 404 });
 	}
+	const etag = quoteEtag(obj.etag ?? effectiveKey);
+	const notModified = maybeNotModified(
+		ifNoneMatch ?? null,
+		etag,
+		TILE_BROWSER_CACHE_CONTROL,
+		TILE_EDGE_CACHE_CONTROL,
+		contentType
+	);
+	if (notModified) {
+		return notModified;
+	}
 	const body = await obj.arrayBuffer();
 	return new Response(body, {
-		headers: {
-			"content-type": contentType,
-			"cache-control": TILE_CACHE_CONTROL,
-			"access-control-allow-origin": "*",
-		},
+		headers: withSharedHeaders(
+			{
+				"content-type": contentType,
+				"cache-control": TILE_BROWSER_CACHE_CONTROL,
+				"access-control-allow-origin": "*",
+			},
+			body.byteLength,
+			etag,
+			TILE_EDGE_CACHE_CONTROL
+		),
 	});
 }
 
@@ -273,16 +392,36 @@ async function r2Passthrough(
 export async function handleTileRequest(
 	pathname: string,
 	bucket: R2Bucket,
-	origin: string
+	origin: string,
+	requestHeaders: Headers = new Headers()
 ): Promise<Response | null> {
 	if (!pathname.startsWith(TILE_PREFIX)) {
 		return null;
 	}
 
 	const publicOrigin = toPublicOrigin(origin);
+	const ifNoneMatch = requestHeaders.get("if-none-match");
 
 	if (pathname === STYLE_PATH) {
-		return jsonResponse(buildStyleJson(publicOrigin));
+		const detail = await getArchive(bucket, DETAIL_PMTILES_KEY).getHeader();
+		const world = await getArchive(bucket, WORLD_PMTILES_KEY)
+			.getHeader()
+			.catch(() => null);
+		const etag = createMetadataEtag([
+			"style",
+			detail.etag ?? DETAIL_PMTILES_KEY,
+			world?.etag ?? "no-world",
+		]);
+		const notModified = maybeNotModified(
+			ifNoneMatch,
+			etag,
+			META_BROWSER_CACHE_CONTROL,
+			META_EDGE_CACHE_CONTROL
+		);
+		if (notModified) {
+			return notModified;
+		}
+		return jsonResponse(buildStyleJson(publicOrigin), etag);
 	}
 
 	if (pathname === TILEJSON_PATH) {
@@ -293,7 +432,21 @@ export async function handleTileRequest(
 		const world = await getArchive(bucket, WORLD_PMTILES_KEY)
 			.getHeader()
 			.catch(() => null);
-		return jsonResponse(buildTileJson(world, detail, publicOrigin));
+		const etag = createMetadataEtag([
+			"tilejson",
+			detail.etag ?? DETAIL_PMTILES_KEY,
+			world?.etag ?? "no-world",
+		]);
+		const notModified = maybeNotModified(
+			ifNoneMatch,
+			etag,
+			META_BROWSER_CACHE_CONTROL,
+			META_EDGE_CACHE_CONTROL
+		);
+		if (notModified) {
+			return notModified;
+		}
+		return jsonResponse(buildTileJson(world, detail, publicOrigin), etag);
 	}
 
 	const font = pathname.match(FONT_RE);
@@ -304,7 +457,8 @@ export async function handleTileRequest(
 		return r2Passthrough(
 			bucket,
 			`fonts/${fontstack}/${font[2]}.pbf`,
-			"application/x-protobuf"
+			"application/x-protobuf",
+			ifNoneMatch
 		);
 	}
 
@@ -313,10 +467,13 @@ export async function handleTileRequest(
 		// sprite[1] is guaranteed by the regex capture group
 		const filename = sprite[1] as string;
 		const isJson = filename.endsWith(".json");
+		const baseFilename = filename.replace("@2x", "");
 		return r2Passthrough(
 			bucket,
 			`sprite/${filename}`,
-			isJson ? "application/json" : "image/png"
+			isJson ? "application/json" : "image/png",
+			ifNoneMatch,
+			`sprite/${baseFilename}`
 		);
 	}
 
@@ -331,6 +488,18 @@ export async function handleTileRequest(
 	const archiveKey = archiveKeyForZoom(z);
 	const archive = getArchive(bucket, archiveKey);
 	try {
+		const archiveHeader = await archive.getHeader();
+		const etag = createCoordinateEtag(archiveHeader, archiveKey, z, x, y);
+		const notModified = maybeNotModified(
+			ifNoneMatch,
+			etag,
+			TILE_BROWSER_CACHE_CONTROL,
+			TILE_EDGE_CACHE_CONTROL,
+			"application/x-protobuf"
+		);
+		if (notModified) {
+			return notModified;
+		}
 		const result = await archive.getZxy(z, x, y);
 		// A miss means "no features here", which is a normal answer for a tile
 		// outside the data footprint. Answer it with an empty-but-valid MVT and
@@ -338,11 +507,16 @@ export async function handleTileRequest(
 		// empty tile, so it silently paints nothing and never falls back.
 		const body = result ? result.data : EMPTY_TILE;
 		return new Response(body, {
-			headers: {
-				"content-type": "application/x-protobuf",
-				"cache-control": TILE_CACHE_CONTROL,
-				"access-control-allow-origin": "*",
-			},
+			headers: withSharedHeaders(
+				{
+					"content-type": "application/x-protobuf",
+					"cache-control": TILE_BROWSER_CACHE_CONTROL,
+					"access-control-allow-origin": "*",
+				},
+				body.byteLength,
+				etag,
+				TILE_EDGE_CACHE_CONTROL
+			),
 		});
 	} catch (err) {
 		if (err instanceof EtagMismatch) {
@@ -355,11 +529,16 @@ export async function handleTileRequest(
 		// instead of the deploy breaking every low-zoom request.
 		if (archiveKey === WORLD_PMTILES_KEY && isArchiveMissing(err)) {
 			return new Response(EMPTY_TILE, {
-				headers: {
-					"content-type": "application/x-protobuf",
-					"cache-control": MISSING_ARCHIVE_CACHE_CONTROL,
-					"access-control-allow-origin": "*",
-				},
+				headers: withSharedHeaders(
+					{
+						"content-type": "application/x-protobuf",
+						"cache-control": MISSING_ARCHIVE_BROWSER_CACHE_CONTROL,
+						"access-control-allow-origin": "*",
+					},
+					EMPTY_TILE.byteLength,
+					undefined,
+					MISSING_ARCHIVE_EDGE_CACHE_CONTROL
+				),
 			});
 		}
 		throw err;

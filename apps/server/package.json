@@ -20,6 +20,7 @@
     "drizzle-orm": "^0.44.0",
     "hono": "^4.10.4",
     "pmtiles": "^4.4.1",
+    "protomaps-themes-base": "^4.5.0",
     "stripe": "^22.2.0"
   },
   "devDependencies": {
