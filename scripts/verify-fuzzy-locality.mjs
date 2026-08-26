@@ -93,7 +93,9 @@ try {
 			const ms = Date.now() - started;
 			const first = r.rows[0]?.locality;
 			if (first !== expected) {
-				console.log(`FAIL "${typo}": expected ${expected} first, got ${first ?? "(none)"}`);
+				console.log(
+					`FAIL "${typo}": expected ${expected} first, got ${first ?? "(none)"}`
+				);
 				failed++;
 			} else if (ms > MAX_MS) {
 				console.log(`FAIL "${typo}": ranked correctly but took ${ms}ms`);
@@ -116,14 +118,20 @@ try {
 	]);
 	const first = r.rows[0]?.locality;
 	if (first === expected) {
-		console.log(`NOTE "${typo}" now ranks ${expected} first — scoring improved, update KNOWN_MISS`);
+		console.log(
+			`NOTE "${typo}" now ranks ${expected} first — scoring improved, update KNOWN_MISS`
+		);
 	} else {
-		console.log(`PASS "${typo}": still a known miss (${first ?? "none"}), documented`);
+		console.log(
+			`PASS "${typo}": still a known miss (${first ?? "none"}), documented`
+		);
 	}
 } finally {
 	client.release();
 	await pool.end();
 }
 
-console.log(failed === 0 ? "\nAll checks passed." : `\n${failed} check(s) failed.`);
+console.log(
+	failed === 0 ? "\nAll checks passed." : `\n${failed} check(s) failed.`
+);
 process.exit(failed === 0 ? 0 : 1);
