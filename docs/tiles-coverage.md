@@ -7,12 +7,15 @@ against Locnative, read this first — the coverage footprint is not uniform.
 
 | Endpoint | Purpose |
 |---|---|
-| `GET /tiles/v1/{z}/{x}/{y}.mvt` | Vector tiles (Mapbox Vector Tile, protobuf) |
-| `GET /tiles/v1/tiles.json` | TileJSON 3.0.0 — bounds, zoom range, attribution |
-| `GET /tiles/v1/style.json` | Reference MapLibre dark style using the live TileJSON source |
-| `GET /tiles/v1/fonts/{fontstack}/{range}.pbf` | Glyphs |
-| `GET /tiles/v1/sprite/dark.{json,png}` | Sprite sheet |
-| `GET /tiles/v1/sprite/dark@2x.{json,png}` | Retina sprite sheet |
+| `GET /tiles/v2/{z}/{x}/{y}.mvt` | Vector tiles (Mapbox Vector Tile, protobuf) |
+| `GET /tiles/v2/tiles.json` | TileJSON 3.0.0 — bounds, zoom range, attribution |
+| `GET /tiles/v2/style.json` | Reference MapLibre dark style using the live TileJSON source |
+| `GET /tiles/v2/fonts/{fontstack}/{range}.pbf` | Glyphs |
+| `GET /tiles/v2/sprite/dark.{json,png}` | Sprite sheet |
+| `GET /tiles/v2/sprite/dark@2x.{json,png}` | Retina sprite sheet |
+
+`/tiles/v1/*` remains live as a compatibility alias, but `v2` is now the
+canonical path for new integrations and for long-lived CDN versioning.
 
 All responses set `access-control-allow-origin: *`.
 Tiles, fonts, sprites, TileJSON and style responses also set explicit
@@ -26,6 +29,9 @@ Tile-family responses use split cache headers:
   longer-lived for immutable tile assets.
 - `x-locnative-cache` reports the Worker cache outcome as `HIT`, `MISS`, or
   `REVALIDATED` to make production verification straightforward.
+- `x-locnative-tile-version` reports the current canonical tile API version.
+- `server-timing` reports cache lookup, origin tile handling, and total request
+  time so latency investigations do not require log access.
 
 ## Coverage
 
@@ -54,7 +60,7 @@ Point your source at `tiles.json` instead of an inline `tiles` array:
 
 ```js
 sources: {
-  protomaps: { type: "vector", url: "https://api.locnative.com/tiles/v1/tiles.json" }
+  protomaps: { type: "vector", url: "https://api.locnative.com/tiles/v2/tiles.json" }
 }
 ```
 
@@ -71,9 +77,21 @@ client can render a complete basemap from a single URL:
 ```js
 new maplibregl.Map({
   container: "map",
-  style: "https://api.locnative.com/tiles/v1/style.json",
+  style: "https://api.locnative.com/tiles/v2/style.json",
 });
 ```
+
+## Zoom-band archives
+
+The Worker now supports a separate archive lane for the heaviest zoom band:
+
+- `z0-z6` -> `world-z0-z6.pmtiles`
+- `z7-z9` -> `australia-z7-z9.pmtiles`
+- `z10-z15` -> `australia-z10-z15.pmtiles`
+
+If a band archive is absent, the Worker falls back to `australia.pmtiles`.
+This split is the first pipeline step toward reducing z7-z9 payload size
+without disturbing street-level detail at higher zooms.
 
 ## Attribution
 

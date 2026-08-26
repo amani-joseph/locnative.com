@@ -1111,10 +1111,10 @@ const map = new maplibregl.Map({
     sources: {
       protomaps: {
         type: "vector",
-        url: "https://api.locnative.com/tiles/v1/tiles.json",
+        url: "https://api.locnative.com/tiles/v2/tiles.json",
       },
     },
-    layers: [/* your layers, or use /tiles/v1/style.json */],
+    layers: [/* your layers, or use /tiles/v2/style.json */],
   },
 });`;
 
@@ -2721,26 +2721,29 @@ const payload = JSON.parse(rawBody);`}
 											<p className="font-medium text-sm">Vector tiles</p>
 											<code className="mt-2 block rounded bg-muted px-3 py-2 font-mono text-sm">
 												GET
-												/tiles/v1/&#123;z&#125;/&#123;x&#125;/&#123;y&#125;.mvt
+												/tiles/v2/&#123;z&#125;/&#123;x&#125;/&#123;y&#125;.mvt
 											</code>
 										</div>
 										<div className="rounded-lg border p-4">
 											<p className="font-medium text-sm">TileJSON and style</p>
 											<code className="mt-2 block rounded bg-muted px-3 py-2 font-mono text-sm">
-												GET /tiles/v1/tiles.json
+												GET /tiles/v2/tiles.json
 											</code>
 											<code className="mt-2 block rounded bg-muted px-3 py-2 font-mono text-sm">
-												GET /tiles/v1/style.json
+												GET /tiles/v2/style.json
 											</code>
 										</div>
 										<div className="rounded-lg border p-4">
 											<p className="font-medium text-sm">Glyphs and sprites</p>
 											<code className="mt-2 block rounded bg-muted px-3 py-2 font-mono text-sm">
 												GET
-												/tiles/v1/fonts/&#123;fontstack&#125;/&#123;range&#125;.pbf
+												/tiles/v2/fonts/&#123;fontstack&#125;/&#123;range&#125;.pbf
 											</code>
 											<code className="mt-2 block rounded bg-muted px-3 py-2 font-mono text-sm">
-												GET /tiles/v1/sprite/dark.&#123;json,png&#125;
+												GET /tiles/v2/sprite/dark.&#123;json,png&#125;
+											</code>
+											<code className="mt-2 block rounded bg-muted px-3 py-2 font-mono text-sm">
+												GET /tiles/v2/sprite/dark@2x.&#123;json,png&#125;
 											</code>
 										</div>
 									</CardContent>
