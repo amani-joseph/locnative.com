@@ -8,11 +8,14 @@
 #
 # `immutable` tells the browser not to revalidate at all for a year. There is no
 # consistency trade-off — the hash IS the invalidation strategy.
+#
+# NOTE: rules here APPEND to the platform default rather than replacing it, and
+# a `/*` rule would append a second Cache-Control to every asset as well —
+# producing `max-age=0, must-revalidate, public, max-age=31536000, immutable`,
+# where browsers honour the FIRST max-age and the fix silently does nothing.
+# So: set `! Cache-Control` to clear the inherited value first, and scope the
+# rule to /assets/* only. Non-hashed files keep the platform default, which is
+# what we want — they must revalidate or deploys would not be picked up.
 /assets/*
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
-
-# Everything else (HTML, robots.txt, brand assets) keeps revalidating. These are
-# NOT content-hashed, so they must stay revalidated or a deploy would not be
-# picked up.
-/*
-  Cache-Control: public, max-age=0, must-revalidate
