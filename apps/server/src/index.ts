@@ -295,6 +295,41 @@ const DEVICES_ZONES_PATH = /\/devices\/[^/]+\/zones/;
 const DEVICES_LOCATION_PATH = /\/devices\/[^/]+\/location/;
 
 // Derive endpoint key from path for Server-Timing metric name
+// Numeric-id lookups only — must not match /addresses/autocomplete etc.
+const ADDRESS_BY_ID_PATH = /\/addresses\/\d+$/;
+
+/**
+ * Cache-Control for a successful public API response, by endpoint shape.
+ *
+ * `no-store` on everything was costing us repeat lookups of data that cannot
+ * change between G-NAF imports. The split below is by how stable the answer is:
+ *
+ *   - `/addresses/{id}` is an immutable reference record. Safe to cache for a
+ *     day, with a week of stale-while-revalidate.
+ *   - `reverse` maps a fixed coordinate to the nearest address. Stable in
+ *     practice but can shift when new addresses are imported nearby, so a
+ *     shorter hour-long TTL.
+ *   - `autocomplete` stays `no-store`: high-cardinality, user-specific, and a
+ *     CDN would get a poor hit rate while holding partially-typed queries.
+ *   - anything unrecognised, and every non-2xx, stays `no-store`.
+ *
+ * Consistency trade-off: after a G-NAF import, cached records may be stale for
+ * up to the TTL. Address reference data changes on the order of months, so a
+ * day is acceptable; bump a version segment in the path if that ever changes.
+ */
+export function cacheControlForResponse(pathname: string, status: number): string {
+	if (status < 200 || status >= 300) {
+		return "no-store";
+	}
+	if (ADDRESS_BY_ID_PATH.test(pathname)) {
+		return "public, max-age=86400, stale-while-revalidate=604800";
+	}
+	if (pathname.includes("/reverse")) {
+		return "public, max-age=3600, stale-while-revalidate=86400";
+	}
+	return "no-store";
+}
+
 function endpointKeyFromPath(pathname: string): string {
 	if (pathname.includes("/autocomplete")) {
 		return "addresses_autocomplete";
@@ -407,7 +442,13 @@ app.use("/api/v1/*", async (context) => {
 
 	// Fix #1: Ensure cache-control on ALL responses (success + error)
 	if (!response.headers.has("cache-control")) {
-		response.headers.set("cache-control", "no-store");
+		response.headers.set(
+			"cache-control",
+			cacheControlForResponse(
+				new URL(context.req.url).pathname,
+				response.status
+			)
+		);
 	}
 
 	// Add Server-Timing header

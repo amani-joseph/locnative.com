@@ -10,7 +10,7 @@
 //     Filter. Measured >120s.
 //   - parsedPathFallback wraps the columns in upper(), and no functional index
 //     exists on upper(flat_number)/upper(number_first), so it Parallel Seq
-//     Scans 173M rows. Measured >60s.
+//     Scans 307M rows. Measured >60s.
 // End to end the query took ~7.7 minutes and returned nothing.
 //
 // The fix anchors these on idx_addresses_search_text_btree, the same index

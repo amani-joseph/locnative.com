@@ -32,7 +32,7 @@ uncompressed / ~0.5–1.9 KB on the wire.
 | `addresses` heap | 51 GB |
 | `addresses` indexes | **104 GB** |
 | Index-to-heap ratio | **2.04** |
-| Rows | ~173 M (planner believes 308 M — see F5) |
+| Rows | 307.6 M (exact count; planner estimate accurate to 0.1 %) |
 | `shared_buffers` | 1.27 GB (2.5 % of heap) |
 | Heap cache hit ratio | 63.7 % |
 | Index cache hit ratio | 96.5 % |
@@ -197,32 +197,42 @@ signal. That is a product gap, not just an index one.
 
 ---
 
-### F5 — Autovacuum has not run since 2026-06-14 (P1)
+### F5 — Autovacuum had not run since 2026-06-14 (P3 — corrected)
 
-**Issue.** `last_autovacuum` and `last_autoanalyze` on `addresses` are both
-**2026-06-14** — over two months stale. The planner believes the table has
-**308 M rows**; it has ~173 M.
+> **Correction, 2026-08-27.** This finding originally claimed the planner
+> believed 308 M rows against an actual ~173 M — a 78 % error. That was wrong.
+> An exact `count(*)` returns **307,584,808** and the planner estimate is
+> **307,835,040**, accurate to **0.1 %**. The 173 M figure came from stale code
+> comments repeated without verification, not from measurement. The planner was
+> never misled, so this is not the P1 correctness risk originally described.
+> `ANALYZE` was still worth running — statistics were two months stale — and it
+> has now been done. Downgraded to P3.
+
+**Issue.** `last_autovacuum` and `last_autoanalyze` on `addresses` were both
+**2026-06-14** — over two months stale, though the resulting estimates had not
+drifted meaningfully.
 
 **Evidence.**
 ```
-n_live_tup: 308,127,709   n_dead_tup: 2,820,648
-last_autovacuum:  2026-06-14T16:59:06Z
-last_autoanalyze: 2026-06-14T17:06:27Z
+before: n_live_tup 308,127,709  last_autoanalyze 2026-06-14T17:06:27Z
+ANALYZE addresses -> 4s
+after:  n_live_tup 307,835,055  last_analyze     2026-08-27T00:42:22Z
+exact count(*):     307,584,808  (estimate error 0.1%)
 ```
 
-**Impact.** Every query plan on the hottest table is costed against row counts
-that are ~78 % too high. This silently degrades plan selection everywhere and
-makes future regressions harder to diagnose. It is plausibly a contributor to
-several of the pathological plans found over the past week.
+**Impact.** Lower than first assessed. Estimates were accurate, so plans were
+not being misled. The real risk was that nothing was maintaining statistics —
+a table this size can drift between imports without anyone noticing.
 
-**Recommendation.** Run `ANALYZE addresses` now, and set per-table autovacuum
-thresholds appropriate to a 173 M-row table (the defaults scale poorly at this
-size). Verify `autovacuum_vacuum_scale_factor` / `analyze_scale_factor` are
-tuned down for this table.
+**Recommendation.** `ANALYZE` has been run (2026-08-27). Set per-table
+autovacuum thresholds appropriate to a 307 M-row table — the default
+`autovacuum_analyze_scale_factor` of 0.1 means ~30 M rows must change before
+autoanalyze triggers, which is why it had not fired since the last import.
 
-**Expected improvement.** Correct planner input; prevents a class of regression.
+**Expected improvement.** Keeps statistics fresh across future imports. No
+immediate latency change, since estimates were already accurate.
 
-**Effort** Low · **Risk** Low · **Priority P1**
+**Effort** Low · **Risk** Low · **Priority P3** (was P1)
 
 ---
 
@@ -361,7 +371,7 @@ Low effort, low risk, measurable benefit — implement these first.
 | # | Change | Effort | Impact |
 |---|---|---|---|
 | F1 | `immutable` cache headers on `/assets/*` | Low | 47 round trips removed per repeat visit |
-| F5 | `ANALYZE addresses` + tune autovacuum thresholds | Low | Correct plans across the hottest table |
+| F5 | Tune autovacuum thresholds (`ANALYZE` already run) | Low | Keeps statistics fresh across imports |
 | F4a | Drop `idx_addresses_population_score` (all-zero column) | Low | 2.2 GB reclaimed |
 | F6 | Cache headers on `/addresses/{id}` and `reverse` | Low | Near-zero repeat latency |
 
@@ -370,8 +380,8 @@ Low effort, low risk, measurable benefit — implement these first.
 ## 5. Roadmap
 
 **Phase 1 — Immediate (low risk, high impact)**
-F1 asset caching · F5 ANALYZE + autovacuum tuning · F4a drop the all-zero index
-· F6 differentiated API cache headers.
+F1 asset caching · F4a drop the all-zero index · F6 differentiated API cache
+headers · F5 autovacuum threshold tuning (`ANALYZE` done).
 
 **Phase 2 — Performance (moderate effort)**
 F2/F3 together — cache validated API keys in the Worker. One change addresses

@@ -1,0 +1,14 @@
+-- Drop idx_addresses_population_score: 2.18 GB indexing a constant.
+--
+-- population_score is 0 for every row (0 non-zero in a 158,716-row sample), so
+-- a btree over it has no selectivity — every entry sorts equal and the index
+-- can never narrow a scan. pg_stat_user_indexes recorded 4 scans against it.
+--
+-- The column itself is kept. buildOrderBy() and structured-search.ts still
+-- reference it as a ranking term, and it is a genuine product gap that it was
+-- never populated (suburb ranking has no popularity signal, which is why fuzzy
+-- matching returns SYDENHAM before SYDNEY). If it is ever backfilled, re-add
+-- this index then — at that point it will actually earn its size.
+--
+-- CONCURRENTLY so the drop does not take an exclusive lock on a 156 GB table.
+DROP INDEX CONCURRENTLY IF EXISTS "idx_addresses_population_score";

@@ -149,7 +149,7 @@ function buildWhereClause(
  * that is always bounded by a selective prefix anchor.
  *
  * This exists because the same defect has now been fixed three times in this
- * file: an unbounded fuzzy predicate over 173M rows. Trigram operators scan the
+ * file: an unbounded fuzzy predicate over 307M rows. Trigram operators scan the
  * whole GIN index when nothing matches; levenshtein and dmetaphone wrap
  * `search_text` in function calls so no index can serve them at all. In every
  * case the no-match path is the expensive one, and the no-match path is exactly
@@ -516,7 +516,7 @@ export async function autocompleteAddresses(
 	//   - tieredSearch's trigram predicate bitmap-scans the GIN index for a
 	//     common street word and applies the unit filters as a post-scan Filter
 	//     (measured >120s for "Main St").
-	//   - parsedPathFallback Parallel Seq Scans all 173M rows (>60s).
+	//   - parsedPathFallback Parallel Seq Scans all 307M rows (>60s).
 	// End to end a miss took ~7.7 minutes and still returned nothing, so falling
 	// through bought no results at enormous cost.
 	//
@@ -654,7 +654,7 @@ async function tieredSearch(
 		// Levenshtein fallback (distance <= 1). Anchored on the same token: the
 		// predicate wraps search_text in levenshtein(lower(left(...))), so no
 		// index can serve it and without a bound it is a full table scan of
-		// 173M rows — reached, by definition, only after the trigram tier above
+		// 307M rows — reached, by definition, only after the trigram tier above
 		// already found nothing.
 		const levenshteinWhere = buildAnchoredFuzzyWhere(
 			sql`levenshtein(lower(left(search_text, ${len + 2})), lower(${trimmed})) <= ${LEVENSHTEIN_SHORT_MAX_DISTANCE}`,
@@ -903,7 +903,7 @@ async function localitySearch(
  * Uses case-sensitive `search_text LIKE 'QUERY%'` on the UPPERCASED prefix so
  * it uses idx_addresses_search_text_btree (text_pattern_ops). search_text is
  * stored uppercase. NOTE: case-insensitive ILIKE does NOT use that btree — it
- * falls back to a full trigram/seq scan (>30s on the 173M-row table), which was
+ * falls back to a full trigram/seq scan (>30s on the 307M-row table), which was
  * the forward-geocode/autocomplete hang. See design doc A2.
  *
  * When `parsed` carries a streetNumber (e.g. input was "5/120 Main St"),
