@@ -317,7 +317,10 @@ const ADDRESS_BY_ID_PATH = /\/addresses\/\d+$/;
  * up to the TTL. Address reference data changes on the order of months, so a
  * day is acceptable; bump a version segment in the path if that ever changes.
  */
-export function cacheControlForResponse(pathname: string, status: number): string {
+export function cacheControlForResponse(
+	pathname: string,
+	status: number
+): string {
 	if (status < 200 || status >= 300) {
 		return "no-store";
 	}

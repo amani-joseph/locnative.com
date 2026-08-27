@@ -1,5 +1,5 @@
 ---
-status: verifying
+status: resolved
 trigger: "Address autocomplete on '5/120 Main St' returns wrong/no matches and is slow"
 created: 2026-04-17T00:00:00Z
 updated: 2026-04-17T01:00:00Z
@@ -98,3 +98,22 @@ Test these inputs against the autocomplete endpoint (`GET /api/v1/addresses/auto
 4. **"zzz999 Fake Blvd"** — obviously wrong input
    - Expected: 0 results, no error, response still fast (prefix scan returns nothing quickly, falls to tiered/ilike with no matches)
    - Previously: slow but returned 0 results
+
+## Resolution (added 2026-08-27)
+
+Fixed in f6f351f. Root cause: when prefixSearch missed, a parsed unit query fell
+through to two unindexable paths — tieredSearch's trigram predicate (>120s) and
+parsedPathFallback's Parallel Seq Scan of 307M rows (>60s). buildFilterClauses
+wraps the unit columns in upper(), and no functional index exists on those
+expressions.
+
+prefixSearch had already tried the only indexable form, so a miss now returns
+empty instead of spending minutes confirming it. parsedPathFallback became
+unreachable and was removed.
+
+Measured: "5/120 Main St" 7.7 min -> 596ms; "1/12 Smith St" returns correctly
+in 58ms. Verified live on production.
+
+Guarded by scripts/verify-unit-query.mjs, which asserts the plan is anchored on
+idx_addresses_search_text_btree — the plan shape is the fix, so a results-only
+test would not catch a regression.

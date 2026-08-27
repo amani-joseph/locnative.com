@@ -1,5 +1,5 @@
 ---
-status: awaiting_human_verify
+status: resolved
 trigger: "GET /api/v1/addresses/autocomplete?q=34%20boxg takes 30+ seconds"
 created: 2026-04-16T00:00:00Z
 updated: 2026-04-16T00:00:00Z
@@ -49,3 +49,19 @@ fix: |
 verification: pending human verification
 files_changed:
   - packages/database/src/queries/autocomplete.ts
+
+## Resolution (added 2026-08-27)
+
+Superseded and resolved. This April session introduced prefixSearch using
+`ILIKE 'query%'`, believing it indexable. It is not: idx_addresses_search_text_btree
+is text_pattern_ops (case-sensitive), so ILIKE cannot use it for an alphabetic
+prefix and degrades to a full-table trigram scan.
+
+That was corrected in 3ec943f (uppercased case-sensitive LIKE), and the wider
+class of unanchored-fuzzy-predicate bugs was closed by:
+  - f6f351f  slash-unit path
+  - f38dcf6  Tier 2 zero-match hang
+  - 6654282  ORDER BY 1 placeholder defeating LIMIT
+  - fed3121  structural invariant test preventing recurrence
+
+The original trigger query ("34 boxg") returns normally. No further action.
