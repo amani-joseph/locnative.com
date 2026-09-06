@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { orpcClient } from "@/lib/orpc";
 import { cn } from "@/lib/utils";
+import { AutocompleteCache } from "./autocomplete-cache.ts";
 import { coordValueFromCandidate, isValidLatLng } from "./location-value.ts";
 
 interface Candidate {
@@ -22,8 +23,12 @@ interface LocationInputProps {
 	value: string;
 }
 
-const DEBOUNCE_MS = 250;
+// Trimmed from 250 ms. Debounce sits on top of a ~90-190 ms request, so it was
+// the single largest contributor to perceived latency on the fast path. Safe to
+// shorten now that superseded requests are aborted rather than left in flight.
+const DEBOUNCE_MS = 150;
 const MIN_QUERY = 3;
+const CACHE_CAPACITY = 50;
 
 export function LocationInput({
 	id,
@@ -43,11 +48,20 @@ export function LocationInput({
 	// earlier response must not clobber a newer one (last-response-wins race),
 	// and responses arriving after unmount must be ignored.
 	const requestSeq = useRef(0);
+	// Aborts the request that requestSeq has just superseded. The seq guard
+	// alone only discards the response — the HTTP request kept running to
+	// completion, so a user typing ten characters left several dead requests
+	// competing for the connection and the origin's DB pool.
+	const inFlight = useRef<AbortController | null>(null);
+	// Per-instance so two LocationInputs (e.g. origin/destination) cannot evict
+	// each other's entries. Ref, not state: writing to it must never re-render.
+	const cache = useRef(new AutocompleteCache<Candidate[]>(CACHE_CAPACITY));
 
 	useEffect(() => {
 		return () => {
 			// Invalidate any in-flight request so its resolution is a no-op.
 			requestSeq.current++;
+			inFlight.current?.abort();
 			if (debounceTimer.current) {
 				clearTimeout(debounceTimer.current);
 			}
@@ -59,11 +73,19 @@ export function LocationInput({
 
 	const runQuery = (q: string) => {
 		const seq = ++requestSeq.current;
+		// Cancel the request this one supersedes before opening a new one.
+		inFlight.current?.abort();
+		const controller = new AbortController();
+		inFlight.current = controller;
 		setLoading(true);
 		setOpen(true);
 		orpcClient.geocode
-			.autocomplete({ q })
+			.autocomplete({ q }, { signal: controller.signal })
 			.then((res) => {
+				// Cache before the staleness guard: the response is valid for `q`
+				// regardless of what the user has typed since, so it is still worth
+				// keeping for when they backspace to it.
+				cache.current.set(q, res.results);
 				if (seq !== requestSeq.current) {
 					return;
 				}
@@ -71,6 +93,9 @@ export function LocationInput({
 				setOpen(true);
 			})
 			.catch(() => {
+				// An abort lands here too. Bail on the seq guard rather than
+				// inspecting the error: a superseded request must not clear the
+				// candidates its successor is about to fill in.
 				if (seq !== requestSeq.current) {
 					return;
 				}
@@ -92,11 +117,28 @@ export function LocationInput({
 			clearTimeout(debounceTimer.current);
 		}
 		if (next.length < MIN_QUERY || isValidLatLng(next)) {
+			// Nothing will be requested for this input, so drop any request still
+			// running for a previous one.
+			requestSeq.current++;
+			inFlight.current?.abort();
 			setCandidates([]);
 			setOpen(false);
 			setLoading(false);
 			return;
 		}
+
+		// Cache hit: render synchronously, skipping both debounce and network.
+		// This is the common case when backspacing or retyping a prefix.
+		const cached = cache.current.get(next);
+		if (cached) {
+			requestSeq.current++;
+			inFlight.current?.abort();
+			setCandidates(cached);
+			setOpen(true);
+			setLoading(false);
+			return;
+		}
+
 		debounceTimer.current = setTimeout(() => runQuery(next), DEBOUNCE_MS);
 	};
 
