@@ -4,7 +4,11 @@ import { orpcClient } from "@/lib/orpc";
 
 const SRC = "gnaf-addresses";
 const ZOOM_FLOOR = 14;
-const DEBOUNCE_MS = 350;
+// Aligned with the autocomplete input's debounce. Note this timer is stacked on
+// top of `moveend`, which MapLibre already fires only once panning has settled,
+// so it is a second delay rather than the primary one. Kept short because a
+// superseded viewport fetch is now aborted rather than left running.
+const DEBOUNCE_MS = 150;
 const FETCH_LIMIT = 2000;
 
 interface FeatureCollection {
@@ -22,6 +26,10 @@ const EMPTY: FeatureCollection = { type: "FeatureCollection", features: [] };
 export function useAddressOverlay(map: MapLibreMap | null) {
 	const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const reqIdRef = useRef(0);
+	// Aborts the viewport fetch a newer pan has superseded. reqId alone only
+	// discards the response; the request kept streaming up to FETCH_LIMIT rows
+	// that nothing would ever read.
+	const inFlightRef = useRef<AbortController | null>(null);
 
 	useEffect(() => {
 		if (!map) {
@@ -94,6 +102,11 @@ export function useAddressOverlay(map: MapLibreMap | null) {
 
 		const refresh = async () => {
 			if (map.getZoom() < ZOOM_FLOOR) {
+				// Zoomed back out: nothing will be rendered, so stop any fetch still
+				// running for the previous viewport.
+				reqIdRef.current++;
+				inFlightRef.current?.abort();
+				inFlightRef.current = null;
 				clear();
 				return;
 			}
@@ -106,11 +119,15 @@ export function useAddressOverlay(map: MapLibreMap | null) {
 				b.getNorth(),
 			];
 			const reqId = ++reqIdRef.current;
+			// Cancel the fetch this one supersedes before starting a new one.
+			inFlightRef.current?.abort();
+			const controller = new AbortController();
+			inFlightRef.current = controller;
 			try {
-				const res = await orpcClient.zones.inViewport({
-					bbox,
-					limit: FETCH_LIMIT,
-				});
+				const res = await orpcClient.zones.inViewport(
+					{ bbox, limit: FETCH_LIMIT },
+					{ signal: controller.signal }
+				);
 				if (reqId !== reqIdRef.current) {
 					return; // stale response
 				}
@@ -164,6 +181,11 @@ export function useAddressOverlay(map: MapLibreMap | null) {
 			map.off("moveend", onMove);
 			// biome-ignore lint/suspicious/noExplicitAny: maplibre layer event typing
 			map.off("click", "gnaf-point", onPointClick as any);
+			// Invalidate and cancel any in-flight fetch so it cannot resolve against
+			// a torn-down map source.
+			reqIdRef.current++;
+			inFlightRef.current?.abort();
+			inFlightRef.current = null;
 			if (timerRef.current) {
 				clearTimeout(timerRef.current);
 			}
