@@ -79,6 +79,16 @@ export const addresses = pgTable(
 			table.state,
 			table.postcode
 		),
+		// Bare-postcode autocomplete walks distinct locality/state keys for one
+		// country and postcode. Keep id last so the representative-row lookup can
+		// stop at its first address without sorting the postcode's full population.
+		index("idx_addresses_country_postcode_locality_state_id").on(
+			table.country,
+			table.postcode,
+			table.locality,
+			sql`coalesce(${table.state}, '')`,
+			table.id
+		),
 		index("idx_addresses_geom").using("gist", table.geom),
 		// Expression index on the geography cast. The proximity endpoints
 		// (addresses.nearby / addresses.reverse) filter with

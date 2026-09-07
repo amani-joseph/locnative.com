@@ -769,13 +769,14 @@ async function tieredSearch(
  * returns street numbers (4118 Murringo Road) instead of the requested
  * postcode, and because it returns early on any hit it also suppresses the
  * fuzzy tiers. This branch matches the `postcode` column directly instead,
- * using idx_addresses_country_state_postcode.
+ * using idx_addresses_country_postcode_locality_state_id.
  *
- * `DISTINCT ON (locality, state)` collapses the result to one row per suburb:
- * a postcode holds thousands of addresses, and ten rows of the same street is
- * not a useful suggestion list. Postgres requires DISTINCT ON's leading
- * ORDER BY to match its expressions, so the dedupe runs in a subquery and the
- * caller's ranking is applied outside it.
+ * A recursive loose index scan walks distinct (locality, state) keys directly.
+ * This is load-bearing for dense postcodes: DISTINCT ON has to read and sort
+ * every address before LIMIT can apply, so CBD postcodes with many addresses
+ * can take tens of seconds even though they contain only a handful of suburbs.
+ * The recursion is explicitly capped at `limit`, making work proportional to
+ * the number of suggestions returned rather than the postcode's address count.
  */
 async function postcodeSearch(
 	db: Database,
@@ -789,23 +790,47 @@ async function postcodeSearch(
 	}
 ): Promise<AutocompleteResult[]> {
 	const { limit, state, latitude, longitude } = opts;
-
-	const conditions: SQL<unknown>[] = [
-		sql`postcode = ${postcode}`,
-		sql`country = ${country.toUpperCase()}`,
-	];
-	if (state) {
-		conditions.push(sql`state = ${state.toUpperCase()}`);
-	}
-	const whereClause = sql.join(conditions, sql` AND `);
+	const countryUpper = country.toUpperCase();
+	const stateUpper = state?.toUpperCase();
+	const stateFilter = stateUpper ? sql`AND a.state = ${stateUpper}` : sql``;
 
 	const result = await db.execute(sql`
-		SELECT * FROM (
-			SELECT DISTINCT ON (locality, state) ${SELECT_COLUMNS}, 1.0 as similarity_score
-			FROM addresses
-			WHERE ${whereClause}
-			ORDER BY locality, state, id
-		) AS localities
+		WITH RECURSIVE keys(locality, state_key, id, depth) AS (
+			(
+				SELECT a.locality, coalesce(a.state, ''), a.id, 1
+				FROM addresses a
+				WHERE a.country = ${countryUpper} AND a.postcode = ${postcode}
+					${stateFilter}
+				ORDER BY a.locality, coalesce(a.state, ''), a.id
+				LIMIT 1
+			)
+			UNION ALL
+			(
+				SELECT next_key.locality, next_key.state_key, next_key.id, k.depth + 1
+				FROM keys k
+				CROSS JOIN LATERAL (
+					SELECT a.locality, coalesce(a.state, '') AS state_key, a.id
+					FROM addresses a
+					WHERE a.country = ${countryUpper}
+						AND a.postcode = ${postcode}
+						AND (a.locality, coalesce(a.state, '')) > (k.locality, k.state_key)
+						${stateFilter}
+					ORDER BY a.locality, coalesce(a.state, ''), a.id
+					LIMIT 1
+				) AS next_key
+				WHERE k.depth < ${limit}
+			)
+		)
+		SELECT
+			a.id, a.country, a.state, a.locality, a.postcode,
+			a.street_name, a.street_type, a.street_suffix,
+			a.building_name, a.flat_type, a.flat_number,
+			a.level_type, a.level_number,
+			a.number_first, a.number_last,
+			a.longitude, a.latitude, a.geom,
+			1.0 as similarity_score
+		FROM keys k
+		JOIN addresses a ON a.id = k.id
 		${buildOrderBy(latitude, longitude)}
 		LIMIT ${limit}
 	`);
