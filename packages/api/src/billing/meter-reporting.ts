@@ -30,6 +30,20 @@ export function recentUsageDates(now = new Date()): string[] {
 	return [utcDateMinus(now, 1), utcDateMinus(now, 0)];
 }
 
+/**
+ * Meter event timestamp (unix seconds) for a usage date: the last second of
+ * that UTC day, capped at `now`. The cron runs daily just after midnight, so
+ * yesterday's delta is attributed to yesterday rather than the report time —
+ * otherwise usage from the last day of a billing period lands in the next one.
+ */
+export function meterEventTimestamp(
+	usageDate: string,
+	now = new Date()
+): number {
+	const endOfDay = Date.parse(`${usageDate}T23:59:59Z`);
+	return Math.floor(Math.min(endOfDay, now.getTime()) / 1000);
+}
+
 /** Diff live per-date totals against the reported ledger; emit positive deltas. */
 export function computeMeterDeltas(
 	live: LiveUsage[],
@@ -112,6 +126,7 @@ export async function reportUsageToStripe(
 						stripe_customer_id: customerId,
 					},
 					identifier: `${account.id}:${d.usageDate}:${d.liveCount}`,
+					timestamp: meterEventTimestamp(d.usageDate, now),
 				},
 				{ idempotencyKey: `${account.id}:${d.usageDate}:${d.liveCount}` }
 			);

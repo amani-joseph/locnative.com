@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { computeMeterDeltas, recentUsageDates } from "./meter-reporting.ts";
+import {
+	computeMeterDeltas,
+	meterEventTimestamp,
+	recentUsageDates,
+} from "./meter-reporting.ts";
 
 describe("computeMeterDeltas", () => {
 	it("emits positive deltas vs the reported ledger", () => {
@@ -31,5 +35,19 @@ describe("recentUsageDates", () => {
 			"2026-06-10",
 			"2026-06-11",
 		]);
+	});
+});
+
+describe("meterEventTimestamp", () => {
+	it("attributes a past date to its last second (UTC)", () => {
+		const now = new Date("2026-06-11T00:10:00Z");
+		expect(meterEventTimestamp("2026-06-10", now)).toBe(
+			Date.parse("2026-06-10T23:59:59Z") / 1000
+		);
+	});
+
+	it("caps today's timestamp at now", () => {
+		const now = new Date("2026-06-11T00:10:00Z");
+		expect(meterEventTimestamp("2026-06-11", now)).toBe(now.getTime() / 1000);
 	});
 });
