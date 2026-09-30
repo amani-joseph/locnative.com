@@ -1,6 +1,7 @@
 import { apiKeys, apiUsageDaily } from "@locnative/database";
 import { and, eq, gte, isNull, sql, sum } from "drizzle-orm";
 import { z } from "zod";
+import { getOrCreateBillingAccount } from "../../billing/account.ts";
 import { protectedProcedure } from "../../procedures.ts";
 import {
 	buildDateAxis,
@@ -63,6 +64,7 @@ export const dashboardRouter = {
 			thirtyDaysAgo.toISOString().split("T")[0] ?? "1970-01-01";
 
 		const [
+			billingAccount,
 			activeKeysResult,
 			totalUsageResult,
 			recentUsageResult,
@@ -70,6 +72,11 @@ export const dashboardRouter = {
 			endpointResult,
 			recentKeysResult,
 		] = await Promise.all([
+			getOrCreateBillingAccount(context.db, {
+				ownerType: "user",
+				teamId: null,
+				userId: authUserId,
+			}),
 			context.db
 				.select({ count: sql<number>`count(*)::int` })
 				.from(apiKeys)
@@ -133,7 +140,9 @@ export const dashboardRouter = {
 
 		return {
 			activeKeys: activeKeysResult[0]?.count ?? 0,
+			currentPeriodRequests: billingAccount.currentPeriodRequests,
 			explorerTestRequests: Number(explorerTestUsageResult[0]?.total ?? 0),
+			freeAllotment: billingAccount.freeAllotment,
 			totalRequests: Number(totalUsageResult[0]?.total ?? 0),
 			recentRequests: Number(recentUsageResult[0]?.total ?? 0),
 			endpointBreakdown: endpointResult.map((result) => ({
