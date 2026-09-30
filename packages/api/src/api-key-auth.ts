@@ -15,9 +15,13 @@ export const INTERNAL_REQUEST_SOURCE_HEADER = "x-locnative-request-source";
 export const REQUEST_SOURCE_PRODUCTION = "production";
 export const REQUEST_SOURCE_EXPLORER_TEST = "explorer_test";
 
-/** UUID v4 pattern (case-insensitive) */
+/**
+ * `wh_<uuid>_<secret>`. The secret is always `randomBytes(24)` in base64url
+ * (exactly 32 chars, see generateApiKeySecretPart), so anything else is
+ * rejected before a DB lookup can wake the database.
+ */
 const API_KEY_TOKEN_RE =
-	/^wh_([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})_(.+)$/i;
+	/^wh_([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})_([A-Za-z0-9_-]{32})$/i;
 
 // API-key secret hashing uses WebCrypto PBKDF2-HMAC-SHA256 rather than
 // node:crypto `scryptSync`. The Cloudflare Workers runtime (workerd) does not

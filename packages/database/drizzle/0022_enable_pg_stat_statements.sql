@@ -1,0 +1,11 @@
+-- Enable per-query statistics so expensive or frequent statements can be ranked.
+--
+-- The 2026-09-30 Neon compute audit (F10) found pg_stat_statements missing, so
+-- decisions such as dropping idx_addresses_country / idx_addresses_state could
+-- only lean on cumulative table-level counters. Neon supports this extension
+-- and resets its counters when the compute restarts, so snapshot
+-- pg_stat_statements during an active session rather than after a suspend.
+--
+-- Manual migration, like 0018-0021: not in the drizzle journal. Apply
+-- deliberately with psql against the target branch (dev first).
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements;

@@ -2,11 +2,13 @@
 
 import {
 	type BillingOwner,
-	computeBlocked,
 	getOrCreateBillingAccount,
 	utcMonthStart,
 } from "@locnative/api/billing/account";
 import {
+	type FlushSnapshot,
+	flushNeeded,
+	flushSnapshot,
 	increment as incrementMeter,
 	type MeterState,
 	peek as peekMeter,
@@ -20,6 +22,8 @@ const FLUSH_INTERVAL_MS = 10_000;
 
 interface StoredMeter extends MeterState {
 	billingAccountId: string;
+	/** What the last successful flush wrote to Postgres. */
+	lastFlushed?: FlushSnapshot;
 	owner: BillingOwner;
 	seeded: true;
 }
@@ -149,15 +153,21 @@ export class UsageMeter implements DurableObject {
 		if (!stored?.seeded) {
 			return;
 		}
+		// Nothing to mirror: skip the write so the flush does not wake Postgres.
+		// The card/allotment refresh below is skipped too; the blocked path still
+		// re-reads them via refreshLimits, so a new card unblocks promptly.
+		const snapshot = flushSnapshot(stored);
+		if (!flushNeeded(snapshot, stored.lastFlushed)) {
+			return;
+		}
 		// Mirror the live counter to Postgres and refresh card status/allotment in
 		// one round trip. blocked is recomputed from the freshest values we hold.
-		const blocked = computeBlocked(stored);
 		const refreshed = await db
 			.update(billingAccounts)
 			.set({
-				currentPeriodRequests: stored.currentPeriodRequests,
-				currentPeriodStart: stored.currentPeriodStart,
-				blocked,
+				currentPeriodRequests: snapshot.currentPeriodRequests,
+				currentPeriodStart: snapshot.currentPeriodStart,
+				blocked: snapshot.blocked,
 				updatedAt: new Date(),
 			})
 			.where(eq(billingAccounts.id, stored.billingAccountId))
@@ -167,10 +177,15 @@ export class UsageMeter implements DurableObject {
 			});
 		const row = refreshed[0];
 		if (row) {
+			// Requests can be delivered while the UPDATE is in flight, so re-read
+			// rather than writing back `stored` and dropping those increments.
+			const latest =
+				(await this.storage.get<StoredMeter>(STORAGE_KEY)) ?? stored;
 			await this.storage.put(STORAGE_KEY, {
-				...stored,
+				...latest,
 				hasPaymentMethod: row.hasPaymentMethod,
 				freeAllotment: row.freeAllotment,
+				lastFlushed: snapshot,
 			});
 		}
 	}

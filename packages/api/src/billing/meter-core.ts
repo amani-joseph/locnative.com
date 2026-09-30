@@ -49,3 +49,34 @@ export function increment(state: MeterState, now: Date): MeterDecision {
 	};
 	return { state: next, blocked: computeBlocked(next) };
 }
+
+/** The `billing_accounts` columns the DO mirrors on flush. */
+export interface FlushSnapshot {
+	blocked: boolean;
+	currentPeriodRequests: number;
+	currentPeriodStart: string;
+}
+
+export function flushSnapshot(state: MeterState): FlushSnapshot {
+	return {
+		blocked: computeBlocked(state),
+		currentPeriodRequests: state.currentPeriodRequests,
+		currentPeriodStart: state.currentPeriodStart,
+	};
+}
+
+/**
+ * Whether a flush would change Postgres. Skipping unchanged flushes keeps
+ * peek-only traffic (e.g. blocked accounts) from waking the database.
+ */
+export function flushNeeded(
+	next: FlushSnapshot,
+	lastFlushed: FlushSnapshot | undefined
+): boolean {
+	return (
+		lastFlushed === undefined ||
+		next.blocked !== lastFlushed.blocked ||
+		next.currentPeriodRequests !== lastFlushed.currentPeriodRequests ||
+		next.currentPeriodStart !== lastFlushed.currentPeriodStart
+	);
+}
