@@ -30,8 +30,6 @@ export const Route = createFileRoute("/_protected/dashboard")({
 	component: RouteComponent,
 });
 
-const PLAN_LIMIT = 100_000;
-
 function StatsLoadingSkeleton() {
 	return (
 		<>
@@ -107,7 +105,10 @@ function EmptyDashboard() {
 }
 
 function DashboardContent({ stats }: { stats: DashboardStats }) {
-	const usagePct = Math.min((stats.recentRequests / PLAN_LIMIT) * 100, 100);
+	const usagePct =
+		stats.freeAllotment > 0
+			? Math.min((stats.currentPeriodRequests / stats.freeAllotment) * 100, 100)
+			: 0;
 	const hasUsage = stats.recentRequests > 0;
 
 	return (
@@ -139,7 +140,7 @@ function DashboardContent({ stats }: { stats: DashboardStats }) {
 							{stats.recentRequests.toLocaleString()}
 						</p>
 						<p className="text-muted-foreground text-xs">
-							of {PLAN_LIMIT.toLocaleString()} limit
+							production requests in the last 30 days
 						</p>
 					</CardContent>
 				</Card>
@@ -184,8 +185,9 @@ function DashboardContent({ stats }: { stats: DashboardStats }) {
 				<CardHeader className="pb-3">
 					<CardTitle className="text-base">Monthly Usage</CardTitle>
 					<CardDescription>
-						{stats.recentRequests.toLocaleString()} /{" "}
-						{PLAN_LIMIT.toLocaleString()} production requests used this period
+						{stats.currentPeriodRequests.toLocaleString()} /{" "}
+						{stats.freeAllotment.toLocaleString()} production requests used this
+						period
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -193,7 +195,11 @@ function DashboardContent({ stats }: { stats: DashboardStats }) {
 					<div className="mt-2 flex justify-between text-muted-foreground text-xs">
 						<span>{Math.round(usagePct)}% used</span>
 						<span>
-							{(PLAN_LIMIT - stats.recentRequests).toLocaleString()} remaining
+							{Math.max(
+								stats.freeAllotment - stats.currentPeriodRequests,
+								0
+							).toLocaleString()}{" "}
+							remaining
 						</span>
 					</div>
 				</CardContent>
