@@ -17,7 +17,11 @@
 	"vars": {
 		"AUTH_COOKIE_DOMAIN": ".locnative.com",
 		"BETTER_AUTH_URL": "https://api.locnative.com",
-		"WEB_BASE_URL": "https://locnative.com"
+		"WEB_BASE_URL": "https://locnative.com",
+		// Neon usage monitor. Secrets set separately: NEON_API_KEY (org API
+		// key) and NEON_MONITOR_DISCORD_WEBHOOK_URL.
+		"NEON_ORG_ID": "org-patient-leaf-57488846",
+		"NEON_MONITOR_ALERT_EMAIL": "chirurecode@gmail.com"
 	},
 	"observability": {
 		"enabled": true,
@@ -30,7 +34,8 @@
 	"triggers": {
 		// Daily Stripe usage report (yesterday's final totals). Hourly kept Neon
 		// awake ~24 wakes/day pre-launch — see docs/audits/neon-compute-audit-2026-09-30.md.
-		"crons": ["10 0 * * *"]
+		// Hourly at :30: Neon usage monitor (Neon API only; never touches Postgres).
+		"crons": ["10 0 * * *", "30 * * * *"]
 	},
 	"queues": {
 		"producers": [
@@ -47,7 +52,13 @@
 		{ "binding": "MAP_TILES", "bucket_name": "locnative-tiles" }
 	],
 	"durable_objects": {
-		"bindings": [{ "name": "USAGE_METER", "class_name": "UsageMeter" }]
+		"bindings": [
+			{ "name": "USAGE_METER", "class_name": "UsageMeter" },
+			{ "name": "NEON_MONITOR", "class_name": "NeonMonitor" }
+		]
 	},
-	"migrations": [{ "tag": "v1", "new_sqlite_classes": ["UsageMeter"] }]
+	"migrations": [
+		{ "tag": "v1", "new_sqlite_classes": ["UsageMeter"] },
+		{ "tag": "v2", "new_sqlite_classes": ["NeonMonitor"] }
+	]
 }

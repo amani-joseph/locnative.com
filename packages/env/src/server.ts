@@ -36,6 +36,13 @@ function buildServerEnv() {
 				.int()
 				.positive()
 				.default(15_000),
+			// Neon usage monitor (apps/server/src/neon-monitor). All optional:
+			// the monitor skips runs without an API key and org ID, and only
+			// delivers to the channels that are configured.
+			NEON_API_KEY: z.string().min(1).optional(),
+			NEON_ORG_ID: z.string().min(1).optional(),
+			NEON_MONITOR_ALERT_EMAIL: z.string().email().optional(),
+			NEON_MONITOR_DISCORD_WEBHOOK_URL: z.string().url().optional(),
 		},
 		runtimeEnv: {
 			...process.env,
@@ -50,6 +57,11 @@ function buildServerEnv() {
 			STRIPE_PRICE_ID: process.env.STRIPE_PRICE_ID,
 			STRIPE_METER_EVENT_NAME: process.env.STRIPE_METER_EVENT_NAME,
 			BILLING_FREE_ALLOTMENT: process.env.BILLING_FREE_ALLOTMENT,
+			NEON_API_KEY: process.env.NEON_API_KEY,
+			NEON_ORG_ID: process.env.NEON_ORG_ID,
+			NEON_MONITOR_ALERT_EMAIL: process.env.NEON_MONITOR_ALERT_EMAIL,
+			NEON_MONITOR_DISCORD_WEBHOOK_URL:
+				process.env.NEON_MONITOR_DISCORD_WEBHOOK_URL,
 		},
 		emptyStringAsUndefined: true,
 	});

@@ -18,6 +18,7 @@ import { Hono, type Context as HonoContext } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import type Stripe from "stripe";
+import { NEON_MONITOR_INSTANCE } from "./neon-monitor/neon-monitor.ts";
 import {
 	type BatchGeocodeMessage,
 	processBatchGeocodeMessage,
@@ -28,9 +29,13 @@ import {
 } from "./queues/webhook-delivery.ts";
 import { CURRENT_TILE_API_VERSION, handleTileRequest } from "./tiles.ts";
 
-// Durable Object class must be re-exported from the Worker entry so the runtime
-// can construct it for the USAGE_METER binding declared in wrangler.jsonc.
+// Durable Object classes must be re-exported from the Worker entry so the
+// runtime can construct them for the bindings declared in wrangler.jsonc.
+export { NeonMonitor } from "./neon-monitor/neon-monitor.ts";
 export { UsageMeter } from "./usage-meter.ts";
+
+/** Cron expression for the hourly Neon usage monitor (wrangler.jsonc). */
+const NEON_MONITOR_CRON = "30 * * * *";
 
 const app = new Hono();
 
@@ -691,10 +696,21 @@ export default {
 	},
 	// biome-ignore lint/suspicious/useAwait: Cloudflare scheduled handler — work is handed to ctx.waitUntil() as fire-and-forget so the handler returns immediately; awaiting here would defeat that. Signature must stay async to satisfy the handler type.
 	async scheduled(
-		_event: { cron: string; scheduledTime: number },
-		_env: unknown,
+		event: { cron: string; scheduledTime: number },
+		env: { NEON_MONITOR: DurableObjectNamespace },
 		ctx: { waitUntil(p: Promise<unknown>): void }
 	): Promise<void> {
+		if (event.cron === NEON_MONITOR_CRON) {
+			const stub = env.NEON_MONITOR.get(
+				env.NEON_MONITOR.idFromName(NEON_MONITOR_INSTANCE)
+			);
+			ctx.waitUntil(
+				stub.fetch("https://neon-monitor/run").catch((err: unknown) => {
+					console.error("[cron] neon monitor failed:", err);
+				})
+			);
+			return;
+		}
 		ctx.waitUntil(
 			reportUsageToStripe(db).catch((err: unknown) => {
 				console.error("[cron] reportUsageToStripe failed:", err);
