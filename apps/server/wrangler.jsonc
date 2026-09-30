@@ -28,7 +28,9 @@
 		}
 	},
 	"triggers": {
-		"crons": ["0 * * * *"]
+		// Daily Stripe usage report (yesterday's final totals). Hourly kept Neon
+		// awake ~24 wakes/day pre-launch — see docs/audits/neon-compute-audit-2026-09-30.md.
+		"crons": ["10 0 * * *"]
 	},
 	"queues": {
 		"producers": [
