@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
 	applyRollover,
+	flushNeeded,
+	flushSnapshot,
 	increment,
 	type MeterState,
 	peek,
@@ -94,5 +96,42 @@ describe("increment", () => {
 			state = increment(state, now).state;
 		}
 		expect(state.currentPeriodRequests).toBe(11_000);
+	});
+});
+
+describe("flushNeeded", () => {
+	const snapshot = flushSnapshot(base);
+
+	it("flushes when nothing has been flushed yet", () => {
+		expect(flushNeeded(snapshot, undefined)).toBe(true);
+	});
+
+	it("skips when the mirrored columns are unchanged", () => {
+		expect(flushNeeded(flushSnapshot({ ...base }), snapshot)).toBe(false);
+	});
+
+	it("flushes when the counter, period or gate changes", () => {
+		expect(
+			flushNeeded(
+				flushSnapshot({ ...base, currentPeriodRequests: 1 }),
+				snapshot
+			)
+		).toBe(true);
+		expect(
+			flushNeeded(
+				flushSnapshot({ ...base, currentPeriodStart: "2026-07-01" }),
+				snapshot
+			)
+		).toBe(true);
+		expect(
+			flushNeeded(
+				flushSnapshot({ ...base, currentPeriodRequests: 10_000 }),
+				flushSnapshot({
+					...base,
+					currentPeriodRequests: 10_000,
+					hasPaymentMethod: true,
+				})
+			)
+		).toBe(true);
 	});
 });
