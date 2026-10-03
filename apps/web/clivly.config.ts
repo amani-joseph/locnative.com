@@ -3,10 +3,12 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as schema from "@locnative/database";
 import { createDb } from "@locnative/database";
-import { defineClivlyConfig } from "clivly/core";
-import { discoverFromDrizzle } from "clivly/core/drizzle";
-import { drizzleIntrospector, fromDrizzle } from "clivly/drizzle";
-import { createClivlySDK } from "clivly/sdk";
+import {
+	discoverFromDrizzle,
+	drizzleIntrospector,
+	fromDrizzle,
+} from "clivly/drizzle";
+import { createClivlySDK, defineClivlyConfig } from "clivly/sdk";
 import { config as loadEnv } from "dotenv";
 
 // The `.env` files only exist in the Node/CLI context, where the `clivly` CLI
