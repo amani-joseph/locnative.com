@@ -1,6 +1,3 @@
-import { existsSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import * as schema from "@locnative/database";
 import { createDb } from "@locnative/database";
 import {
@@ -9,28 +6,10 @@ import {
 	fromDrizzle,
 } from "clivly/drizzle";
 import { createClivlySDK, defineClivlyConfig } from "clivly/sdk";
-import { config as loadEnv } from "dotenv";
 
-// The `.env` files only exist in the Node/CLI context, where the `clivly` CLI
-// loads this config. On Cloudflare Workers (the deployed web app) there is no
-// filesystem and `import.meta.url` is `undefined`, so calling `fileURLToPath`
-// on it throws and crashes the Worker on every request. Env there comes from
-// Workers bindings (already on `process.env`), so skip filesystem loading.
-if (import.meta.url) {
-	const configDir = dirname(fileURLToPath(import.meta.url));
-	const localEnvFiles = [
-		resolve(configDir, ".env"),
-		resolve(configDir, ".dev.vars"),
-		resolve(configDir, "../server/.env"),
-		resolve(configDir, "../server/.dev.vars"),
-	];
-
-	for (const envPath of localEnvFiles) {
-		if (existsSync(envPath)) {
-			loadEnv({ path: envPath, override: false });
-		}
-	}
-}
+// This file also runs inside the Cloudflare Worker, so it must stay edge-safe:
+// no `node:*` imports. The CLI loads local env files from `clivly.cli.ts`;
+// on Workers, env comes from bindings (already on `process.env`).
 
 let cachedDb: ReturnType<typeof createDb> | undefined;
 

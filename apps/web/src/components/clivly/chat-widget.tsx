@@ -5,12 +5,15 @@ import {
 	createClivlyTransport,
 	createSessionFetcher,
 } from "@clivly/chat-widget";
+import type { CSSProperties } from "react";
 
 const getSession = createSessionFetcher({
 	sessionUrl: "/api/clivly/widget/session",
 });
 
 const createTransport = createClivlyTransport();
+
+const chatWidgetStyle = { "--clivly-chat-z-index": 50 } as CSSProperties;
 
 export function ClivlyChatWidget() {
 	const widgetId = import.meta.env.VITE_CLIVLY_WIDGET_ID?.trim();
@@ -25,16 +28,16 @@ export function ClivlyChatWidget() {
 		) : null;
 	}
 
+	// Since 0.16 the widget floats itself bottom-right (safe-area aware, full-
+	// screen sheet on phones). Keep it at the z-50 layer it always sat on so the
+	// app's own dialogs still stack above it.
 	return (
-		<div className="pointer-events-none fixed right-4 bottom-4 z-50 sm:right-6 sm:bottom-6">
-			<div className="pointer-events-auto">
-				<ChatWidget
-					createTransport={createTransport}
-					getSession={getSession}
-					launcherLabel="Chat with us"
-					widgetId={widgetId}
-				/>
-			</div>
-		</div>
+		<ChatWidget
+			createTransport={createTransport}
+			getSession={getSession}
+			launcherLabel="Chat with us"
+			style={chatWidgetStyle}
+			widgetId={widgetId}
+		/>
 	);
 }
