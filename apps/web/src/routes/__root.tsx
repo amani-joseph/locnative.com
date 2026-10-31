@@ -52,8 +52,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 			},
 			{
 				name: "viewport",
-				content:
-					"width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover",
+				content: "width=device-width, initial-scale=1, viewport-fit=cover",
 			},
 			{
 				title: "Locnative — Locations API for developers",
@@ -168,7 +167,7 @@ function RootDocument() {
 				>
 					<LiveAnnouncerProvider>
 						<SkipLink />
-						<div className="grid h-svh grid-rows-[auto_1fr]">
+						<div className="grid h-svh grid-cols-1 grid-rows-[auto_1fr]">
 							<Outlet />
 						</div>
 						<ClivlyChatWidget />

@@ -32,7 +32,7 @@ export function DeliveryTimelineDrawer({
 }: DeliveryTimelineDrawerProps) {
 	return (
 		<Sheet onOpenChange={(o) => !o && onClose()} open={open}>
-			<SheetContent className="w-[460px] sm:max-w-[460px]">
+			<SheetContent className="w-full sm:w-[460px] sm:max-w-[460px]">
 				<SheetHeader>
 					<SheetTitle>Delivery attempts</SheetTitle>
 					<SheetDescription>
