@@ -22,6 +22,33 @@
 }
 
 /*
+ * iOS Safari zooms the page when a focused field's font-size is below 16px.
+ * The UI primitives already use text-base below md, but raw <input>s and
+ * third-party widgets can set smaller sizes, and tablets are touch devices
+ * too (coarse pointer). This rule is intentionally
+ * unlayered so it beats Tailwind's utility layer on phones without
+ * !important, while pinch-zoom stays enabled (no maximum-scale) for WCAG 1.4.4.
+ */
+@media (max-width: 47.99rem), (pointer: coarse) {
+	input:not(
+			[type="checkbox"],
+			[type="radio"],
+			[type="range"],
+			[type="file"],
+			[type="color"],
+			[type="button"],
+			[type="submit"],
+			[type="reset"],
+			[type="image"]
+		),
+	textarea,
+	select,
+	[contenteditable="true"] {
+		font-size: max(16px, 1rem);
+	}
+}
+
+/*
  * Global reduced-motion safety net (WCAG 2.3.3). Decorative animations are also
  * gated in JS via useReducedMotion(), but this guarantees that ANY missed
  * animation/transition is neutralised when the OS requests reduced motion.

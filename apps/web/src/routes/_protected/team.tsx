@@ -557,7 +557,7 @@ function TeamSection({
 											}
 											value={member.role}
 										>
-											<SelectTrigger className="h-8 w-28 text-xs">
+											<SelectTrigger className="h-8 w-28 md:text-xs">
 												<SelectValue />
 											</SelectTrigger>
 											<SelectContent>

@@ -41,7 +41,7 @@ export function ZoneAddressesDrawer({
 }: ZoneAddressesDrawerProps) {
 	return (
 		<Sheet onOpenChange={(o) => !o && onClose()} open={open}>
-			<SheetContent className="w-[480px] sm:max-w-[480px]">
+			<SheetContent className="w-full sm:w-[480px] sm:max-w-[480px]">
 				<SheetHeader>
 					<SheetTitle>Addresses in {zoneName}</SheetTitle>
 					<SheetDescription>
