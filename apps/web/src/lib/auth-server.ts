@@ -106,13 +106,15 @@ export interface BetterAuthSession {
 	};
 }
 
-export const getSession = async (): Promise<BetterAuthSession | null> => {
+export const getSession = async (
+	request?: Request
+): Promise<BetterAuthSession | null> => {
 	const targetUrl = getServerTargetUrl("/api/auth/get-session");
 	if (!targetUrl) {
 		return null;
 	}
 
-	const headers = new Headers(getRequestHeaders());
+	const headers = new Headers(request?.headers ?? getRequestHeaders());
 	headers.delete("content-length");
 	headers.delete("transfer-encoding");
 	headers.set("accept-encoding", "identity");

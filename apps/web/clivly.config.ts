@@ -1,3 +1,4 @@
+// biome-ignore lint/performance/noNamespaceImport: Clivly discovers every exported Drizzle table.
 import * as schema from "@locnative/database";
 import { createDb } from "@locnative/database";
 import {
@@ -5,7 +6,8 @@ import {
 	drizzleIntrospector,
 	fromDrizzle,
 } from "clivly/drizzle";
-import { createClivlySDK, defineClivlyConfig } from "clivly/sdk";
+import type { CursorKV } from "clivly/sdk";
+import { createClivlySDK, defineClivlyConfig, kvCursorStore } from "clivly/sdk";
 
 // This file also runs inside the Cloudflare Worker, so it must stay edge-safe:
 // no `node:*` imports. The CLI loads local env files from `clivly.cli.ts`;
@@ -32,6 +34,17 @@ const db = new Proxy({} as ReturnType<typeof createDb>, {
 	},
 });
 
+const getCursorNamespace = async (): Promise<CursorKV> => {
+	// Resolve bindings inside an invocation so the CLI and Vite's Node process
+	// can still load this config without importing the Workers runtime.
+	const { env } = await import("cloudflare:workers");
+	const namespace = env.CLIVLY_CURSORS;
+	if (!namespace) {
+		throw new Error("CLIVLY_CURSORS binding is required for persistent sync");
+	}
+	return namespace;
+};
+
 const entities = defineClivlyConfig({
 	entities: {
 		contacts: {
@@ -48,8 +61,24 @@ const entities = defineClivlyConfig({
 });
 
 export default createClivlySDK({
-	apiKey: process.env.CLIVLY_API_KEY!,
+	apiKey:
+		process.env.CLIVLY_SECRET_KEY?.trim() ||
+		process.env.CLIVLY_API_KEY?.trim() ||
+		"",
 	entities,
+	// Development uses the SDK's memory store; production survives Worker eviction.
+	cursorStore: import.meta.env?.PROD
+		? kvCursorStore({
+				async get(key) {
+					const namespace = await getCursorNamespace();
+					return namespace.get(key);
+				},
+				async put(key, value) {
+					const namespace = await getCursorNamespace();
+					await namespace.put(key, value);
+				},
+			})
+		: undefined,
 	// Expose the full Drizzle namespace so Clivly can discover additional tables
 	// if you add more mappings in the dashboard later.
 	schema: discoverFromDrizzle(schema),
