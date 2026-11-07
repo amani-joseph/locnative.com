@@ -17,6 +17,10 @@ VITE_SERVER_URL = "https://api.locnative.com"
 binding = "SERVER"
 service = "locnative-server"
 
+[[kv_namespaces]]
+binding = "CLIVLY_CURSORS"
+id = "fb2d3ea9ecae456884790e849204b980"
+
 [observability]
 enabled = true
 

@@ -6,6 +6,7 @@ import {
 	createSessionFetcher,
 } from "@clivly/chat-widget";
 import type { CSSProperties } from "react";
+import { useSession } from "@/lib/auth-client";
 
 const getSession = createSessionFetcher({
 	sessionUrl: "/api/clivly/widget/session",
@@ -16,6 +17,7 @@ const createTransport = createClivlyTransport();
 const chatWidgetStyle = { "--clivly-chat-z-index": 50 } as CSSProperties;
 
 export function ClivlyChatWidget() {
+	const { data: session, isPending } = useSession();
 	const widgetId = import.meta.env.VITE_CLIVLY_WIDGET_ID?.trim();
 
 	if (!widgetId) {
@@ -27,6 +29,14 @@ export function ClivlyChatWidget() {
 			</div>
 		) : null;
 	}
+	if (isPending) {
+		return null;
+	}
+	const user = session?.user;
+	const email = user?.email.trim();
+	const defaultVisitor = email
+		? { email, name: user?.name.trim() || email }
+		: undefined;
 
 	// Since 0.16 the widget floats itself bottom-right (safe-area aware, full-
 	// screen sheet on phones). Keep it at the z-50 layer it always sat on so the
@@ -34,7 +44,9 @@ export function ClivlyChatWidget() {
 	return (
 		<ChatWidget
 			createTransport={createTransport}
+			defaultVisitor={defaultVisitor}
 			getSession={getSession}
+			key={user?.id ?? "anonymous"}
 			launcherLabel="Chat with us"
 			style={chatWidgetStyle}
 			widgetId={widgetId}
