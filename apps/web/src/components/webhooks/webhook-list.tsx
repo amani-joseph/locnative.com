@@ -8,7 +8,8 @@ import {
 	TableHeader,
 	TableRow,
 } from "@locnative/ui/components/table";
-import { ListIcon, RefreshCwIcon, TrashIcon } from "lucide-react";
+import { ListIcon, RefreshCwIcon, TrashIcon, WebhookIcon } from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
 
 export interface WebhookRow {
 	active: boolean;
@@ -35,9 +36,12 @@ export function WebhookList({
 }: WebhookListProps) {
 	if (webhooks.length === 0) {
 		return (
-			<p className="py-8 text-center text-muted-foreground text-sm">
-				No webhooks yet.
-			</p>
+			<EmptyState
+				className="border-0 py-8"
+				description="Webhooks notify your endpoint when devices enter or leave a zone."
+				icon={<WebhookIcon />}
+				title="No webhooks yet"
+			/>
 		);
 	}
 	return (

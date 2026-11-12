@@ -9,6 +9,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ActiveProjectSelector } from "@/components/active-project-selector";
+import { PageHeader } from "@/components/page-header";
 import {
 	type DeliveryAttemptItem,
 	DeliveryTimelineDrawer,
@@ -170,17 +171,23 @@ function RouteComponent() {
 	};
 
 	return (
-		<div className="space-y-4">
-			<div className="flex items-center justify-between">
-				<ActiveProjectSelector
-					activeId={activeId}
-					onSelect={select}
-					projects={projects}
-				/>
-				<Button disabled={!activeId} onClick={() => setDialogOpen(true)}>
-					Create webhook
-				</Button>
-			</div>
+		<div className="flex flex-col gap-6">
+			<PageHeader
+				actions={
+					<>
+						<ActiveProjectSelector
+							activeId={activeId}
+							onSelect={select}
+							projects={projects}
+						/>
+						<Button disabled={!activeId} onClick={() => setDialogOpen(true)}>
+							Create webhook
+						</Button>
+					</>
+				}
+				description="Get an HTTP callback when a device enters or leaves one of your zones."
+				title="Webhooks"
+			/>
 			<Card>
 				<CardHeader>
 					<CardTitle className="text-sm">

@@ -21,6 +21,7 @@ import {
 	type BatchResultRow,
 	ResultsTable,
 } from "@/components/batch/results-table";
+import { PageHeader } from "@/components/page-header";
 import { useActiveProject } from "@/lib/active-project";
 import { orpcClient } from "@/lib/orpc";
 
@@ -162,15 +163,21 @@ function RouteComponent() {
 	};
 
 	return (
-		<div className="space-y-4">
-			<ActiveProjectSelector
-				activeId={activeId}
-				onSelect={select}
-				projects={projects}
+		<div className="flex flex-col gap-6">
+			<PageHeader
+				actions={
+					<ActiveProjectSelector
+						activeId={activeId}
+						onSelect={select}
+						projects={projects}
+					/>
+				}
+				description="Paste or upload a list of addresses and geocode them in one job."
+				title="Batch geocoding"
 			/>
 			<Card>
 				<CardHeader>
-					<CardTitle className="text-sm">Batch geocoding</CardTitle>
+					<CardTitle className="text-sm">New batch</CardTitle>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<BatchInput onSubmit={handleSubmit} submitting={submitting} />
