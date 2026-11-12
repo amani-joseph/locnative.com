@@ -1,5 +1,5 @@
 import { cn } from "@locnative/ui/lib/utils";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type Variant = "suburb" | "topographic";
 
@@ -53,6 +53,21 @@ export function AuthIllustration() {
 		);
 	}, []);
 
+	// Reveal on the image's own load/error events. Do not use img.decode():
+	// it can stay pending indefinitely, which left the scene invisible.
+	const revealWhenLoaded = useCallback((node: HTMLImageElement | null) => {
+		if (!node) {
+			return;
+		}
+		if (node.complete) {
+			setLoaded(true);
+			return;
+		}
+		const reveal = () => setLoaded(true);
+		node.addEventListener("load", reveal, { once: true });
+		node.addEventListener("error", reveal, { once: true });
+	}, []);
+
 	return (
 		<div aria-hidden="true" className="absolute inset-0 bg-[#0b0b10]">
 			{variant ? (
@@ -67,13 +82,7 @@ export function AuthIllustration() {
 						className="absolute inset-0 size-full object-cover"
 						decoding="async"
 						height={1290}
-						ref={(node) => {
-							// decode() resolves for cached and freshly loaded images alike
-							node
-								?.decode()
-								.catch(() => undefined)
-								.finally(() => setLoaded(true));
-						}}
+						ref={revealWhenLoaded}
 						src={SOURCES[variant]}
 						width={1800}
 					/>
