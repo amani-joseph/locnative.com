@@ -20,6 +20,12 @@ catalog:
   tailwindcss: ^4.1.18
   '@types/react': ^19.2.10
   '@types/react-dom': ^19.2.3
+  # Every @orpc/* package must resolve to one version: ORPCError is checked with
+  # instanceof, so a second copy turns UNAUTHORIZED (401) into a 500.
+  '@orpc/client': 1.14.6
+  '@orpc/openapi': 1.14.6
+  '@orpc/server': 1.14.6
+  '@orpc/tanstack-query': 1.14.6
 
 overrides:
   stripe: 22.2.2
