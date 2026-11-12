@@ -1,11 +1,11 @@
-# Roadmap: Wherabouts — Projects & API Key Management
+# Roadmap: Locnative — Projects & API Key Management
 
 > Tactical roadmap for the current execution track.
 > For the strategic 18-month platform roadmap, see `PLATFORM-ROADMAP.md` and `PLATFORM-MILESTONES.md`.
 
 ## Overview
 
-Transform Wherabouts from a flat user-to-key model into a project-scoped API key management system. The work progresses from database schema changes (preserving existing keys), through project CRUD, project-scoped key management, key lifecycle features, and finally an integrated dashboard experience. Each phase delivers a complete vertical slice that can be verified independently.
+Transform Locnative from a flat user-to-key model into a project-scoped API key management system. The work progresses from database schema changes (preserving existing keys), through project CRUD, project-scoped key management, key lifecycle features, and finally an integrated dashboard experience. Each phase delivers a complete vertical slice that can be verified independently.
 
 ## Phases
 

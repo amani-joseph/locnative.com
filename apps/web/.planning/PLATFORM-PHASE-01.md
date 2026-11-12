@@ -2,7 +2,7 @@
 
 ## Goal
 
-Establish Wherabouts as a reliable, documented, production-grade API platform that developers can adopt without manual support.
+Establish Locnative as a reliable, documented, production-grade API platform that developers can adopt without manual support.
 
 ## Timeline
 

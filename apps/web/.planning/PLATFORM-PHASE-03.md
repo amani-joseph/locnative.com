@@ -2,7 +2,7 @@
 
 ## Goal
 
-Operationalize Wherabouts as a self-serve platform with visibility, pricing, async workflows, and broader integration reach.
+Operationalize Locnative as a self-serve platform with visibility, pricing, async workflows, and broader integration reach.
 
 ## Timeline
 

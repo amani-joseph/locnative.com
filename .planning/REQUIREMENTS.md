@@ -1,4 +1,4 @@
-# Requirements: Wherabouts.com — BetterAuth Migration
+# Requirements: Locnative.com — BetterAuth Migration
 
 **Defined:** 2026-04-14
 **Core Value:** Users can authenticate seamlessly — login, signup, OAuth, and session persistence must work without disruption after the migration.

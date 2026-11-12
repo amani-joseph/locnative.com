@@ -1,13 +1,13 @@
 # Project Research Summary
 
-**Project:** Wherabouts -- Project-Scoped API Key Management
+**Project:** Locnative -- Project-Scoped API Key Management
 **Domain:** SaaS geocoding API with developer-facing key management
 **Researched:** 2026-04-12
 **Confidence:** HIGH
 
 ## Executive Summary
 
-Wherabouts needs to evolve from a flat user-to-key model into a project-scoped API key management system. This is a well-understood domain pattern (Stripe, Google Cloud, Mapbox all use it) and the existing stack already contains every dependency needed. No new runtime libraries are required -- the work is schema extension, server function additions, and UI build-out using Drizzle ORM, TanStack Start server functions, Better Auth, and existing shadcn/ui components.
+Locnative needs to evolve from a flat user-to-key model into a project-scoped API key management system. This is a well-understood domain pattern (Stripe, Google Cloud, Mapbox all use it) and the existing stack already contains every dependency needed. No new runtime libraries are required -- the work is schema extension, server function additions, and UI build-out using Drizzle ORM, TanStack Start server functions, Better Auth, and existing shadcn/ui components.
 
 The recommended approach is a phased migration that preserves backward compatibility. The `api_keys` table gains a nullable `project_id` foreign key, a backfill migration creates default projects for existing users and assigns orphaned keys, and only then is the NOT NULL constraint applied. This prevents the single most dangerous pitfall: breaking existing API keys in production during migration. Key expiration, rotation, and project-scoped usage dashboards layer on top of this foundation.
 

@@ -25,7 +25,7 @@ Features users expect from any API product with project/key management. Missing 
 
 ## Differentiators
 
-Features that set Wherabouts apart from commodity geocoding APIs. Not expected, but valued.
+Features that set Locnative apart from commodity geocoding APIs. Not expected, but valued.
 
 | Feature | Value Proposition | Complexity | Notes |
 |---------|-------------------|------------|-------|
