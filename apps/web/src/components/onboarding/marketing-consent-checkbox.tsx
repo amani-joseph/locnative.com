@@ -25,7 +25,9 @@ export function MarketingConsentCheckbox({
 				id="marketing-consent"
 				onCheckedChange={onChange}
 			/>
-			<span className="text-foreground text-sm">{MARKETING_CONSENT_WORDING}</span>
+			<span className="text-foreground text-sm">
+				{MARKETING_CONSENT_WORDING}
+			</span>
 		</label>
 	);
 }
