@@ -44,6 +44,7 @@ import {
 	useMemo,
 	useState,
 } from "react";
+import { EmptyState } from "@/components/empty-state";
 import { orpcClient } from "@/lib/orpc";
 
 type ApiKeyListItem = Awaited<
@@ -564,24 +565,17 @@ function EmptyProjectsState({
 	onCreated: () => Promise<void>;
 }) {
 	return (
-		<Card className="border-dashed">
-			<CardContent className="flex flex-col items-center gap-4 py-12 text-center">
-				<div className="flex size-16 items-center justify-center rounded-full bg-muted">
-					<FolderOpenIcon className="size-8 text-muted-foreground" />
-				</div>
-				<div>
-					<p className="font-semibold text-lg">No projects yet</p>
-					<p className="mx-auto max-w-sm text-muted-foreground text-sm">
-						Create a project to attach an existing API key or auto-generate a
-						new one from the project name.
-					</p>
-				</div>
+		<EmptyState
+			actions={
 				<CreateProjectDialog
 					apiKeyOptions={apiKeyOptions}
 					onCreated={onCreated}
 				/>
-			</CardContent>
-		</Card>
+			}
+			description="Create a project to attach an existing API key or auto-generate a new one from the project name."
+			icon={<FolderOpenIcon />}
+			title="No projects yet"
+		/>
 	);
 }
 

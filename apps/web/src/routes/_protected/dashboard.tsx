@@ -21,6 +21,7 @@ import {
 	ZapIcon,
 } from "lucide-react";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
+import { EmptyState } from "@/components/empty-state";
 import { useSession } from "@/lib/auth-client";
 import { orpcClient } from "@/lib/orpc";
 
@@ -74,33 +75,32 @@ function StatsLoadingSkeleton() {
 
 function EmptyDashboard() {
 	return (
-		<Card className="border-dashed">
-			<CardContent className="flex flex-col items-center gap-4 py-12 text-center">
-				<div className="flex size-16 items-center justify-center rounded-full bg-muted">
-					<RocketIcon className="size-8 text-muted-foreground" />
-				</div>
-				<div>
-					<p className="font-semibold text-lg">Get started with Locnative</p>
-					<p className="mx-auto max-w-sm text-muted-foreground text-sm">
-						Create your first API key and start geocoding addresses in minutes.
-					</p>
-				</div>
-				<div className="flex flex-wrap gap-3">
-					<Link to="/api-keys">
-						<Button>
-							<KeyRoundIcon className="size-4" />
-							Create API Key
-						</Button>
-					</Link>
-					<Link to="/docs">
-						<Button variant="outline">
-							<BookOpenIcon className="size-4" />
-							Read the Docs
-						</Button>
-					</Link>
-				</div>
-			</CardContent>
-		</Card>
+		<EmptyState
+			actions={
+				<>
+					<Button
+						render={
+							<Link to="/api-keys">
+								<KeyRoundIcon className="size-4" />
+								Create API Key
+							</Link>
+						}
+					/>
+					<Button
+						render={
+							<Link to="/docs">
+								<BookOpenIcon className="size-4" />
+								Read the Docs
+							</Link>
+						}
+						variant="outline"
+					/>
+				</>
+			}
+			description="Create your first API key and start geocoding addresses in minutes."
+			icon={<RocketIcon />}
+			title="Get started with Locnative"
+		/>
 	);
 }
 

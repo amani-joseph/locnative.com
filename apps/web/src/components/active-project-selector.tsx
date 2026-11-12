@@ -1,3 +1,4 @@
+import { Button } from "@locnative/ui/components/button";
 import {
 	Select,
 	SelectContent,
@@ -5,6 +6,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@locnative/ui/components/select";
+import { Link } from "@tanstack/react-router";
+import { FolderPlusIcon } from "lucide-react";
 
 export interface ProjectOption {
 	id: string;
@@ -23,14 +26,25 @@ export function ActiveProjectSelector({
 	onSelect,
 }: ActiveProjectSelectorProps) {
 	if (projects.length === 0) {
-		return <p className="text-muted-foreground text-sm">No projects yet.</p>;
+		return (
+			<Button
+				render={
+					<Link to="/projects">
+						<FolderPlusIcon className="size-4" />
+						Create a project
+					</Link>
+				}
+				size="sm"
+				variant="outline"
+			/>
+		);
 	}
 	return (
 		<Select
 			onValueChange={(value) => onSelect(value ?? "")}
 			value={activeId ?? ""}
 		>
-			<SelectTrigger className="w-56">
+			<SelectTrigger className="w-full sm:w-56">
 				<SelectValue placeholder="Select a project">
 					{(value: string | null) =>
 						projects.find((project) => project.id === value)?.name ??

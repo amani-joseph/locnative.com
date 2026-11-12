@@ -6,7 +6,14 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@locnative/ui/components/card";
-import { ListIcon, MapPinIcon, PencilIcon, TrashIcon } from "lucide-react";
+import {
+	HexagonIcon,
+	ListIcon,
+	MapPinIcon,
+	PencilIcon,
+	TrashIcon,
+} from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
 
 export interface ZoneListProps {
 	onDelete: (id: number) => void;
@@ -28,8 +35,13 @@ export function ZoneList({
 	if (zones.length === 0) {
 		return (
 			<Card>
-				<CardContent className="py-8 text-center text-muted-foreground text-sm">
-					No zones yet. Draw a polygon on the map to create one.
+				<CardContent>
+					<EmptyState
+						className="border-0 py-8"
+						description="Draw a polygon on the map to create one."
+						icon={<HexagonIcon />}
+						title="No zones yet"
+					/>
 				</CardContent>
 			</Card>
 		);

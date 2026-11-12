@@ -18,6 +18,8 @@ import {
 	VideoIcon,
 } from "lucide-react";
 
+import { PageHeader } from "@/components/page-header";
+
 export const Route = createFileRoute("/_protected/help")({
 	component: RouteComponent,
 });
@@ -75,18 +77,18 @@ const faqs = [
 function RouteComponent() {
 	return (
 		<div className="flex flex-col gap-6">
-			<div className="text-center">
-				<h1 className="font-semibold text-2xl tracking-tight">Help Center</h1>
-				<p className="text-muted-foreground text-sm">
-					Find answers, guides, and resources to get the most out of Locnative
-				</p>
-			</div>
+			<PageHeader
+				description="Find answers, guides, and resources to get the most out of Locnative."
+				title="Help Center"
+			/>
 
-			<div className="mx-auto w-full max-w-lg">
-				<div className="relative">
-					<SearchIcon className="absolute top-3 left-3 size-4 text-muted-foreground" />
-					<Input className="pl-9" placeholder="Search for help articles..." />
-				</div>
+			<div className="relative w-full max-w-lg">
+				<SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+				<Input
+					aria-label="Search help articles"
+					className="pl-9"
+					placeholder="Search for help articles..."
+				/>
 			</div>
 
 			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

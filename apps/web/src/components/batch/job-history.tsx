@@ -6,6 +6,8 @@ import {
 	TableHeader,
 	TableRow,
 } from "@locnative/ui/components/table";
+import { ListChecksIcon } from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
 
 export interface JobHistoryItem {
 	createdAt: string;
@@ -23,9 +25,12 @@ export interface JobHistoryProps {
 export function JobHistory({ jobs, onSelect }: JobHistoryProps) {
 	if (jobs.length === 0) {
 		return (
-			<p className="py-4 text-center text-muted-foreground text-sm">
-				No jobs yet.
-			</p>
+			<EmptyState
+				className="border-0 py-8"
+				description="Submitted batches and their progress will show up here."
+				icon={<ListChecksIcon />}
+				title="No jobs yet"
+			/>
 		);
 	}
 	return (

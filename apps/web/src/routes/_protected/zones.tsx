@@ -4,6 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ActiveProjectSelector } from "@/components/active-project-selector";
+import { PageHeader } from "@/components/page-header";
 import {
 	type PointTestResult,
 	PointTestTool,
@@ -268,29 +269,35 @@ function RouteComponent() {
 	};
 
 	return (
-		<div className="space-y-4">
-			<div className="flex items-center justify-between">
-				<ActiveProjectSelector
-					activeId={activeId}
-					onSelect={select}
-					projects={projects}
-				/>
-				{editingId === null ? (
-					<Button
-						disabled={!(activeId && controls)}
-						onClick={() => controls?.startDrawing()}
-					>
-						Draw zone
-					</Button>
-				) : (
-					<div className="flex gap-2">
-						<Button onClick={handleCancelEdit} variant="outline">
-							Cancel
-						</Button>
-						<Button onClick={handleSaveEdit}>Save edit</Button>
-					</div>
-				)}
-			</div>
+		<div className="flex flex-col gap-6">
+			<PageHeader
+				actions={
+					<>
+						<ActiveProjectSelector
+							activeId={activeId}
+							onSelect={select}
+							projects={projects}
+						/>
+						{editingId === null ? (
+							<Button
+								disabled={!(activeId && controls)}
+								onClick={() => controls?.startDrawing()}
+							>
+								Draw zone
+							</Button>
+						) : (
+							<div className="flex gap-2">
+								<Button onClick={handleCancelEdit} variant="outline">
+									Cancel
+								</Button>
+								<Button onClick={handleSaveEdit}>Save edit</Button>
+							</div>
+						)}
+					</>
+				}
+				description="Draw geofences on the map, then test points or list the addresses inside them."
+				title="Zones"
+			/>
 			<div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_320px]">
 				<ZoneMap
 					highlightZoneIds={matchedZoneIds}
