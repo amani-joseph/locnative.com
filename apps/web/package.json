@@ -7,7 +7,8 @@
     "dev": "vite dev",
     "preview": "wrangler dev",
     "deploy": "vite build && wrangler deploy",
-    "test": "vitest"
+    "test": "vitest",
+    "generate:auth-illustrations": "node scripts/generate-auth-illustrations.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",
@@ -82,6 +83,7 @@
     "@vitejs/plugin-react": "^5.0.4",
     "eslint": "^9",
     "jsdom": "^26.0.0",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4.1.17",
     "typescript": "^5",
     "vite": "^7.0.2",
