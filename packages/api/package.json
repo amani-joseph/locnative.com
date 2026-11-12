@@ -12,8 +12,8 @@
     "./*": "./src/*.ts"
   },
   "dependencies": {
-    "@orpc/openapi": "^1.13.14",
-    "@orpc/server": "^1.9.0",
+    "@orpc/openapi": "catalog:",
+    "@orpc/server": "catalog:",
     "@locnative/auth": "workspace:*",
     "@locnative/database": "workspace:*",
     "@locnative/env": "workspace:*",
