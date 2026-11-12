@@ -39,8 +39,13 @@ const fetchSession = createServerFn({ method: "GET" }).handler(async () => {
 	return await getSession();
 });
 
+const needsOnboarding = (
+	user: { onboardingCompletedAt?: Date | string | null } | null | undefined
+): boolean => Boolean(user) && !user?.onboardingCompletedAt;
+
 export interface RouterAppContext {
 	isAuthenticated?: boolean;
+	needsOnboarding?: boolean;
 	queryClient: QueryClient;
 }
 
@@ -102,7 +107,10 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 			} catch {
 				// fetchSession may throw when request context is unavailable.
 			}
-			return { isAuthenticated: Boolean(session?.session) };
+			return {
+				isAuthenticated: Boolean(session?.session),
+				needsOnboarding: needsOnboarding(session?.user),
+			};
 		}
 
 		// Client-side (SPA navigation): check the session directly with the
@@ -110,9 +118,12 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 		// (SameSite=None) which the server function route cannot forward.
 		try {
 			const { data } = await authClient.getSession();
-			return { isAuthenticated: Boolean(data?.session) };
+			return {
+				isAuthenticated: Boolean(data?.session),
+				needsOnboarding: needsOnboarding(data?.user),
+			};
 		} catch {
-			return { isAuthenticated: false };
+			return { isAuthenticated: false, needsOnboarding: false };
 		}
 	},
 });

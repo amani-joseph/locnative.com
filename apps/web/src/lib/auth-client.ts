@@ -1,4 +1,7 @@
-import { twoFactorClient } from "better-auth/client/plugins";
+import {
+	inferAdditionalFields,
+	twoFactorClient,
+} from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 const getAuthBaseUrl = (): string => {
@@ -25,6 +28,11 @@ export const authClient = createAuthClient({
 		credentials: "include",
 	},
 	plugins: [
+		inferAdditionalFields({
+			user: {
+				onboardingCompletedAt: { type: "date", required: false, input: false },
+			},
+		}),
 		twoFactorClient({
 			onTwoFactorRedirect() {
 				if (typeof window !== "undefined") {

@@ -6,6 +6,9 @@ export const Route = createFileRoute("/_protected")({
 		if (!context.isAuthenticated) {
 			throw redirect({ to: "/sign-in" });
 		}
+		if (context.needsOnboarding) {
+			throw redirect({ to: "/onboarding" });
+		}
 	},
 	component: RouteComponent,
 });

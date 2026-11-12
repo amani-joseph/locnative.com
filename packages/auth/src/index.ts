@@ -146,6 +146,16 @@ function buildAuth() {
 		plugins: [twoFactor({ issuer: "Locnative" })],
 		user: {
 			deleteUser: { enabled: true },
+			additionalFields: {
+				// Exposed on the session so route guards can send unfinished users
+				// to onboarding without an extra request. Written only by the
+				// onboarding RPC, never by sign-up input.
+				onboardingCompletedAt: {
+					type: "date",
+					required: false,
+					input: false,
+				},
+			},
 		},
 		socialProviders: {
 			github: {

@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { EmailAndServicesCard } from "@/components/settings/preferences/email-and-services-card.tsx";
 import { ActiveSessionsCard } from "@/components/settings/security/active-sessions-card.tsx";
 import { DeleteAccountCard } from "@/components/settings/security/delete-account-card.tsx";
 import { TwoFactorCard } from "@/components/settings/security/two-factor-card.tsx";
@@ -180,7 +181,8 @@ function RouteComponent() {
 					</Card>
 				</TabsContent>
 
-				<TabsContent value="notifications">
+				<TabsContent className="space-y-6" value="notifications">
+					<EmailAndServicesCard />
 					<Card>
 						<CardHeader>
 							<CardTitle>Notification Preferences</CardTitle>
@@ -206,12 +208,6 @@ function RouteComponent() {
 									description:
 										"Receive a weekly email digest of your API usage",
 									defaultChecked: false,
-								},
-								{
-									title: "Product Updates",
-									description:
-										"Stay informed about new features and improvements",
-									defaultChecked: true,
 								},
 								{
 									title: "Billing Reminders",

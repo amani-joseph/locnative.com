@@ -17,6 +17,7 @@
     "@locnative/auth": "workspace:*",
     "@locnative/database": "workspace:*",
     "@locnative/env": "workspace:*",
+    "clivly": "^0.22.0",
     "drizzle-orm": "^0.44.7",
     "hono": "^4.10.4",
     "stripe": "^22.2.0",
