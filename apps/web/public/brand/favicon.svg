@@ -1,6 +1,19 @@
 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="locnative icon">
   <title>locnative icon</title>
   <rect width="100" height="100" rx="22" fill="#0A0F0D"/>
-  <path d="M22,18 L22,78 L82,78" fill="none" stroke="#EEF5F0" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M52,52 L52,20 L80,50 L80,20" fill="none" stroke="#4EE0A0" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <g transform="translate(9,9) scale(0.82)"><path d="M20.5,20.5 L20.5,50 L20.5,79.5 L50,79.5 L79.5,79.5" fill="none" stroke="#EEF5F0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+  <path d="M50,50 L50,20.5 L79.5,50 L79.5,20.5" fill="none" stroke="#4EE0A0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity="1.0"/>
+  <g fill="#EEF5F0">
+    <rect x="12" y="12" width="17" height="17" rx="6" transform="rotate(45 20.5 20.5)" opacity="0.4"/>
+    <rect x="12" y="41.5" width="17" height="17" rx="6" transform="rotate(45 20.5 50)" opacity="0.65"/>
+    <rect x="12" y="71" width="17" height="17" rx="6" transform="rotate(45 20.5 79.5)" opacity="0.85"/>
+    <rect x="41.5" y="71" width="17" height="17" rx="6" transform="rotate(45 50 79.5)" opacity="0.95"/>
+    <rect x="71" y="71" width="17" height="17" rx="6" transform="rotate(45 79.5 79.5)"/>
+  </g>
+  <g fill="#4EE0A0">
+    <rect x="41.5" y="41.5" width="17" height="17" rx="6" transform="rotate(45 50 50)" opacity="0.45"/>
+    <rect x="41.5" y="12" width="17" height="17" rx="6" transform="rotate(45 50 20.5)" opacity="0.7"/>
+    <rect x="71" y="41.5" width="17" height="17" rx="6" transform="rotate(45 79.5 50)" opacity="0.88"/>
+    <rect x="71" y="12" width="17" height="17" rx="6" transform="rotate(45 79.5 20.5)"/>
+  </g></g>
 </svg>

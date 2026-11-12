@@ -37,7 +37,7 @@
 | `logo-wordmark-inverted.svg` | Wordmark only for light backgrounds | Light |
 | `logo-monochrome.svg` | All-black — print, emboss, engraving | Light |
 | `logo-monochrome-white.svg` | All-white — photographic / dark backgrounds | Dark |
-| `favicon.svg` | Rounded-square app icon (fused LN monogram) | #0A0F0D |
+| `favicon.svg` | Rounded-square app icon (full brand mark) | #0A0F0D |
 | `apple-touch-icon.svg` | iOS home-screen icon (180 × 180) | #0C0C0C |
 | `og-image.svg` | Open Graph / Twitter card (1200 × 630) | #0C0C0C |
 
