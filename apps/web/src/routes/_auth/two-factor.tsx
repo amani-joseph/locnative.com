@@ -1,16 +1,11 @@
 import { Button } from "@locnative/ui/components/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@locnative/ui/components/card";
+import { Checkbox } from "@locnative/ui/components/checkbox";
 import { Input } from "@locnative/ui/components/input";
 import { Label } from "@locnative/ui/components/label";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { AuthFrame } from "@/components/auth-frame";
 import { twoFactor } from "@/lib/auth-client";
 
 const DASHBOARD_PATH = "/dashboard";
@@ -41,59 +36,68 @@ function TwoFactorRoute() {
 	};
 
 	return (
-		<div className="mx-auto flex min-h-svh w-full max-w-sm items-center px-4">
-			<Card className="w-full">
-				<CardHeader>
-					<CardTitle>Two-factor authentication</CardTitle>
-					<CardDescription>
-						{useBackup
-							? "Enter one of your backup codes."
-							: "Enter the 6-digit code from your authenticator app."}
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<form className="space-y-4" onSubmit={submit}>
-						<div className="space-y-2">
-							<Label htmlFor="code">
-								{useBackup ? "Backup code" : "Authentication code"}
-							</Label>
-							<Input
-								autoComplete="one-time-code"
-								autoFocus
-								id="code"
-								inputMode={useBackup ? "text" : "numeric"}
-								onChange={(e) => setCode(e.target.value)}
-								placeholder={useBackup ? "XXXXX-XXXXX" : "123456"}
-								value={code}
-							/>
-						</div>
-						{!useBackup && (
-							<label className="flex items-center gap-2 text-muted-foreground text-sm">
-								<input
-									checked={trustDevice}
-									onChange={(e) => setTrustDevice(e.target.checked)}
-									type="checkbox"
-								/>
-								Trust this device for 30 days
-							</label>
-						)}
-						<Button className="w-full" disabled={loading} type="submit">
-							{loading ? "Verifying…" : "Verify"}
-						</Button>
-						<Button
-							className="w-full"
-							onClick={() => {
-								setUseBackup((v) => !v);
-								setCode("");
-							}}
-							type="button"
-							variant="ghost"
+		<AuthFrame title="Verify it's you.">
+			<p className="text-muted-foreground text-sm">
+				{useBackup
+					? "Enter one of the backup codes you saved when you turned on two-factor authentication."
+					: "Enter the 6-digit code from your authenticator app."}
+			</p>
+			<form className="space-y-6" onSubmit={submit}>
+				<div className="space-y-1.5">
+					<Label
+						className="font-normal text-muted-foreground text-sm"
+						htmlFor="code"
+					>
+						{useBackup ? "Backup code" : "Authentication code"}
+					</Label>
+					<Input
+						autoComplete="one-time-code"
+						autoFocus
+						className="h-10 font-mono text-lg tracking-[0.3em]"
+						id="code"
+						inputMode={useBackup ? "text" : "numeric"}
+						onChange={(e) => setCode(e.target.value)}
+						placeholder={useBackup ? "XXXXX-XXXXX" : "123456"}
+						value={code}
+					/>
+				</div>
+				{useBackup ? null : (
+					<div className="flex items-center gap-3 text-sm">
+						<Checkbox
+							checked={trustDevice}
+							className="cursor-pointer border-border data-checked:bg-primary data-checked:text-primary-foreground dark:bg-background"
+							id="trust-device"
+							onCheckedChange={(checked) => setTrustDevice(checked === true)}
+						/>
+						<Label
+							className="cursor-pointer font-normal text-muted-foreground leading-none"
+							htmlFor="trust-device"
 						>
-							{useBackup ? "Use authenticator app" : "Use a backup code"}
-						</Button>
-					</form>
-				</CardContent>
-			</Card>
-		</div>
+							Trust this device for 30 days
+						</Label>
+					</div>
+				)}
+				<div className="flex flex-col gap-3">
+					<Button
+						className="h-10 w-full cursor-pointer rounded-lg"
+						disabled={loading}
+						type="submit"
+					>
+						{loading ? "Verifying…" : "Verify"}
+					</Button>
+					<Button
+						className="h-10 w-full cursor-pointer rounded-lg"
+						onClick={() => {
+							setUseBackup((v) => !v);
+							setCode("");
+						}}
+						type="button"
+						variant="ghost"
+					>
+						{useBackup ? "Use authenticator app" : "Use a backup code"}
+					</Button>
+				</div>
+			</form>
+		</AuthFrame>
 	);
 }

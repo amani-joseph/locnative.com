@@ -1,15 +1,9 @@
 import { Button } from "@locnative/ui/components/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@locnative/ui/components/card";
 import { Skeleton } from "@locnative/ui/components/skeleton";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { AuthFrame } from "@/components/auth-frame";
 import { signOut, useSession } from "@/lib/auth-client";
 import { orpcClient } from "@/lib/orpc";
 
@@ -59,8 +53,10 @@ function RouteComponent() {
 
 	if (loading || sessionPending) {
 		return (
-			<div className="mx-auto max-w-md p-6">
-				<Skeleton className="h-48 w-full" />
+			<div className="mx-auto flex min-h-svh w-full max-w-md flex-col justify-center gap-4 p-6">
+				<Skeleton className="h-12 w-3/4" />
+				<Skeleton className="h-4 w-full" />
+				<Skeleton className="h-10 w-full" />
 			</div>
 		);
 	}
@@ -133,14 +129,13 @@ function InviteShell({
 	children: React.ReactNode;
 }) {
 	return (
-		<div className="mx-auto flex min-h-svh max-w-md items-center p-6">
-			<Card className="w-full">
-				<CardHeader>
-					<CardTitle>{title}</CardTitle>
-					<CardDescription>{description}</CardDescription>
-				</CardHeader>
-				<CardContent>{children}</CardContent>
-			</Card>
-		</div>
+		<AuthFrame eyebrow="Team invitation" title={title}>
+			<p className="text-muted-foreground text-sm leading-relaxed">
+				{description}
+			</p>
+			<div className="flex flex-col gap-3 [&>*]:h-10 [&>*]:w-full">
+				{children}
+			</div>
+		</AuthFrame>
 	);
 }
