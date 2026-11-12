@@ -401,6 +401,9 @@ importers:
       jsdom:
         specifier: ^26.0.0
         version: 26.1.0
+      sharp:
+        specifier: ^0.34.5
+        version: 0.34.5
       typescript:
         specifier: ^5
         version: 5.9.3

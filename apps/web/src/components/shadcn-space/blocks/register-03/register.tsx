@@ -5,7 +5,7 @@ import { Label } from "@locnative/ui/components/label";
 import { PasswordInput } from "@locnative/ui/components/password-input";
 import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { type FormEvent, useState } from "react";
-import { ShaderAnimation } from "@/components/shadcn-space/animations/shader-lines";
+import { AuthIllustration } from "@/components/auth-illustration";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { signIn, signUp } from "@/lib/auth-client";
@@ -98,8 +98,8 @@ const RegisterForm = () => {
 				<div className="w-full">
 					<div className="relative mx-auto max-w-7xl border-border border-x border-b before:absolute before:right-full before:-bottom-px before:h-px before:w-screen before:bg-border after:absolute after:-bottom-px after:left-full after:h-px after:w-screen after:bg-border">
 						<div className="relative grid grid-cols-1 overflow-hidden md:grid-cols-12">
-							<div className="relative hidden overflow-hidden md:col-span-7 md:block">
-								<ShaderAnimation />
+							<div className="relative hidden overflow-hidden md:col-span-7 md:block md:min-h-[420px]">
+								<AuthIllustration />
 							</div>
 
 							<div className="flex flex-col justify-center px-8 py-10 md:col-span-5">
