@@ -101,6 +101,7 @@ None yet.
 | 260419-lml | Fix critical audit issues C1 (wrangler NODE_ENV) and C2 (CLAUDE.md Convex→Postgres) | 2026-04-19 | 7b0e382, 5b3ce0b | [260419-lml-fix-critical-audit-issues-c1-and-c2-remo](./quick/260419-lml-fix-critical-audit-issues-c1-and-c2-remo/) |
 | 260823-pcq | Fix bare AU postcode queries in /addresses/autocomplete | 2026-08-23 | 2c771db | [260823-pcq-fix-bare-au-postcode-autocomplete](./quick/260823-pcq-fix-bare-au-postcode-autocomplete/) |
 | 260930-dbw | Reduce pre-launch Neon wakes (API key pre-check, DO flush skip, Clivly pause, pg_stat_statements) | 2026-09-30 | 8fb000a, 2016336, a0d925e | [260930-dbw-reduce-prelaunch-db-wakes](./quick/260930-dbw-reduce-prelaunch-db-wakes/) |
+| 261113-uip | Responsive and visual polish audit: shared AuthFrame, PageHeader, EmptyState; mobile fixes | 2026-11-13 | eab3b96, b5c569d, f7c1a7f | [261113-uip-responsive-visual-polish](./quick/261113-uip-responsive-visual-polish/) |
 
 ## Session Continuity
 
