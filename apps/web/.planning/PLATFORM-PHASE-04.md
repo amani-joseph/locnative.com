@@ -2,7 +2,7 @@
 
 ## Goal
 
-Make Wherabouts defensible through differentiated intelligence, enterprise trust, and globally scalable platform behavior.
+Make Locnative defensible through differentiated intelligence, enterprise trust, and globally scalable platform behavior.
 
 ## Timeline
 
@@ -48,7 +48,7 @@ Make Wherabouts defensible through differentiated intelligence, enterprise trust
 
 ## Success Criteria
 
-1. Wherabouts offers capabilities beyond commodity geocoding and lookup vendors.
+1. Locnative offers capabilities beyond commodity geocoding and lookup vendors.
 2. Enterprise customers can evaluate the platform with confidence.
 3. Global performance strategy is measurable and operationally meaningful.
 4. Growth no longer depends only on direct product discovery.

@@ -69,7 +69,7 @@ Mistakes that cause data loss, security incidents, or force rewrites.
 1. After creation, show the key in a modal that cannot be dismissed without explicit acknowledgment ("I have copied this key")
 2. Provide a one-click copy button with visual confirmation
 3. Warn in the modal: "This key will not be shown again. Store it securely."
-4. Consider offering a `.env` snippet download (e.g., `WHERABOUTS_API_KEY=wh_...`) for developer convenience
+4. Consider offering a `.env` snippet download (e.g., `LOCNATIVE_API_KEY=wh_...`) for developer convenience
 5. Do NOT auto-close the modal or navigate away after creation
 
 **Detection:** Track how many keys are created and immediately revoked within 5 minutes -- this signals users losing their key and regenerating.

@@ -1,4 +1,4 @@
-# Platform Milestones: Wherabouts API Platform
+# Platform Milestones: Locnative API Platform
 
 ## Purpose
 
@@ -93,7 +93,7 @@ Each milestone should be executable as a vertical slice:
 
 ### M6. React integration layer
 
-- Outcome: React users can adopt Wherabouts with provider, hooks, and drop-in components
+- Outcome: React users can adopt Locnative with provider, hooks, and drop-in components
 - Strategic requirements advanced:
   - `P2-R03`
   - `P2-R05`
@@ -162,7 +162,7 @@ Each milestone should be executable as a vertical slice:
 
 ### M12. Intelligence layer
 
-- Outcome: Wherabouts ships differentiated address intelligence features beyond commodity lookup
+- Outcome: Locnative ships differentiated address intelligence features beyond commodity lookup
 - Strategic requirements advanced:
   - `P4-R01`
   - `P4-R05`
@@ -173,7 +173,7 @@ Each milestone should be executable as a vertical slice:
 
 ### M13. Enterprise trust package
 
-- Outcome: enterprise buyers can evaluate Wherabouts as a serious vendor
+- Outcome: enterprise buyers can evaluate Locnative as a serious vendor
 - Strategic requirements advanced:
   - `P4-R02`
   - `P4-R05`

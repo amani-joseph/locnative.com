@@ -2,7 +2,7 @@
 
 ## Goal
 
-Move Wherabouts beyond addresses into two new product surfaces that AU competitors
+Move Locnative beyond addresses into two new product surfaces that AU competitors
 (Mapbox/Google) under-serve for Australia:
 
 1. **POI / category search** (Radar Places parity) — `/api/v1/places/search` with text +
@@ -101,7 +101,7 @@ as the structural template for the POI importer (streamed parse → normalise �
 
 - Resources are factory functions: `createAddresses(request: Requester): AddressesResource`
   returning an object of methods; each method calls `request<T>({ method, path, query })`.
-- `client.ts` imports each `createX` and assembles `WheraboutsClient` in `createWheraboutsClient`
+- `client.ts` imports each `createX` and assembles `LocnativeClient` in `createLocnativeClient`
   (`addresses: createAddresses(request)`, etc.). A new `places` resource gets registered here.
 - Tests (`*.test.ts`) use a `vi.fn()` mock as the `request` and assert the exact
   `{ method, path, query }` shape — e.g. `addresses.test.ts` asserts

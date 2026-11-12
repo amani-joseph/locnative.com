@@ -1,4 +1,4 @@
-# Requirements: Wherabouts — Projects & API Key Management
+# Requirements: Locnative — Projects & API Key Management
 
 **Defined:** 2026-04-12
 **Core Value:** Users can create projects and generate API keys to access the geocoding API, with clear visibility into usage per project and per key.

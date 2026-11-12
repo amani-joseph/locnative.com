@@ -1,8 +1,8 @@
-# Platform Roadmap: Wherabouts API Platform
+# Platform Roadmap: Locnative API Platform
 
 ## Purpose
 
-This document translates the 18-month Wherabouts platform roadmap into repo-local planning artifacts that are actionable for engineering.
+This document translates the 18-month Locnative platform roadmap into repo-local planning artifacts that are actionable for engineering.
 
 This is a strategic planning layer.
 
@@ -91,7 +91,7 @@ It does not replace the existing tactical `.planning` track for project and API 
 
 #### Strategic requirements
 
-- `P4-R01` Address intelligence differentiation: Wherabouts delivers intelligence features beyond commodity lookup behavior.
+- `P4-R01` Address intelligence differentiation: Locnative delivers intelligence features beyond commodity lookup behavior.
 - `P4-R02` Enterprise trust posture: enterprise buyers can assess compliance, auditability, and control surfaces with confidence.
 - `P4-R03` Global scale architecture: caching, edge or regional routing, and load characteristics are measurable and repeatable.
 - `P4-R04` Growth leverage: partner, education, and community motions create reusable growth channels beyond direct discovery.

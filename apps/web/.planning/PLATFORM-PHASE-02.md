@@ -2,7 +2,7 @@
 
 ## Goal
 
-Turn Wherabouts from a raw HTTP API into a developer platform with first-party SDKs and drop-in framework primitives.
+Turn Locnative from a raw HTTP API into a developer platform with first-party SDKs and drop-in framework primitives.
 
 ## Timeline
 

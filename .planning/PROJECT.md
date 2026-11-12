@@ -1,8 +1,8 @@
-# Wherabouts.com — BetterAuth Migration
+# Locnative.com — BetterAuth Migration
 
 ## What This Is
 
-Wherabouts.com is an existing application built on TanStack Start + Convex. This project uses BetterAuth (self-hosted, open-source) for authentication, giving full ownership of auth data and infrastructure. The mydeffo.com-web project serves as architectural inspiration for BetterAuth patterns.
+Locnative.com is an existing application built on TanStack Start + Convex. This project uses BetterAuth (self-hosted, open-source) for authentication, giving full ownership of auth data and infrastructure. The mydeffo.com-web project serves as architectural inspiration for BetterAuth patterns.
 
 ## Core Value
 
