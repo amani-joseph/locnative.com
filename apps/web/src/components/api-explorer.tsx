@@ -284,7 +284,7 @@ export function ApiEndpointCard({
 		<Card>
 			<CardHeader className="p-0">
 				<button
-					className="flex w-full items-center gap-3 p-4 text-left transition-colors hover:bg-muted/50"
+					className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 p-4 text-left transition-colors hover:bg-muted/50 sm:flex-nowrap"
 					onClick={() => setIsOpen(!isOpen)}
 					type="button"
 				>
@@ -299,8 +299,10 @@ export function ApiEndpointCard({
 					>
 						{endpoint.method}
 					</Badge>
-					<code className="font-mono text-sm">{endpoint.path}</code>
-					<span className="ml-auto text-muted-foreground text-sm">
+					<code className="min-w-0 break-all font-mono text-sm">
+						{endpoint.path}
+					</code>
+					<span className="basis-full pl-7 text-muted-foreground text-xs sm:ml-auto sm:shrink-0 sm:basis-auto sm:pl-0 sm:text-right sm:text-sm">
 						{endpoint.summary}
 					</span>
 				</button>

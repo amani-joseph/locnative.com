@@ -520,17 +520,17 @@ function TeamSection({
 						const isSelf = member.userId === currentUserId;
 						return (
 							<div
-								className="flex items-center justify-between py-3 first:pt-0"
+								className="flex items-center justify-between gap-3 py-3 first:pt-0"
 								key={member.userId}
 							>
-								<div className="flex items-center gap-3">
-									<Avatar className="size-9">
+								<div className="flex min-w-0 items-center gap-3">
+									<Avatar className="size-9 shrink-0">
 										<AvatarFallback className="text-xs">
 											{initialsOf(display)}
 										</AvatarFallback>
 									</Avatar>
-									<div>
-										<p className="font-medium text-sm">
+									<div className="min-w-0">
+										<p className="truncate font-medium text-sm">
 											{display}
 											{isSelf && (
 												<span className="ml-1.5 text-muted-foreground text-xs">
@@ -538,12 +538,15 @@ function TeamSection({
 												</span>
 											)}
 										</p>
-										<p className="text-muted-foreground text-xs">
+										<p
+											className="truncate text-muted-foreground text-xs"
+											title={member.email}
+										>
 											{member.email}
 										</p>
 									</div>
 								</div>
-								<div className="flex items-center gap-3">
+								<div className="flex shrink-0 items-center gap-3">
 									<Badge variant={roleBadgeVariant(member.role)}>
 										{member.role}
 									</Badge>

@@ -10,7 +10,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 	return (
 		<SidebarProvider className={cn("[--app-wrapper-max-width:80rem]")}>
 			<AppSidebar />
-			<SidebarInset>
+			{/* Faint brand glow behind the top of every page. Decorative only. */}
+			<SidebarInset className="relative isolate before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:-z-10 before:h-72 before:bg-[radial-gradient(60%_100%_at_50%_0%,var(--color-primary)_0%,transparent_100%)] before:opacity-[0.06] dark:before:opacity-[0.08]">
 				<AppHeader />
 				{/* Skip-link target + primary landmark. tabIndex=-1 lets the
 				    "Skip to main content" link move focus here. */}
