@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as PublicRouteImport } from './routes/_public'
 import { Route as ProtectedRouteImport } from './routes/_protected'
@@ -63,6 +64,11 @@ import { Route as ApiAuthCallbackProviderRouteImport } from './routes/api/auth/c
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsRoute = DocsRouteImport.update({
@@ -313,6 +319,7 @@ const ApiAuthCallbackProviderRoute = ApiAuthCallbackProviderRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
+  '/onboarding': typeof OnboardingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/api-catalog': typeof DotwellKnownApiCatalogRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
@@ -363,6 +370,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
+  '/onboarding': typeof OnboardingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/api-catalog': typeof DotwellKnownApiCatalogRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
@@ -416,6 +424,7 @@ export interface FileRoutesById {
   '/_protected': typeof ProtectedRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
   '/docs': typeof DocsRoute
+  '/onboarding': typeof OnboardingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/api-catalog': typeof DotwellKnownApiCatalogRoute
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -468,6 +477,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/docs'
+    | '/onboarding'
     | '/sitemap.xml'
     | '/.well-known/api-catalog'
     | '/forgot-password'
@@ -518,6 +528,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/docs'
+    | '/onboarding'
     | '/sitemap.xml'
     | '/.well-known/api-catalog'
     | '/forgot-password'
@@ -570,6 +581,7 @@ export interface FileRouteTypes {
     | '/_protected'
     | '/_public'
     | '/docs'
+    | '/onboarding'
     | '/sitemap.xml'
     | '/.well-known/api-catalog'
     | '/_auth/forgot-password'
@@ -623,6 +635,7 @@ export interface RootRouteChildren {
   ProtectedRoute: typeof ProtectedRouteWithChildren
   PublicRoute: typeof PublicRouteWithChildren
   DocsRoute: typeof DocsRoute
+  OnboardingRoute: typeof OnboardingRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   DotwellKnownApiCatalogRoute: typeof DotwellKnownApiCatalogRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
@@ -656,6 +669,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs': {
@@ -1072,6 +1092,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProtectedRoute: ProtectedRouteWithChildren,
   PublicRoute: PublicRouteWithChildren,
   DocsRoute: DocsRoute,
+  OnboardingRoute: OnboardingRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   DotwellKnownApiCatalogRoute: DotwellKnownApiCatalogRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,

@@ -127,6 +127,13 @@
       "when": 1782204256148,
       "tag": "0017_thankful_toad_men",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1794461292476,
+      "tag": "0023_onboarding_consent",
+      "breakpoints": true
     }
   ]
 }

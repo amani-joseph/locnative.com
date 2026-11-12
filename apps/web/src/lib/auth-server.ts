@@ -103,6 +103,7 @@ export interface BetterAuthSession {
 		id: string;
 		image?: string | null;
 		name?: string | null;
+		onboardingCompletedAt?: Date | string | null;
 	};
 }
 

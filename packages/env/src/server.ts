@@ -43,6 +43,9 @@ function buildServerEnv() {
 			NEON_ORG_ID: z.string().min(1).optional(),
 			NEON_MONITOR_ALERT_EMAIL: z.string().email().optional(),
 			NEON_MONITOR_DISCORD_WEBHOOK_URL: z.string().url().optional(),
+			// Clivly marketing-consent capture. Optional: without it, consent is
+			// still stored locally and the Clivly call is skipped.
+			CLIVLY_SECRET_KEY: z.string().min(1).optional(),
 		},
 		runtimeEnv: {
 			...process.env,
@@ -62,6 +65,8 @@ function buildServerEnv() {
 			NEON_MONITOR_ALERT_EMAIL: process.env.NEON_MONITOR_ALERT_EMAIL,
 			NEON_MONITOR_DISCORD_WEBHOOK_URL:
 				process.env.NEON_MONITOR_DISCORD_WEBHOOK_URL,
+			CLIVLY_SECRET_KEY:
+				process.env.CLIVLY_SECRET_KEY ?? process.env.CLIVLY_API_KEY,
 		},
 		emptyStringAsUndefined: true,
 	});

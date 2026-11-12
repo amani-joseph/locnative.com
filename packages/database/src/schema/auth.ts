@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import {
 	boolean,
 	index,
@@ -18,6 +19,23 @@ export const users = pgTable(
 		createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
 		updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
 		twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
+		/** Set once the user finishes or skips the onboarding step. */
+		onboardingCompletedAt: timestamp("onboarding_completed_at", {
+			withTimezone: true,
+		}),
+		/**
+		 * Local mirror of the marketing opt-in. Clivly holds the authoritative
+		 * record (including unsubscribes made from an email link).
+		 */
+		marketingConsent: boolean("marketing_consent").notNull().default(false),
+		marketingConsentUpdatedAt: timestamp("marketing_consent_updated_at", {
+			withTimezone: true,
+		}),
+		/** Services the user said they plan to use; synced to Clivly contacts. */
+		serviceInterests: text("service_interests")
+			.array()
+			.notNull()
+			.default(sql`'{}'::text[]`),
 	},
 	(table) => [uniqueIndex("user_email_unique").on(table.email)]
 );
