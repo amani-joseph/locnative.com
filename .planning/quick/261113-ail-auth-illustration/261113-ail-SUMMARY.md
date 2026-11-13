@@ -2,7 +2,7 @@
 quick_id: 261113-ail
 status: complete
 date: 2026-11-13
-commits: [b9966fa]
+commits: [b9966fa, 1135f7d]
 prs: [74, 77]
 ---
 
@@ -26,4 +26,4 @@ This was done outside the GSD tooling at the user's request (design options → 
 
 ## Notes
 
-- `STATE.md` quick-task row: not added here, to avoid a merge conflict with open PR #76, which edits the same table. Add the row once #76 lands.
+- `STATE.md` quick-task row added after PR #76 merged.
