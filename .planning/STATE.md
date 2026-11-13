@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-14)
 Phase: 08 (Teams — creation, invitations, API keys) — EXECUTING
 Plan: 2 of 7
 Status: Ready to execute
-Last activity: 2026-09-30 - Completed quick task 260930-dbw: Reduce pre-launch Neon wakes
+Last activity: 2026-11-13 - Completed quick task 261113-ail: Replace auth shader with static illustrations
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -102,6 +102,7 @@ None yet.
 | 260823-pcq | Fix bare AU postcode queries in /addresses/autocomplete | 2026-08-23 | 2c771db | [260823-pcq-fix-bare-au-postcode-autocomplete](./quick/260823-pcq-fix-bare-au-postcode-autocomplete/) |
 | 260930-dbw | Reduce pre-launch Neon wakes (API key pre-check, DO flush skip, Clivly pause, pg_stat_statements) | 2026-09-30 | 8fb000a, 2016336, a0d925e | [260930-dbw-reduce-prelaunch-db-wakes](./quick/260930-dbw-reduce-prelaunch-db-wakes/) |
 | 261113-uip | Responsive and visual polish audit: shared AuthFrame, PageHeader, EmptyState; mobile fixes | 2026-11-13 | eab3b96, b5c569d, f7c1a7f | [261113-uip-responsive-visual-polish](./quick/261113-uip-responsive-visual-polish/) |
+| 261113-ail | Replace auth shader with static suburb/topographic illustrations; fix stuck fade-in | 2026-11-13 | b9966fa, 1135f7d | [261113-ail-auth-illustration](./quick/261113-ail-auth-illustration/) |
 
 ## Session Continuity
 
